@@ -1,11 +1,8 @@
 .anime_path {
   fill: none;
-  /* 路径填充颜色为空 */
-  stroke: #100C08;
-  /* 路径的边框颜色为白色 */
+  stroke: #F5F5F5;
 }
 
-
-#Title_Index {
+#Main_Resource {
   height: 100vh;
 }

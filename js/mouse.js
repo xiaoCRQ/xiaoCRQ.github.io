@@ -12,6 +12,7 @@ const ball = {
   x: mouseX,
   y: mouseY,
   radius: 10,
+  color: '#FFFFFF', // 初始颜色为白色
 };
 
 // 更新小球的位置
@@ -25,7 +26,7 @@ function drawBall() {
   ctx.clearRect(0, 0, Mouse.width, Mouse.height); // 清除画布
   ctx.beginPath();
   ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-  ctx.fillStyle = '100C08'; // 设置小球颜色
+  ctx.fillStyle = ball.color; // 使用小球的颜色属性
   ctx.fill();
   ctx.closePath();
 }
@@ -47,3 +48,21 @@ document.addEventListener('mousemove', (event) => {
 setTimeout(() => {
   animate(); // 延迟1秒后启动动画
 }, 1250);
+
+// 修改小球颜色的函数
+function setMouseColor(color) {
+  ball.color = color; // 更新小球的颜色属性
+}
+
+// 各个元素的悬停变化
+const navMain = document.getElementById('Nav_Main');
+// 鼠标悬停时的动画
+navMain.addEventListener('mouseenter', () => {
+  // 修改小球颜色的函数
+  setMouseColor('#100C08')
+});
+navMain.addEventListener('mouseleave', () => {
+  // 修改小球颜色的函数
+  setMouseColor('#F5F5F5')
+});
+
