@@ -6,3 +6,9 @@
 #Main_Resource {
   height: 100vh;
 }
+
+.Page {
+  width: 90vw;
+  height: 80%;
+  background-color: #F5F5F5;
+}
