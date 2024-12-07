@@ -1,0 +1,13 @@
+body {
+  height: 100vh;
+  width: 100%;
+  background-color: #35dad2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+svg {
+  width: 60em;
+}
