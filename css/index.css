@@ -1,17 +1,11 @@
-body {
-  height: 100vh;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
-}
-
-svg {
-  width: 60em;
-}
-
 .anime_path {
-  fill: none; /* 路径填充颜色为空 */
-  stroke: #35dad2; /* 路径的边框颜色为白色 */
+  fill: none;
+  /* 路径填充颜色为空 */
+  stroke: #100C08;
+  /* 路径的边框颜色为白色 */
+}
+
+
+#Title_Index {
+  height: 100vh;
 }

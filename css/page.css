@@ -1,0 +1,67 @@
+body,
+main,
+nav {
+  display: flex;
+  text-align: center;
+  align-items: center;
+  align-content: center;
+  margin: 0;
+}
+
+body {
+  overflow: hidden;
+  /* 隐藏整个页面的滚动条 */
+  flex-direction: column;
+  cursor: none;
+  /* 隐藏鼠标光标 */
+}
+
+
+#XiaoCRQ {
+  width: 45vw;
+  transition: width 0.25s;
+}
+
+#Nav_Main {
+  border-radius: 10vw;
+  height: 120vh;
+  width: 35vw;
+  background-color: #EEEEEE;
+  transform: translateY(-4vh);
+  display: flex;
+  /* 设置为垂直排列 */
+  flex-direction: column;
+  /* 水平居中 */
+  align-items: center;
+}
+
+#Nav_Line {
+  width: 35%;
+  height: 0.3vh;
+  margin: 2vh;
+  border-radius: 10vw;
+  background-color: #999999;
+}
+
+#Nav_Resource {
+  width: 100%;
+  height: 100%;
+  margin-top: 2vh;
+}
+
+#Mouse {
+  position: fixed;
+  /* 固定定位 */
+  top: 0;
+  /* 从顶部开始 */
+  left: 0;
+  /* 从左侧开始 */
+  width: 100vw;
+  /* 宽度为视口宽度 */
+  height: 100vh;
+  /* 高度为视口高度 */
+  z-index: 9999;
+  /* 确保在最高层级 */
+  pointer-events: none;
+  /* 不影响其他元素的交互 */
+}

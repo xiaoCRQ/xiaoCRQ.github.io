@@ -18,15 +18,89 @@ function loadAndAnimateSVG(targetId, svgPath) {
         targets: '.anime_path', // 动画目标集合
         strokeDashoffset: [anime.setDashoffset, 0], // 设置路径的描边偏移动画，从初始值(使用 anime.js 自动计算的偏移量)到 0
         easing: 'easeInOutSine', // 设置动画的缓动效果为 “正弦曲线缓动”
-        duration: 275, // 单个动画的持续时间为 275 毫秒
-        delay: (el, i) => { return i * 250 }, // 每个动画的延迟为索引值 `i` 乘以 250 毫秒
+        duration: 250, // 单个动画的持续时间为 275 毫秒
+        delay: (el, i) => { return i * 150 }, // 每个动画的延迟为索引值 `i` 乘以 250 毫秒
         direction: 'alternate', // 动画方向为交替(动画完成后反向播放)
         autoplay: true, // 自动播放
-        loop: true // 动画循环播放
+        loop: false // 动画循环播放
       });
+
+      // 添加进入时放大的效果
+      anime({
+        targets: targetElement,
+        scale: [0.85, 1], // 从 0.5 放大到 1
+        filter: ['blur(0.8vh)', 'blur(0vh)'], // 从模糊到清晰
+        easing: 'easeInOutSine', // 设置缓动效果
+        duration: 1250, // 持续时间为 500 毫秒
+      });
+
     })
     .catch(error => console.error(error));
+
+  // 鼠标悬停时的动画
+  targetElement.addEventListener('click', () => {
+    anime({
+      targets: '.anime_path', // 动画目标集合
+      strokeDashoffset: [anime.setDashoffset, 0], // 设置路径的描边偏移动画，从初始值(使用 anime.js 自动计算的偏移量)到 0
+      easing: 'easeInOutSine', // 设置动画的缓动效果为 “正弦曲线缓动”
+      duration: 250, // 单个动画的持续时间为 275 毫秒
+      delay: (el, i) => { return i * 150 }, // 每个动画的延迟为索引值 `i` 乘以 250 毫秒
+      direction: 'alternate', // 动画方向为交替(动画完成后反向播放)
+      autoplay: true, // 自动播放
+      loop: false // 动画循环播放
+    });
+  });
 }
+
+// 动画下方导航窗口栏的函数
+function animateNavMain() {
+  const navMain = document.getElementById('Nav_Main');
+
+  // 初始状态
+  navMain.style.transform = 'translateY(100vh)'; // 从视口下方开始
+
+  // 使用 anime.js 创建进入动画
+  anime({
+    delay: 1250,// 延迟
+    targets: navMain,
+    translateY: [0, -4], // 从下方移动到目标位置
+    easing: 'spring(0.5, 80, 10, 5)', // 弹簧缓解
+    duration: 275, // 动画持续时间（毫秒）
+  });
+
+  // 鼠标悬停时的动画
+  navMain.addEventListener('mouseenter', () => {
+    anime({
+      targets: navMain,
+      width: '40vw',
+      translateY: '-6vh',
+      easing: 'spring(0.65, 80, 10, 5)', // 弹簧缓解
+    });
+  });
+
+  navMain.addEventListener('mouseleave', () => {
+    anime({
+      targets: navMain,
+      width: '35vw',
+      translateY: '-4vh',
+      easing: 'spring(0.65, 80, 10, 5)', // 弹簧缓解
+    });
+  });
+
+  // 鼠标点击时的动画
+  navMain.addEventListener('click', () => {
+    anime({
+      targets: navMain,
+      width: '85vw',
+      translateY: '-95vh',
+      easing: 'spring(0.65, 80, 10, 5)', // 弹簧缓解
+    });
+  });
+}
+
 
 // 调用函数，替换 ID 为 XiaoCRQ 的元素内容为指定 SVG，并动画显示
 loadAndAnimateSVG('XiaoCRQ', 'svg/xiaoCRQwrite.svg');
+animateNavMain();
+
+
