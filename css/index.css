@@ -1,7 +1,6 @@
 body {
   height: 100vh;
   width: 100%;
-  background-color: #35dad2;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -10,4 +9,9 @@ body {
 
 svg {
   width: 60em;
+}
+
+.anime_path {
+  fill: none; /* 路径填充颜色为空 */
+  stroke: #35dad2; /* 路径的边框颜色为白色 */
 }
