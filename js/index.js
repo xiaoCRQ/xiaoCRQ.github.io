@@ -1,5 +1,5 @@
 /**
- * 等待指定资源加载完成，支持 CSS、JS 和图片资源。
+ * 等待指定资源加载完成，支持 CSS、JS、图片和 HTML 页面资源。
  * @param {string} resourceUrl - 资源的 URL 路径
  * @param {number} timeout - 等待超时时间（毫秒），默认为 10,000ms
  * @returns {Promise<void>} - 成功时解析，失败时拒绝
@@ -15,6 +15,8 @@ async function waitForResource(resourceUrl, timeout = 10000) {
     return waitForResourceUsingTag(resourceUrl, timeout); // 加载 CSS/JS
   } else if (resourceUrl.endsWith('.svg') || resourceUrl.endsWith('.png') || resourceUrl.endsWith('.jpg') || resourceUrl.endsWith('.jpeg')) {
     return waitForImage(resourceUrl, timeout); // 加载图片
+  } else if (resourceUrl.endsWith('.html')) {
+    return waitForHTMLPage(resourceUrl, timeout); // 加载 HTML 页面
   } else {
     throw new Error(`未知的资源类型: ${resourceUrl}`);
   }
@@ -45,6 +47,13 @@ function isResourceLoaded(resourceUrl) {
   if (isImage) {
     const images = document.querySelectorAll('img');
     return Array.from(images).some(img => img.src === resourceUrl);
+  }
+
+  // 检查 HTML 页面资源是否已加载
+  const isHTML = resourceUrl.endsWith('.html');
+  if (isHTML) {
+    // 可以通过 window.onload 或 document.readyState 来判断
+    return document.readyState === 'complete';
   }
 
   return false; // 默认返回 false，表示没有加载
@@ -123,6 +132,31 @@ function waitForImage(resourceUrl, timeout) {
   });
 }
 
+/**
+ * 等待 HTML 页面加载完成。
+ * @param {string} resourceUrl - HTML 资源的 URL 路径
+ * @param {number} timeout - 等待超时时间（毫秒）
+ * @returns {Promise<void>} - 成功时解析，失败时拒绝
+ */
+function waitForHTMLPage(resourceUrl, timeout) {
+  return new Promise((resolve, reject) => {
+    if (document.readyState === 'complete') {
+      console.log(`HTML 页面已加载: ${resourceUrl}`);
+      resolve();
+    } else {
+      // 如果页面尚未加载，等待 `window.onload` 事件
+      window.onload = () => {
+        console.log(`HTML 页面已加载: ${resourceUrl}`);
+        resolve();
+      };
+
+      // 设置超时处理
+      setTimeout(() => {
+        reject(new Error(`HTML 页面加载超时: ${resourceUrl}`));
+      }, timeout);
+    }
+  });
+}
 
 // -------------------------------------------------------------------------------------------
 
@@ -261,7 +295,7 @@ async function loadAndAnimateSVG(targetId) {
       duration: 250,
       delay: (el, i) => i * 150,
       direction: 'alternate',
-      loop: false // 加载期间 loop 为 true
+      loop: false
     });
 
     // 等待动画完成
@@ -458,6 +492,10 @@ const resources = [
   'js/index.js',
   'js/mouse.js',
   'img/back.png',
+  'html/Blog.html',
+  'html/Home.html',
+  'html/Github.html',
+  'html/Nav_Options.html',
 ];
 
 // 启动应用
