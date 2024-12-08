@@ -66,3 +66,19 @@ navMain.addEventListener('mouseleave', () => {
   setMouseColor('#F5F5F5')
 });
 
+
+const observer = new MutationObserver(() => {
+  const Main = document.getElementById('Page');
+  if (Main) {
+    // 如果元素存在，则绑定事件监听器
+    Main.addEventListener('mouseenter', () => {
+      setMouseColor('#100C08');
+    });
+    Main.addEventListener('mouseleave', () => {
+      setMouseColor('#F5F5F5');
+    });
+  }
+});
+
+// 配置观察器
+observer.observe(document.body, { childList: true, subtree: true });

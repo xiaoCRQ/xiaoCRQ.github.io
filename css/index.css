@@ -4,11 +4,17 @@
 }
 
 #Main_Resource {
+  width: 100%;
   height: 100vh;
 }
 
-.Page {
-  width: 90vw;
+#Page {
+  width: 100%;
   height: 80%;
   background-color: #F5F5F5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 5vw;
 }

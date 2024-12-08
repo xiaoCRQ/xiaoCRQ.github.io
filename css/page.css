@@ -95,6 +95,7 @@ button {
   height: 100%;
 }
 
+#Main_Title,
 #Mouse {
   position: fixed;
   /* 固定定位 */
@@ -110,4 +111,14 @@ button {
   /* 确保在最高层级 */
   pointer-events: none;
   /* 不影响其他元素的交互 */
+}
+
+#Main_Title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  /* 视口高度 */
+  z-index: -1;
 }
