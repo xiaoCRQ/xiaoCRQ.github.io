@@ -278,34 +278,30 @@ async function loadAndAnimateSVG(targetId) {
     duration: 1250,
   });
 
-  try {
-    // 等待所有资源加载完成
-    // 使用 Promise.all 等待资源加载完成
-    await Promise.all(resources.map(resource => waitForResource(resource)));
-    console.log('所有资源加载成功');
+  // 等待所有资源加载完成
+  // 使用 Promise.all 等待资源加载完成
+  await Promise.all(resources.map(resource => waitForResource(resource)));
+  console.log('所有资源加载成功');
 
-    // 停止路径动画的 loop，使用 pause() 来暂停动画
-    pathAnimation.pause();
-    pathAnimation.loop = false;
+  // 停止路径动画的 loop，使用 pause() 来暂停动画
+  pathAnimation.pause();
+  pathAnimation.loop = false;
 
-    anime({
-      targets: '.anime_path',
-      strokeDashoffset: [anime.setDashoffset, 0],
-      easing: 'easeInOutSine',
-      duration: 250,
-      delay: (el, i) => i * 150,
-      direction: 'alternate',
-      loop: false
-    });
+  anime({
+    targets: '.anime_path',
+    strokeDashoffset: [anime.setDashoffset, 0],
+    easing: 'easeInOutSine',
+    duration: 250,
+    delay: (el, i) => i * 150,
+    direction: 'alternate',
+    loop: false
+  });
 
-    // 等待动画完成
-    await new Promise(resolve => setTimeout(resolve, 1250));
+  // 等待动画完成
+  await new Promise(resolve => setTimeout(resolve, 1250));
 
-    // 返回完成的结果
-    return;
-  } catch (error) {
-    console.error('资源加载失败:', error);
-  }
+  // 返回完成的结果
+  return;
 }
 
 
@@ -487,10 +483,6 @@ async function initializeApp() {
 }
 
 const resources = [
-  'css/index.css',
-  'js/animejs/anime.min.js',
-  'js/index.js',
-  'js/mouse.js',
   'img/back.png',
   'html/Blog.html',
   'html/Home.html',
