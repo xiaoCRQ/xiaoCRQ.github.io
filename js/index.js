@@ -281,6 +281,15 @@ async function loadContent(id, path, useAnimation = true) {
     const data = await response.text();
     element.innerHTML = data;
 
+    // 动态执行其中的 <script> 标签
+    const scripts = element.getElementsByTagName('script');
+    for (let script of scripts) {
+      const newScript = document.createElement('script');
+      newScript.text = script.textContent;
+      document.body.appendChild(newScript);
+      document.body.removeChild(newScript); // 执行完后移除
+    }
+
     if (useAnimation) {
       await animeResource(id, ['0vh', '0vh'], ['100vh', '0vh'], ['100vh', '100vh'], ['10%', '100%'], 1);
     }
@@ -506,12 +515,57 @@ function setBackgroundImage(imageUrl) {
   divElement.style.backgroundSize = 'cover'; // 根据需求调整背景图片的显示方式
   divElement.style.backgroundPosition = 'center'; // 居中显示
   divElement.style.backgroundRepeat = 'no-repeat'; // 防止图片重复
+
+  // 第一个动画：放大至 1.25
+  anime({
+    targets: divElement,
+    scale: 1.2,
+    easing: 'easeInOutSine',
+    duration: 2000,
+    complete: function () {
+      // 第一个动画完成后，开始第二个动画
+      anime({
+        targets: divElement,
+        scale: [1.2, 1.15],
+        easing: 'easeInOutSine', // 平滑过渡
+        duration: 2000, // 动画时间
+        loop: true, // 无限循环
+        direction: 'alternate' // 反向循环，让动画往返
+      });
+    }
+  });
+}
+
+// 渲染markdown
+function renderMarkdownById(elementId) {
+  const element = document.getElementById(elementId);
+
+  if (!element) {
+    console.error(`无法找到 ID 为 "${elementId}" 的元素`);
+    return;
+  }
+
+  // 提取该元素的文本内容
+  const markdownContent = element.innerText || element.textContent;
+
+  // 使用 marked 解析 Markdown 内容为 HTML，启用 GitHub 风格的渲染
+  const htmlContent = marked.parse(markdownContent, {
+    renderer: new marked.Renderer(),
+    gfm: true, // 启用 GitHub 风格的 Markdown 渲染
+    tables: true, // 启用表格支持
+    breaks: true, // 启用换行支持
+    smartLists: true, // 启用智能列表
+    smartypants: true // 启用智能标点符号
+  });
+
+  // 将生成的 HTML 内容替换到原来的元素中
+  element.innerHTML = htmlContent;
 }
 
 
 // 初始化应用
 async function initializeApp() {
-  await checkIPAndRedirect('192.168.1.1')
+  // await checkIPAndRedirect('192.168.1.1')
   await loadContent('Main_Title', './svg/XiaoCRQwrite.svg', false);
   await loadAndAnimateSVG('XiaoCRQ');
   await OpenDoor()
