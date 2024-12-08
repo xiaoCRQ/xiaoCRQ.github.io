@@ -265,7 +265,7 @@ async function loadAndAnimateSVG(targetId) {
     targets: '.anime_path',
     strokeDashoffset: [anime.setDashoffset, 0],
     easing: 'easeInOutSine',
-    duration: 250,
+    duration: 180,
     delay: (el, i) => i * 150,
     direction: 'alternate',
     loop: true // 加载期间 loop 为 true
@@ -293,7 +293,7 @@ async function loadAndAnimateSVG(targetId) {
     targets: '.anime_path',
     strokeDashoffset: [anime.setDashoffset, 0],
     easing: 'easeInOutSine',
-    duration: 250,
+    duration: 180,
     delay: (el, i) => i * 150,
     direction: 'alternate',
     loop: false
