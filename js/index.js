@@ -162,6 +162,35 @@ function waitForHTMLPage(resourceUrl, timeout) {
 }
 // -------------------------------------------------------------------------------------------
 
+/**
+ * 判断访问IP是否来自中国，只有中国IP时才转接到指定地址
+ * @param {string} targetUrl - 转接地址，只有当IP为中国时才会进行转接
+ */
+async function checkIPAndRedirect(targetUrl) {
+  try {
+    // 获取用户的 IP 地址和位置信息
+    const response = await fetch('https://ip-api.com/json');
+    const data = await response.json();
+
+    // 输出 IP 信息，供调试使用
+    console.log('IP 信息:', data);
+
+    // 判断是否为中国IP
+    if (data.country === 'China') {
+      // 如果是中国IP，重定向到目标地址
+      console.log(`访问来自中国，重定向到 ${targetUrl}`);
+      window.location.href = targetUrl;
+    } else {
+      // 如果不是中国IP，正常访问
+      console.log('访问不来自中国，继续访问原网站');
+    }
+  } catch (error) {
+    console.error('获取IP信息失败:', error);
+  }
+}
+
+// -------------------------------------------------------------------------------------------
+
 // 动画资源函数
 async function animeResource(id, X, Y, Height, Width, Opacity) {
   const element = document.getElementById(id);
