@@ -161,29 +161,41 @@ function waitForHTMLPage(resourceUrl, timeout) {
   });
 }
 // -------------------------------------------------------------------------------------------
-
 /**
- * 判断访问IP是否来自中国，只有中国IP时才转接到指定地址
+ * 判断访问IP是否来自中国，多个查询服务同时检测，只要有一个服务返回中国IP就转接
  * @param {string} targetUrl - 转接地址，只有当IP为中国时才会进行转接
  */
 async function checkIPAndRedirect(targetUrl) {
+  const ipServices = [
+    'https://ip-api.com/json', // ip-api.com
+    'https://ipinfo.io/json', // ipinfo.io
+    'https://ipapi.co/json/', // ipapi.co（作为备用）
+  ];
+
   try {
-    // 获取用户的 IP 地址和位置信息
-    const response = await fetch('https://ip-api.com/json');
-    const data = await response.json();
+    const ipPromises = ipServices.map(url => fetch(url).then(response => response.json()));
 
-    // 输出 IP 信息，供调试使用
-    console.log('IP 信息:', data);
+    const results = await Promise.all(ipPromises);
 
-    // 判断是否为中国IP
-    if (data.country === 'China') {
-      // 如果是中国IP，重定向到目标地址
-      console.log(`访问来自中国，重定向到 ${targetUrl}`);
-      window.location.href = targetUrl;
-    } else {
-      // 如果不是中国IP，正常访问
-      console.log('访问不来自中国，继续访问原网站');
+    for (let i = 0; i < results.length; i++) {
+      const data = results[i];
+      console.log(`IP 查询服务 ${ipServices[i]} 返回数据:`, data);
+
+      // 检查返回的数据状态
+      if (data.status && data.status === 'fail') {
+        console.warn(`服务 ${ipServices[i]} 返回失败: ${data.message}`);
+        continue; // 跳过失败的服务
+      }
+
+      // 判断是否为中国IP
+      if (data.country === 'China' || data.country === 'CN') {
+        console.log(`访问来自中国，重定向到 ${targetUrl}`);
+        window.location.href = targetUrl; // 如果是中国IP，重定向
+        return; // 一旦找到中国IP，跳转并停止进一步检查
+      }
     }
+
+    console.log('访问不来自中国，继续访问原网站');
   } catch (error) {
     console.error('获取IP信息失败:', error);
   }
@@ -507,7 +519,7 @@ function setBackgroundImage(imageUrl) {
 
 // 初始化应用
 async function initializeApp() {
-  await checkIPAndRedirect()
+  await checkIPAndRedirect('192.168.1.1')
   await loadContent('Main_Title', './svg/XiaoCRQwrite.svg', false);
   await loadAndAnimateSVG('XiaoCRQ');
   await OpenDoor()
