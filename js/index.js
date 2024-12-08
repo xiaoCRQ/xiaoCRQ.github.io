@@ -52,7 +52,6 @@ function isResourceLoaded(resourceUrl) {
   // 检查 HTML 页面资源是否已加载
   const isHTML = resourceUrl.endsWith('.html');
   if (isHTML) {
-    // 可以通过 window.onload 或 document.readyState 来判断
     return document.readyState === 'complete';
   }
 
@@ -140,11 +139,12 @@ function waitForImage(resourceUrl, timeout) {
  */
 function waitForHTMLPage(resourceUrl, timeout) {
   return new Promise((resolve, reject) => {
+    // 如果页面已经加载完成，则直接解析
     if (document.readyState === 'complete') {
       console.log(`HTML 页面已加载: ${resourceUrl}`);
       resolve();
     } else {
-      // 如果页面尚未加载，等待 `window.onload` 事件
+      // 如果页面尚未加载，等待 window.onload 事件
       window.onload = () => {
         console.log(`HTML 页面已加载: ${resourceUrl}`);
         resolve();
@@ -152,11 +152,15 @@ function waitForHTMLPage(resourceUrl, timeout) {
 
       // 设置超时处理
       setTimeout(() => {
-        reject(new Error(`HTML 页面加载超时: ${resourceUrl}`));
+        // 如果页面在指定时间内没有加载完成，拒绝 Promise
+        if (document.readyState !== 'complete') {
+          reject(new Error(`HTML 页面加载超时: ${resourceUrl}`));
+        }
       }, timeout);
     }
   });
 }
+
 
 // -------------------------------------------------------------------------------------------
 
