@@ -54,14 +54,15 @@ function setMouseColor(color) {
   ball.color = color; // 更新小球的颜色属性
 }
 
+// ---------------------------------------------
 // 各个元素的悬停变化
-const navMain = document.getElementById('Nav_Main');
+const Nav = document.getElementById('Nav_Button');
 // 鼠标悬停时的动画
-navMain.addEventListener('mouseenter', () => {
+Nav.addEventListener('mouseenter', () => {
   // 修改小球颜色的函数
   setMouseColor('#100C08')
 });
-navMain.addEventListener('mouseleave', () => {
+Nav.addEventListener('mouseleave', () => {
   // 修改小球颜色的函数
   setMouseColor('#F5F5F5')
 });

@@ -1,8 +1,33 @@
-.anime_path {
-  fill: none;
-  stroke: #F5F5F5;
+/* 通用样式 */
+body,
+main,
+nav {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 0;
 }
 
+body {
+  overflow: hidden;
+  /* 隐藏整个页面的滚动条 */
+  cursor: none;
+  /* 隐藏鼠标光标 */
+  background-color: #100C08;
+  flex-direction: column;
+}
+
+button {
+  user-select: none;
+  /* 禁止文字选择 */
+  cursor: none;
+  border: none;
+  /* 无边框 */
+  text-decoration: none;
+  /* 去掉下划线 */
+}
+
+/* 页面主要资源样式 */
 #Main_Resource {
   width: 100%;
   height: 100vh;
@@ -10,11 +35,84 @@
 
 #Page {
   width: 100%;
-  height: 80%;
+  height: 100%;
   background-color: #F5F5F5;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: 5vw;
+}
+
+/* 动画路径样式 */
+.anime_path {
+  fill: none;
+  stroke: #F5F5F5;
+}
+
+/* 顶部导航样式 */
+#Nav_Main {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 8vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  /* 设置为垂直排列 */
+  align-items: center;
+  justify-content: center;
+  /* 水平居中 */
+  z-index: 9999;
+  pointer-events: none;
+  /* 不影响其他元素的交互 */
+}
+
+#Nav_Button {
+  border-radius: 2vw;
+  height: 2.5vw;
+  width: 2.5vw;
+  display: flex;
+  /* 添加水平居中效果 */
+  align-items: center;
+  justify-content: center;
+  background-color: #F5F5F5;
+  pointer-events: auto;
+  /* 确保接收鼠标事件 */
+  box-shadow: 0vw 0vw 0.5vw rgba(16, 12, 8, 0.3);
+}
+
+.Nav_Options {
+  margin: 0 1vw;
+  /* 简化 margin 设置 */
+  height: 2vw;
+  font-size: 2vh;
+  background-color: #F5F5F5;
+}
+
+/* 主要标题和鼠标样式 */
+#Main_Title,
+#Mouse {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  /* 不影响其他元素的交互 */
+  z-index: 9999;
+}
+
+#Main_Title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: -1;
+  /* 确保在背景层 */
+}
+
+#XiaoCRQ {
+  width: 45vw;
+  transition: width 0.25s;
 }
