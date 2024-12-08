@@ -144,11 +144,11 @@ function waitForHTMLPage(resourceUrl, timeout) {
       console.log(`HTML 页面已加载: ${resourceUrl}`);
       resolve();
     } else {
-      // 如果页面尚未加载，等待 window.onload 事件
-      window.onload = () => {
+      // 设置 window.onload 事件回调
+      window.addEventListener('load', () => {
         console.log(`HTML 页面已加载: ${resourceUrl}`);
         resolve();
-      };
+      });
 
       // 设置超时处理
       setTimeout(() => {
@@ -160,8 +160,6 @@ function waitForHTMLPage(resourceUrl, timeout) {
     }
   });
 }
-
-
 // -------------------------------------------------------------------------------------------
 
 // 动画资源函数
