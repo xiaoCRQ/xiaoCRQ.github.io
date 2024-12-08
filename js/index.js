@@ -116,20 +116,101 @@ async function loadAndAnimateSVG(targetId) {
     easing: 'easeInOutSine',
     duration: 1250,
   });
-
-  return new Promise(resolve => setTimeout(resolve, 800));
+  return new Promise(resolve => setTimeout(resolve, 1250));
 }
+
+
+async function OpenDoor() {
+  const Door = document.getElementById('Door');
+  const Door_Up = document.getElementById('Door_Up');
+  const Door_Down = document.getElementById('Door_Down');
+
+  // 同时运行 Door_Up 和 Door_Down 的第一组动画
+  await Promise.all([
+    anime({
+      duration: 750,
+      targets: Door_Up,
+      translateY: '-100vh',
+      easing: 'easeInOutSine',
+    }).finished, // 使用 anime 的 finished 返回 Promise
+    anime({
+      duration: 750,
+      targets: Door_Down,
+      translateY: '100vh',
+      easing: 'easeInOutSine',
+    }).finished,
+  ]);
+
+  // 修改 `#Door` 的对齐方式
+  Door.style.flexDirection = 'row'; // 改为水平对齐
+  Door.style.alignItems = 'center'; // 垂直居中
+  Door.style.justifyContent = 'center'; // 水平居中
+  Door.style.zIndex = '1';
+
+  // 修改 `#Door_Up` 和 `#Door_Down` 的样式
+  Door_Up.style.width = '50%';
+  Door_Up.style.height = '100%';
+
+  Door_Down.style.width = '50%';
+  Door_Down.style.height = '100%';
+
+  // 同时运行 Door_Up 和 Door_Down 的第二组动画
+  await Promise.all([
+    anime({
+      duration: 375,
+      targets: Door_Up,
+      translateY: [100, 0],
+      easing: 'easeInOutSine',
+    }).finished,
+    anime({
+      duration: 375,
+      targets: Door_Down,
+      translateY: [-100, 0],
+      easing: 'easeInOutSine',
+    }).finished,
+  ]);
+
+  // 修改 Main_Title 和 XiaoCRQ 的样式
+  const Main_Title = document.getElementById('Main_Title');
+  const XiaoCRQ = document.getElementById('XiaoCRQ');
+  XiaoCRQ.style.transform = 'translateY(-15vh)';
+  Main_Title.style.width = '50vw';
+  Main_Title.style.left = 'auto';
+  Main_Title.style.right = '0';
+  Main_Title.style.background = '#F5F5F5';
+
+  // 执行其他操作
+  updateAnimePathElements('#100C08');
+  loadAndAnimateSVG('XiaoCRQ');
+  setBackgroundImage('img/back.png');
+
+  // 同时运行 Door_Up 和 Door_Down 的第三组动画
+  await Promise.all([
+    anime({
+      duration: 375,
+      targets: Door_Up,
+      translateY: [0, -100],
+      easing: 'easeInOutSine',
+    }).finished,
+    anime({
+      duration: 375,
+      targets: Door_Down,
+      translateY: [0, 100],
+      easing: 'easeInOutSine',
+    }).finished,
+  ]);
+
+  return new Promise(resolve => setTimeout(resolve, 1250));
+}
+
 
 // 动画化导航按钮
 function animateNav() {
   const Nav = document.getElementById('Nav_Button');
   if (!Nav) return;
 
-  Nav.style.transform = 'translateY(100vh)';
-
   // 导航按钮进入动画
   anime({
-    delay: 1250,
     targets: Nav,
     translateY: [-100, 0],
     easing: 'spring(0.5, 80, 10, 5)',
@@ -156,12 +237,15 @@ function animateNav() {
       easing: 'spring(0.5, 80, 10, 5)',
     });
   });
+
 }
 
-// 定义主要功能
-async function Define_Function() {
-  await loadContent('Main_Title', './svg/XiaoCRQwrite.svg', false);
-  await loadAndAnimateSVG('XiaoCRQ');
+
+function updateAnimePathElements(color) {
+  const elements = document.querySelectorAll('.anime_path');
+  elements.forEach(element => {
+    element.style.stroke = color; // 设置 stroke 属性
+  });
 }
 
 // 选项功能
@@ -189,13 +273,35 @@ async function Options_Function() {
   });
 }
 
-// 初始化应用
-function initializeApp() {
-  Define_Function();
+function setBackgroundImage(imageUrl) {
+  const divElement = document.getElementById('Img_Back');
+
+  if (!divElement) {
+    console.error('无法找到 ID 为 "Img_Back" 的元素');
+    return;
+  }
+
+  // 设置背景图片
+  divElement.style.backgroundImage = `url('${imageUrl}')`;
+  divElement.style.backgroundSize = 'cover'; // 根据需求调整背景图片的显示方式
+  divElement.style.backgroundPosition = 'center'; // 居中显示
+  divElement.style.backgroundRepeat = 'no-repeat'; // 防止图片重复
+}
+
+
+// 定义主要功能
+async function Define_Function() {
+  await loadContent('Main_Title', './svg/XiaoCRQwrite.svg', false);
+  await loadAndAnimateSVG('XiaoCRQ');
+  await OpenDoor()
   animateNav();
+}
+
+
+// 初始化应用
+async function initializeApp() {
+  Define_Function();
 }
 
 // 启动应用
 initializeApp();
-
-

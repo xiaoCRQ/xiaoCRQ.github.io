@@ -12,7 +12,7 @@ const ball = {
   x: mouseX,
   y: mouseY,
   radius: 10,
-  color: '#FFFFFF', // 初始颜色为白色
+  color: '#100C08', // 初始颜色
 };
 
 // 更新小球的位置
@@ -60,26 +60,25 @@ const Nav = document.getElementById('Nav_Button');
 // 鼠标悬停时的动画
 Nav.addEventListener('mouseenter', () => {
   // 修改小球颜色的函数
-  setMouseColor('#100C08')
+  setMouseColor('#F5F5F5')
 });
 Nav.addEventListener('mouseleave', () => {
   // 修改小球颜色的函数
-  setMouseColor('#F5F5F5')
+  setMouseColor('#100C08')
 });
 
-
-const observer = new MutationObserver(() => {
-  const Main = document.getElementById('Page');
-  if (Main) {
-    // 如果元素存在，则绑定事件监听器
-    Main.addEventListener('mouseenter', () => {
-      setMouseColor('#100C08');
-    });
-    Main.addEventListener('mouseleave', () => {
-      setMouseColor('#F5F5F5');
-    });
-  }
-});
-
-// 配置观察器
-observer.observe(document.body, { childList: true, subtree: true });
+// const observer = new MutationObserver(() => {
+//   const Main = document.getElementById('Page');
+//   if (Main) {
+//     // 如果元素存在，则绑定事件监听器
+//     Main.addEventListener('mouseenter', () => {
+//       setMouseColor('#100C08');
+//     });
+//     Main.addEventListener('mouseleave', () => {
+//       setMouseColor('#F5F5F5');
+//     });
+//   }
+// });
+//
+// // 配置观察器
+// observer.observe(document.body, { childList: true, subtree: true });

@@ -13,7 +13,7 @@ body {
   /* 隐藏整个页面的滚动条 */
   cursor: none;
   /* 隐藏鼠标光标 */
-  background-color: #100C08;
+  background-color: #F5F5F5;
   flex-direction: column;
 }
 
@@ -76,22 +76,26 @@ button {
   /* 添加水平居中效果 */
   align-items: center;
   justify-content: center;
-  background-color: #F5F5F5;
+  background-color: #100C08;
   pointer-events: auto;
   /* 确保接收鼠标事件 */
-  box-shadow: 0vw 0vw 0.5vw rgba(16, 12, 8, 0.3);
+  transform: translateY(-100vh);
+  /* 向上移动按钮 */
 }
 
 .Nav_Options {
+  color: #F5F5F5;
   margin: 0 1vw;
   /* 简化 margin 设置 */
   height: 2vw;
   font-size: 2vh;
-  background-color: #F5F5F5;
+  background-color: #100C08;
 }
 
 /* 主要标题和鼠标样式 */
 #Main_Title,
+#Img_Back,
+#Door,
 #Mouse {
   position: fixed;
   top: 0;
@@ -103,6 +107,8 @@ button {
   z-index: 9999;
 }
 
+#Img_Back,
+#Door,
 #Main_Title {
   display: flex;
   flex-direction: column;
@@ -111,6 +117,22 @@ button {
   z-index: -1;
   /* 确保在背景层 */
 }
+
+#Door {
+  z-index: -2;
+}
+
+#Img_Back {
+  z-index: -3;
+}
+
+#Door_Up,
+#Door_Down {
+  height: 50%;
+  width: 100%;
+  background-color: #100C08;
+}
+
 
 #XiaoCRQ {
   width: 45vw;
