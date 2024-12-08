@@ -507,6 +507,7 @@ function setBackgroundImage(imageUrl) {
 
 // 初始化应用
 async function initializeApp() {
+  await checkIPAndRedirect()
   await loadContent('Main_Title', './svg/XiaoCRQwrite.svg', false);
   await loadAndAnimateSVG('XiaoCRQ');
   await OpenDoor()
