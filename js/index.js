@@ -1,3 +1,131 @@
+/**
+ * 等待指定资源加载完成，支持 CSS、JS 和图片资源。
+ * @param {string} resourceUrl - 资源的 URL 路径
+ * @param {number} timeout - 等待超时时间（毫秒），默认为 10,000ms
+ * @returns {Promise<void>} - 成功时解析，失败时拒绝
+ */
+async function waitForResource(resourceUrl, timeout = 10000) {
+  // 先检查资源是否已加载或已缓存
+  if (isResourceLoaded(resourceUrl)) {
+    console.log(`资源已加载或已缓存: ${resourceUrl}`);
+    return;
+  }
+
+  if (resourceUrl.endsWith('.css') || resourceUrl.endsWith('.js')) {
+    return waitForResourceUsingTag(resourceUrl, timeout); // 加载 CSS/JS
+  } else if (resourceUrl.endsWith('.svg') || resourceUrl.endsWith('.png') || resourceUrl.endsWith('.jpg') || resourceUrl.endsWith('.jpeg')) {
+    return waitForImage(resourceUrl, timeout); // 加载图片
+  } else {
+    throw new Error(`未知的资源类型: ${resourceUrl}`);
+  }
+}
+
+/**
+ * 检查资源是否已经加载或已缓存
+ * @param {string} resourceUrl - 资源的 URL 路径
+ * @returns {boolean} - 如果资源已加载或缓存返回 true，否则返回 false
+ */
+function isResourceLoaded(resourceUrl) {
+  // 检查 CSS 文件是否已加载
+  const isCSS = resourceUrl.endsWith('.css');
+  if (isCSS) {
+    const links = document.querySelectorAll('link[rel="stylesheet"]');
+    return Array.from(links).some(link => link.href === resourceUrl);
+  }
+
+  // 检查 JS 文件是否已加载
+  const isJS = resourceUrl.endsWith('.js');
+  if (isJS) {
+    const scripts = document.querySelectorAll('script');
+    return Array.from(scripts).some(script => script.src === resourceUrl);
+  }
+
+  // 检查图片和 SVG 是否已经加载或存在于 DOM 中
+  const isImage = resourceUrl.endsWith('.svg') || resourceUrl.endsWith('.png') || resourceUrl.endsWith('.jpg') || resourceUrl.endsWith('.jpeg');
+  if (isImage) {
+    const images = document.querySelectorAll('img');
+    return Array.from(images).some(img => img.src === resourceUrl);
+  }
+
+  return false; // 默认返回 false，表示没有加载
+}
+
+/**
+ * 使用 <script> 或 <link> 标签检测资源加载（适用于 CSS 和 JS）。
+ * @param {string} resourceUrl - 资源的 URL 路径
+ * @param {number} timeout - 等待超时时间（毫秒）
+ * @returns {Promise<void>} - 成功时解析，失败时拒绝
+ */
+function waitForResourceUsingTag(resourceUrl, timeout) {
+  return new Promise((resolve, reject) => {
+    const isCSS = resourceUrl.endsWith('.css');
+    const isJS = resourceUrl.endsWith('.js');
+
+    // 根据资源类型创建对应的标签
+    let element;
+    if (isCSS) {
+      element = document.createElement('link');
+      element.rel = 'stylesheet';
+      element.href = resourceUrl;
+    } else if (isJS) {
+      element = document.createElement('script');
+      element.src = resourceUrl;
+    }
+
+    if (!element) {
+      reject(new Error(`不支持的资源类型: ${resourceUrl}`));
+      return;
+    }
+
+    // 设置加载成功和失败的回调
+    element.onload = () => {
+      console.log(`资源已加载: ${resourceUrl}`);
+      resolve();
+    };
+    element.onerror = () => {
+      reject(new Error(`资源加载失败: ${resourceUrl}`));
+    };
+
+    // 将标签添加到 <head> 中以开始加载
+    document.head.appendChild(element);
+
+    // 设置超时处理
+    setTimeout(() => {
+      reject(new Error(`资源 ${resourceUrl} 加载超时`));
+    }, timeout);
+  });
+}
+
+/**
+ * 使用 Image 对象检测图片资源加载（适用于 PNG、JPEG、SVG 等）。
+ * @param {string} resourceUrl - 图片资源的 URL 路径
+ * @param {number} timeout - 等待超时时间（毫秒）
+ * @returns {Promise<void>} - 成功时解析，失败时拒绝
+ */
+function waitForImage(resourceUrl, timeout) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = resourceUrl;
+
+    // 设置加载成功和失败的回调
+    img.onload = () => {
+      console.log(`图片加载成功: ${resourceUrl}`);
+      resolve();
+    };
+    img.onerror = () => {
+      reject(new Error(`图片加载失败: ${resourceUrl}`));
+    };
+
+    // 设置超时处理
+    setTimeout(() => {
+      reject(new Error(`图片 ${resourceUrl} 加载超时`));
+    }, timeout);
+  });
+}
+
+
+// -------------------------------------------------------------------------------------------
+
 // 动画资源函数
 async function animeResource(id, X, Y, Height, Width, Opacity) {
   const element = document.getElementById(id);
@@ -92,31 +220,58 @@ async function loadContent(id, path, useAnimation = true) {
   }
 }
 
-// 加载并动画化 SVG
 async function loadAndAnimateSVG(targetId) {
   const targetElement = document.getElementById(targetId);
   if (!targetElement) return;
 
-  // 设置 SVG 路径动画
-  anime({
+  // 设置 SVG 路径动画，加载期间处于 loop: true 状态
+  const pathAnimation = anime({
     targets: '.anime_path',
     strokeDashoffset: [anime.setDashoffset, 0],
     easing: 'easeInOutSine',
     duration: 250,
     delay: (el, i) => i * 150,
     direction: 'alternate',
-    loop: false
+    loop: true // 加载期间 loop 为 true
   });
 
   // 设置整体缩放动画
-  anime({
+  const scaleAnimation = anime({
     targets: targetElement,
     scale: [0.85, 1],
     filter: ['blur(10px)', 'blur(0px)'], // 模糊到清晰
     easing: 'easeInOutSine',
     duration: 1250,
   });
-  return new Promise(resolve => setTimeout(resolve, 1250));
+
+  try {
+    // 等待所有资源加载完成
+    // 使用 Promise.all 等待资源加载完成
+    await Promise.all(resources.map(resource => waitForResource(resource)));
+    console.log('所有资源加载成功');
+
+    // 停止路径动画的 loop，使用 pause() 来暂停动画
+    pathAnimation.pause();
+    pathAnimation.loop = false;
+
+    anime({
+      targets: '.anime_path',
+      strokeDashoffset: [anime.setDashoffset, 0],
+      easing: 'easeInOutSine',
+      duration: 250,
+      delay: (el, i) => i * 150,
+      direction: 'alternate',
+      loop: false // 加载期间 loop 为 true
+    });
+
+    // 等待动画完成
+    await new Promise(resolve => setTimeout(resolve, 1250));
+
+    // 返回完成的结果
+    return;
+  } catch (error) {
+    console.error('资源加载失败:', error);
+  }
 }
 
 
@@ -289,19 +444,21 @@ function setBackgroundImage(imageUrl) {
 }
 
 
-// 定义主要功能
-async function Define_Function() {
+// 初始化应用
+async function initializeApp() {
   await loadContent('Main_Title', './svg/XiaoCRQwrite.svg', false);
   await loadAndAnimateSVG('XiaoCRQ');
   await OpenDoor()
   animateNav();
 }
 
-
-// 初始化应用
-async function initializeApp() {
-  Define_Function();
-}
+const resources = [
+  'css/index.css',
+  'js/animejs/anime.min.js',
+  'js/index.js',
+  'js/mouse.js',
+  'img/back.png',
+];
 
 // 启动应用
 initializeApp();
