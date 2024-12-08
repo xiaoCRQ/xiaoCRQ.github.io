@@ -161,41 +161,33 @@ function waitForHTMLPage(resourceUrl, timeout) {
   });
 }
 // -------------------------------------------------------------------------------------------
+
 /**
- * 判断访问IP是否来自中国，多个查询服务同时检测，只要有一个服务返回中国IP就转接
+ * 判断访问IP是否来自中国，使用cors-anywhere和ip-api.com进行检测
  * @param {string} targetUrl - 转接地址，只有当IP为中国时才会进行转接
  */
 async function checkIPAndRedirect(targetUrl) {
-  const ipServices = [
-    'https://ip-api.com/json', // ip-api.com
-    'https://ipinfo.io/json', // ipinfo.io
-    'https://ipapi.co/json/', // ipapi.co（作为备用）
-  ];
+  const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+  const ipApiUrl = 'https://ip-api.com/json';
 
   try {
-    const ipPromises = ipServices.map(url => fetch(url).then(response => response.json()));
+    // 使用代理请求IP信息
+    const response = await fetch(proxyUrl + ipApiUrl);
 
-    const results = await Promise.all(ipPromises);
-
-    for (let i = 0; i < results.length; i++) {
-      const data = results[i];
-      console.log(`IP 查询服务 ${ipServices[i]} 返回数据:`, data);
-
-      // 检查返回的数据状态
-      if (data.status && data.status === 'fail') {
-        console.warn(`服务 ${ipServices[i]} 返回失败: ${data.message}`);
-        continue; // 跳过失败的服务
-      }
-
-      // 判断是否为中国IP
-      if (data.country === 'China' || data.country === 'CN') {
-        console.log(`访问来自中国，重定向到 ${targetUrl}`);
-        window.location.href = targetUrl; // 如果是中国IP，重定向
-        return; // 一旦找到中国IP，跳转并停止进一步检查
-      }
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
 
-    console.log('访问不来自中国，继续访问原网站');
+    const data = await response.json();
+    console.log(`IP 查询结果:`, data);
+
+    // 判断是否为中国IP
+    if (data.country === 'China' || data.country === 'CN') {
+      console.log(`访问来自中国，重定向到 ${targetUrl}`);
+      window.location.href = targetUrl; // 如果是中国IP，重定向
+    } else {
+      console.log('访问不来自中国，继续访问原网站');
+    }
   } catch (error) {
     console.error('获取IP信息失败:', error);
   }
