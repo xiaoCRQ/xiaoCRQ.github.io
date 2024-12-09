@@ -112,18 +112,18 @@ button {
 }
 
 #Nav_Button {
-  border-radius: 2vw;
-  height: 2.5vw;
-  width: 2.5vw;
+  border-radius: 5vh;
+  height: 5vh;
+  width: 5vh;
   display: flex;
   /* 添加水平居中效果 */
   align-items: center;
   justify-content: center;
-  background-color: #100C08;
   pointer-events: auto;
   /* 确保接收鼠标事件 */
   transform: translateY(-100vh);
   /* 向上移动按钮 */
+  background-color: #100C08;
 }
 
 
@@ -153,11 +153,9 @@ button {
   color: #F5F5F5;
   margin: 0 1vw;
   /* 简化 margin 设置 */
-  height: 2vw;
+  height: 3vh;
   font-size: 2vh;
 }
-
-
 
 .Page {
   width: 100%;

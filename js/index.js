@@ -305,8 +305,8 @@ async function loadAndAnimateSVG(targetId) {
   // 设置整体缩放动画
   const scaleAnimation = anime({
     targets: targetElement,
-    scale: [0.85, 1],
-    filter: ['blur(10px)', 'blur(0px)'], // 模糊到清晰
+    // scale: [0.85, 1],
+    // filter: ['blur(10px)', 'blur(0px)'], // 模糊到清晰
     easing: 'easeInOutSine',
     duration: 1250,
   });
@@ -441,52 +441,6 @@ async function Open() {
   return new Promise(resolve => setTimeout(resolve, 1250));
 }
 
-
-
-// 动画化导航按钮
-function animateNav() {
-  const Nav = document.getElementById('Nav_Button');
-  if (!Nav) return;
-
-  // 导航按钮进入动画
-  anime({
-    targets: Nav,
-    translateY: [-100, 0],
-    easing: 'spring(0.5, 80, 10, 5)',
-  });
-
-  // 鼠标悬停效果
-  Nav.addEventListener('mouseenter', () => {
-    anime({
-      targets: Nav,
-      height: '3vw',
-      width: '40vw',
-      easing: 'spring(0.5, 80, 10, 5)',
-    });
-    Options_Function();
-  });
-
-  // 鼠标离开效果
-  Nav.addEventListener('mouseleave', () => {
-    clearContent('Nav_Button');
-    anime({
-      targets: Nav,
-      width: '2.5vw',
-      height: '2.5vw',
-      easing: 'spring(0.5, 80, 10, 5)',
-    });
-  });
-
-}
-
-
-function updateAnimePathElements(color) {
-  const elements = document.querySelectorAll('.anime_path');
-  elements.forEach(element => {
-    element.style.stroke = color; // 设置 stroke 属性
-  });
-}
-
 // 选项功能
 async function Options_Function() {
   await loadContent('Nav_Button', './html/Nav_Options.html', false);
@@ -511,6 +465,48 @@ async function Options_Function() {
     }
   });
 }
+
+// 动画化导航按钮
+function animateNav() {
+  const Nav = document.getElementById('Nav_Button');
+  if (!Nav) return;
+
+  // 导航按钮进入动画
+  anime({
+    targets: Nav,
+    translateY: [-100, 0],
+    easing: 'spring(0.5, 80, 10, 5)',
+  });
+
+  // 鼠标悬停效果
+  Nav.addEventListener('mouseenter', () => {
+    anime({
+      targets: Nav,
+      width: '30vh',
+      easing: 'spring(0.5, 80, 10, 5)',
+    });
+    Options_Function();
+  });
+
+  // 鼠标离开效果
+  Nav.addEventListener('mouseleave', () => {
+    clearContent('Nav_Button', false);
+    anime({
+      targets: Nav,
+      width: '5vh',
+      easing: 'spring(0.5, 80, 10, 5)',
+    });
+  });
+}
+
+
+function updateAnimePathElements(color) {
+  const elements = document.querySelectorAll('.anime_path');
+  elements.forEach(element => {
+    element.style.stroke = color; // 设置 stroke 属性
+  });
+}
+
 
 function setBackgroundImage(imageUrl) {
   const divElement = document.getElementById('Img_Back');
