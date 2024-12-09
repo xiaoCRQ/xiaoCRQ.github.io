@@ -28,5 +28,5 @@
 // }
 // checkIPAndRedirect('192.168.1.107')
 
+// 局域网测试
 window.location.href = 'http://192.168.1.107';
-

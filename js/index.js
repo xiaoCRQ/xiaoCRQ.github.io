@@ -196,12 +196,17 @@ async function animeResource(id, X, Y, Height, Width, Opacity, Easing = 'spring(
   });
 }
 
-
-// 清除内容函数
+// 清除元素
 async function clearContent(id, useAnimation = true) {
   const element = document.getElementById(id);
   if (!element) {
     console.warn(`ID为 "${id}" 的元素不存在，无法清除内容。`);
+    return;
+  }
+
+  const AnimeContainer = document.getElementById('Anime');
+  if (!AnimeContainer) {
+    console.error('未找到 Anime 容器，无法完成动画。');
     return;
   }
 
@@ -217,11 +222,12 @@ async function clearContent(id, useAnimation = true) {
       left: `${element.getBoundingClientRect().left + window.scrollX}px`,
       width: `${element.offsetWidth}px`,
       height: `${element.offsetHeight}px`,
-      zIndex: '-1',
+      zIndex: '1',
       pointerEvents: 'none', // 防止克隆元素干扰交互
     });
 
-    element.parentElement.appendChild(clonedElement);
+    // 将克隆元素添加到 Anime 容器中
+    AnimeContainer.appendChild(clonedElement);
   }
 
   // 清空原始元素内容
@@ -236,10 +242,10 @@ async function clearContent(id, useAnimation = true) {
     animeResource(
       clonedElement.id, // 动画目标为克隆元素
       ['0vw', '0vw'], // 动画起始位置
-      ['0vh', '-200vh'], // 动画结束位置
+      ['0vh', '-100vh'], // 动画结束位置
       [], // 动画高度
       [], // 动画宽度
-      [1, 0.5]
+      [1, 0] // 动画透明度
     );
 
     await new Promise(resolve => setTimeout(() => {
@@ -332,90 +338,109 @@ async function loadAndAnimateSVG(targetId) {
 }
 
 
-async function OpenDoor() {
-  const Door = document.getElementById('Door');
-  const Door_Up = document.getElementById('Door_Up');
-  const Door_Down = document.getElementById('Door_Down');
 
-  // 同时运行 Door_Up 和 Door_Down 的第一组动画
+async function Open() {
+  // 获取 Anime 容器
+  const AnimeContainer = document.getElementById('Anime');
+
+  // 创建 Square_Up 和 Square_Down 元素
+  const Square_Up = document.createElement('div');
+  Square_Up.id = 'Square_Up';
+  const Square_Down = document.createElement('div');
+  Square_Down.id = 'Square_Down';
+
+  Square_Up.style.height = Square_Down.style.height = '50%'
+  Square_Up.style.width = Square_Down.style.width = '100%'
+  Square_Up.style.backgroundColor = Square_Down.style.backgroundColor = '#100C08'
+
+  // 将元素添加到 Anime 容器
+  AnimeContainer.appendChild(Square_Up);
+  AnimeContainer.appendChild(Square_Down);
+
+  await loadAndAnimateSVG('XiaoCRQ');
+
+  // 同时运行 Square_Up 和 Square_Down 的第一组动画
   await Promise.all([
     anime({
       duration: 750,
-      targets: Door_Up,
+      targets: Square_Up,
       translateY: '-100vh',
       easing: 'easeInOutSine',
-    }).finished, // 使用 anime 的 finished 返回 Promise
+    }).finished,
     anime({
       duration: 750,
-      targets: Door_Down,
+      targets: Square_Down,
       translateY: '100vh',
       easing: 'easeInOutSine',
     }).finished,
   ]);
 
-  // 修改 `#Door` 的对齐方式
-  Door.style.flexDirection = 'row'; // 改为水平对齐
-  Door.style.alignItems = 'center'; // 垂直居中
-  Door.style.justifyContent = 'center'; // 水平居中
-  Door.style.zIndex = '1';
+  // 修改 Anime 容器的样式
+  AnimeContainer.style.display = 'flex';
+  AnimeContainer.style.flexDirection = 'row'; // 水平对齐
+  AnimeContainer.style.alignItems = 'center'; // 垂直居中
+  AnimeContainer.style.justifyContent = 'center'; // 水平居中
+  AnimeContainer.style.zIndex = '1';
 
-  // 修改 `#Door_Up` 和 `#Door_Down` 的样式
-  Door_Up.style.width = '50%';
-  Door_Up.style.height = '100%';
+  // 修改 Square_Up 和 Square_Down 的样式
+  Square_Up.style.width = '50%';
+  Square_Up.style.height = '100%';
 
-  Door_Down.style.width = '50%';
-  Door_Down.style.height = '100%';
+  Square_Down.style.width = '50%';
+  Square_Down.style.height = '100%';
 
-  // 同时运行 Door_Up 和 Door_Down 的第二组动画
+  // 同时运行 Square_Up 和 Square_Down 的第二组动画
   await Promise.all([
     anime({
       duration: 375,
-      targets: Door_Up,
+      targets: Square_Up,
       translateY: [100, 0],
       easing: 'easeInOutSine',
     }).finished,
     anime({
       duration: 375,
-      targets: Door_Down,
+      targets: Square_Down,
       translateY: [-100, 0],
       easing: 'easeInOutSine',
     }).finished,
   ]);
 
-  await loadContent('Main_Title', 'html/Main_Title.html', false)
+  await loadContent('Main_Title', 'html/Main_Title.html', false);
 
-  // 修改 Main_Title 和 XiaoCRQ 的样式
+  // 修改 Main_Title 的样式
   const Main_Title = document.getElementById('Main_Title');
-  // const XiaoCRQ = document.getElementById('XiaoCRQ');
-  // XiaoCRQ.style.transform = 'translateY(-15vh)';
   Main_Title.style.width = '50vw';
   Main_Title.style.left = 'auto';
   Main_Title.style.right = '0';
   Main_Title.style.background = '#F5F5F5';
 
-  // 执行其他操作
-  // updateAnimePathElements('#100C08');
-  // loadAndAnimateSVG('XiaoCRQ');
+  // 设置背景图片
   setBackgroundImage('img/back.png');
 
-  // 同时运行 Door_Up 和 Door_Down 的第三组动画
+  // 同时运行 Square_Up 和 Square_Down 的第三组动画
   await Promise.all([
     anime({
       duration: 375,
-      targets: Door_Up,
+      targets: Square_Up,
       translateY: [0, -100],
       easing: 'easeInOutSine',
     }).finished,
     anime({
       duration: 375,
-      targets: Door_Down,
+      targets: Square_Down,
       translateY: [0, 100],
       easing: 'easeInOutSine',
     }).finished,
   ]);
 
+  // 删除 Square_Up 和 Square_Down 元素
+  AnimeContainer.removeChild(Square_Up);
+  AnimeContainer.removeChild(Square_Down);
+
+  // 等待 1250ms 后返回
   return new Promise(resolve => setTimeout(resolve, 1250));
 }
+
 
 
 // 动画化导航按钮
@@ -504,14 +529,14 @@ function setBackgroundImage(imageUrl) {
   // 第一个动画：放大至 1.25
   anime({
     targets: divElement,
-    scale: 1.2,
+    scale: 1.1,
     easing: 'easeInOutSine',
     duration: 2000,
     complete: function () {
       // 第一个动画完成后，开始第二个动画
       anime({
         targets: divElement,
-        scale: [1.2, 1.15],
+        scale: [1.1, 1.05],
         easing: 'easeInOutSine', // 平滑过渡
         duration: 2000, // 动画时间
         loop: true, // 无限循环
@@ -552,8 +577,7 @@ function renderMarkdownById(elementId) {
 async function initializeApp() {
   // loadContent('Main_Title', 'svg/XiaoCRQ_slim.svg',false)
   await loadContent('Main_Title', './svg/XiaoCRQwrite.svg', false);
-  await loadAndAnimateSVG('XiaoCRQ');
-  await OpenDoor()
+  await Open()
   animateNav();
 }
 
