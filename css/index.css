@@ -94,7 +94,15 @@ button {
   /* 简化 margin 设置 */
   height: 2vw;
   font-size: 2vh;
-  background-color: #100C08;
+  background: linear-gradient(to right, #F5F5F5, #F5F5F5) no-repeat right bottom;
+  background-size: 0 0.25vh;
+  transition: background-size 0.5s;
+  /* 动画效果 */
+}
+
+.Nav_Options:hover {
+  background-position: left bottom;
+  background-size: 100% 0.25vh;
 }
 
 /* 主要标题和鼠标样式 */
@@ -128,6 +136,7 @@ button {
 }
 
 #Img_Back {
+  width: 50vw;
   z-index: -3;
   pointer-events: auto;
 }

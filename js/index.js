@@ -161,42 +161,8 @@ function waitForHTMLPage(resourceUrl, timeout) {
   });
 }
 // -------------------------------------------------------------------------------------------
-
-/**
- * 判断访问IP是否来自中国，使用cors-anywhere和ip-api.com进行检测
- * @param {string} targetUrl - 转接地址，只有当IP为中国时才会进行转接
- */
-async function checkIPAndRedirect(targetUrl) {
-  const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-  const ipApiUrl = 'https://ip-api.com/json';
-
-  try {
-    // 使用代理请求IP信息
-    const response = await fetch(proxyUrl + ipApiUrl);
-
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-
-    const data = await response.json();
-    console.log(`IP 查询结果:`, data);
-
-    // 判断是否为中国IP
-    if (data.country === 'China' || data.country === 'CN') {
-      console.log(`访问来自中国，重定向到 ${targetUrl}`);
-      window.location.href = targetUrl; // 如果是中国IP，重定向
-    } else {
-      console.log('访问不来自中国，继续访问原网站');
-    }
-  } catch (error) {
-    console.error('获取IP信息失败:', error);
-  }
-}
-
-// -------------------------------------------------------------------------------------------
-
 // 动画资源函数
-async function animeResource(id, X, Y, Height, Width, Opacity) {
+async function animeResource(id, X, Y, Height, Width, Opacity, Easing = 'spring(0.5, 80, 10, 5)', Duration = 1250, Delay = 0) {
   const element = document.getElementById(id);
   if (!element) {
     console.error(`ID为 "${id}" 的元素不存在，无法应用动画。`);
@@ -222,11 +188,14 @@ async function animeResource(id, X, Y, Height, Width, Opacity) {
       height: Height ? Height[1] : undefined,
       width: Width ? Width[1] : undefined,
       opacity: Opacity,
-      easing: 'spring(0.5, 80, 10, 5)',
+      easing: Easing,
+      duration: Duration,
+      delay: Delay,
       complete: resolve
     });
   });
 }
+
 
 // 清除内容函数
 async function clearContent(id, useAnimation = true) {
@@ -236,18 +205,24 @@ async function clearContent(id, useAnimation = true) {
     return;
   }
 
-  // 克隆元素并设置样式
-  const clonedElement = element.cloneNode(true);
-  const clonedId = `${id}_clone_${Date.now()}`;
-  clonedElement.id = clonedId;
-  Object.assign(clonedElement.style, {
-    position: 'absolute',
-    top: `${element.getBoundingClientRect().top}vh`,
-    left: `${element.getBoundingClientRect().left}vw`,
-    zIndex: '-1'
-  });
+  // 如果启用了动画，则克隆元素并设置样式
+  let clonedElement;
+  if (useAnimation) {
+    clonedElement = element.cloneNode(true);
+    const clonedId = `${id}_clone_${Date.now()}`;
+    clonedElement.id = clonedId;
+    Object.assign(clonedElement.style, {
+      position: 'absolute',
+      top: `${element.getBoundingClientRect().top + window.scrollY}px`, // 修正视口偏移
+      left: `${element.getBoundingClientRect().left + window.scrollX}px`,
+      width: `${element.offsetWidth}px`,
+      height: `${element.offsetHeight}px`,
+      zIndex: '-1',
+      pointerEvents: 'none', // 防止克隆元素干扰交互
+    });
 
-  element.parentElement.appendChild(clonedElement);
+    element.parentElement.appendChild(clonedElement);
+  }
 
   // 清空原始元素内容
   if (element.innerHTML !== '') {
@@ -257,15 +232,23 @@ async function clearContent(id, useAnimation = true) {
   }
 
   // 执行动画（如果启用）
-  if (useAnimation) {
-    animeResource(clonedId, ['0vh', '0vh'], ['0vh', '-100vh'], ['100vh', '100vh'], ['100%', '100%'], 0);
-    element.style.transform = 'translateY(0)';
-    new Promise(resolve => setTimeout(() => {
-      clonedElement.remove();
+  if (useAnimation && clonedElement) {
+    animeResource(
+      clonedElement.id, // 动画目标为克隆元素
+      ['0vw', '0vw'], // 动画起始位置
+      ['0vh', '-200vh'], // 动画结束位置
+      [], // 动画高度
+      [], // 动画宽度
+      [1, 0.5]
+    );
+
+    await new Promise(resolve => setTimeout(() => {
+      clonedElement.remove(); // 动画结束后移除克隆元素
       resolve();
-    }, 300));
+    }, 350));
   }
 }
+
 
 // 加载内容函数
 async function loadContent(id, path, useAnimation = true) {
@@ -291,7 +274,7 @@ async function loadContent(id, path, useAnimation = true) {
     }
 
     if (useAnimation) {
-      await animeResource(id, ['0vh', '0vh'], ['100vh', '0vh'], ['100vh', '100vh'], ['10%', '100%'], 1);
+      animeResource(id, ['0vh', '0vh'], ['100vh', '0vh'], ['0%', '100vh'], ['0%', '100%'], [0, 1]);
     }
   } catch (error) {
     console.error('加载内容时出错:', error);
@@ -399,18 +382,20 @@ async function OpenDoor() {
     }).finished,
   ]);
 
+  await loadContent('Main_Title', 'html/Main_Title.html', false)
+
   // 修改 Main_Title 和 XiaoCRQ 的样式
   const Main_Title = document.getElementById('Main_Title');
-  const XiaoCRQ = document.getElementById('XiaoCRQ');
-  XiaoCRQ.style.transform = 'translateY(-15vh)';
+  // const XiaoCRQ = document.getElementById('XiaoCRQ');
+  // XiaoCRQ.style.transform = 'translateY(-15vh)';
   Main_Title.style.width = '50vw';
   Main_Title.style.left = 'auto';
   Main_Title.style.right = '0';
   Main_Title.style.background = '#F5F5F5';
 
   // 执行其他操作
-  updateAnimePathElements('#100C08');
-  loadAndAnimateSVG('XiaoCRQ');
+  // updateAnimePathElements('#100C08');
+  // loadAndAnimateSVG('XiaoCRQ');
   setBackgroundImage('img/back.png');
 
   // 同时运行 Door_Up 和 Door_Down 的第三组动画
@@ -565,7 +550,7 @@ function renderMarkdownById(elementId) {
 
 // 初始化应用
 async function initializeApp() {
-  // await checkIPAndRedirect('192.168.1.1')
+  // loadContent('Main_Title', 'svg/XiaoCRQ_slim.svg',false)
   await loadContent('Main_Title', './svg/XiaoCRQwrite.svg', false);
   await loadAndAnimateSVG('XiaoCRQ');
   await OpenDoor()
