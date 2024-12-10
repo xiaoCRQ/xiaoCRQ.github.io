@@ -67,8 +67,8 @@ document.addEventListener('mousemove', (event) => {
 
 // 启动动画的延迟执行
 setTimeout(() => {
-  animate(); // 延迟1秒后启动动画
-}, 4800);
+  animate();
+}, 4000);
 
 // 修改小球颜色的函数
 function setMouseColor(color) {

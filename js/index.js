@@ -243,8 +243,8 @@ async function clearContent(id, useAnimation = true) {
       clonedElement.id, // 动画目标为克隆元素
       ['0vw', '0vw'], // 动画起始位置
       ['0vh', '-100vh'], // 动画结束位置
-      [], // 动画高度
-      [], // 动画宽度
+      [], // 高度
+      [], // 宽度
       [1, 0] // 动画透明度
     );
 
@@ -338,6 +338,60 @@ async function loadAndAnimateSVG(targetId) {
 }
 
 
+// 划过背景出现
+function animateElement(id) {
+  const element = document.getElementById(id);
+
+  if (!element) {
+    console.error(`元素 ${id} 未找到`);
+    return;
+  }
+
+  // 保存原有的CSS属性
+  const originalStyles = {
+    color: element.style.color,
+    background: element.style.background,
+    backgroundSize: element.style.backgroundSize,
+    // 可以根据需要添加更多的属性
+  };
+
+  // 添加黑色背景并从右到左划过
+  element.style.background = 'linear-gradient(to right, #100C08, #100C08) no-repeat right bottom';
+  element.style.backgroundSize = '0 0.25vh';
+
+  // 动画 1: 从左到右划过黑色背景
+  anime({
+    targets: element,
+    backgroundSize: ['0 0.25vh', '100% 0.25vh'],  // 背景从右侧拉到左侧
+    backgroundPosition: ['right bottom', 'left bottom'],
+    duration: 1000,  // 动画时间
+    easing: 'easeInOutSine',
+    complete: function () {
+      // 动画 2: 从左到右划过消失背景
+      element.style.background = 'linear-gradient(to right, #F5F5F5, #F5F5F5) no-repeat right bottom';
+      element.style.backgroundSize = '100% 0.25vh'; // 确保背景被填满
+
+      anime({
+        targets: element,
+        backgroundSize: ['100% 0.25vh', '0 0.25vh'],  // 背景逐渐消失
+        backgroundPosition: ['left bottom', 'right bottom'],
+        duration: 1000,
+        easing: 'easeInOutSine',
+        complete: function () {
+          // 动画 3: 移除背景并恢复文本颜色
+          element.style.background = 'none';  // 移除背景
+          element.style.color = '#000';  // 设置文本颜色为黑色
+
+          // 恢复原有的CSS属性
+          element.style.background = originalStyles.background;
+          element.style.backgroundSize == originalStyles.backgroundSize;
+          // 可以根据需要添加更多的属性恢复
+        }
+      });
+    }
+  });
+}
+
 
 async function Open() {
   // 获取 Anime 容器
@@ -415,7 +469,7 @@ async function Open() {
   Main_Title.style.background = '#F5F5F5';
 
   // 设置背景图片
-  setBackgroundImage('img/back.png');
+  setBackgroundImage(resources[0]);
 
   // 同时运行 Square_Up 和 Square_Down 的第三组动画
   await Promise.all([
@@ -438,7 +492,7 @@ async function Open() {
   AnimeContainer.removeChild(Square_Down);
 
   // 等待 1250ms 后返回
-  return new Promise(resolve => setTimeout(resolve, 1250));
+  return new Promise(resolve => setTimeout(resolve, 750));
 }
 
 // 选项功能
@@ -522,24 +576,33 @@ function setBackgroundImage(imageUrl) {
   divElement.style.backgroundPosition = 'center'; // 居中显示
   divElement.style.backgroundRepeat = 'no-repeat'; // 防止图片重复
 
-  // 第一个动画：放大至 1.25
   anime({
     targets: divElement,
-    scale: 1.1,
+    scale: 1.05,
+    // filter: ['blur(2px)', 'blur(0px)'], // 模糊到清晰
     easing: 'easeInOutSine',
-    duration: 2000,
-    complete: function () {
-      // 第一个动画完成后，开始第二个动画
-      anime({
-        targets: divElement,
-        scale: [1.1, 1.05],
-        easing: 'easeInOutSine', // 平滑过渡
-        duration: 2000, // 动画时间
-        loop: true, // 无限循环
-        direction: 'alternate' // 反向循环，让动画往返
-      });
-    }
+    duration: 1250,
   });
+
+  // 鼠标悬停时的放大效果
+  // divElement.addEventListener('mouseenter', function () {
+  //   anime({
+  //     targets: divElement,
+  //     scale: 1.08,  
+  //     easing: 'easeInOutSine',
+  //     duration: 1250  // 动画持续时间
+  //   });
+  // });
+  //
+  //  鼠标移开时恢复原状
+  // divElement.addEventListener('mouseleave', function () {
+  //   anime({
+  //     targets: divElement,
+  //     scale: 1.05,  // 恢复至原来的大小
+  //     easing: 'easeInOutSine',
+  //     duration: 1250  // 动画持续时间
+  //   });
+  // });
 }
 
 // ----------------------------------------
@@ -591,7 +654,7 @@ async function initializeApp() {
 }
 
 const resources = [
-  'img/back.png',
+  'img/Computer_Background.png',
   'html/Blog.html',
   'html/Home.html',
   'html/Github.html',

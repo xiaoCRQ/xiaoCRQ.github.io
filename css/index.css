@@ -85,6 +85,8 @@ button {
 #Img_Back {
   width: 50vw;
   z-index: -3;
+  pointer-events: auto;
+  transition: width 0.75s;
 }
 
 /* 动画路径样式 */
@@ -124,6 +126,8 @@ button {
   transform: translateY(-100vh);
   /* 向上移动按钮 */
   background-color: #100C08;
+  /* 增加边框 */
+  border: 0.5vh solid #F5F5F5;
 }
 
 
