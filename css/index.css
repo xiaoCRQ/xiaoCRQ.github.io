@@ -180,6 +180,11 @@ button {
   /* 水平居中对齐 */
 }
 
+#MarkDown_Resource {
+  overflow-y: auto
+}
+
+
 #XiaoCRQ {
   width: 45vw;
   transition: width 0.25s;

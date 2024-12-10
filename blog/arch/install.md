@@ -80,10 +80,10 @@
 cfdisk /dev/<你的硬盘>
 ```
 
-![image](https://github.com/xiaoCRQ/Hackschooling/blob/main/learning%20materials/arch%20linux/img/cfdisk.png)
+![image](img/cfdisk.png)
 
 > 按需要分区
-> ![image](https://github.com/xiaoCRQ/Hackschooling/blob/main/learning%20materials/arch%20linux/img/wiki_disk.png)
+> ![image](img/wiki_disk.png)
 
 - 格式化分区
 

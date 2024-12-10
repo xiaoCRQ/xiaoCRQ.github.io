@@ -542,32 +542,45 @@ function setBackgroundImage(imageUrl) {
   });
 }
 
+// ----------------------------------------
 // 渲染markdown
-function renderMarkdownById(elementId) {
-  const element = document.getElementById(elementId);
 
-  if (!element) {
-    console.error(`无法找到 ID 为 "${elementId}" 的元素`);
-    return;
+/**
+ * Function to render Markdown content into an element with a specific id.
+ * @param {string} id - The id of the HTML element to render the content into.
+ * @param {string} path - The path to the Markdown file.
+ */
+async function renderMarkdownById(id, path) {
+  try {
+    // Fetch the Markdown file from the provided path
+    const response = await fetch(path);
+
+    // Check if the response is okay
+    if (!response.ok) {
+      throw new Error(`Failed to load file: ${response.statusText}`);
+    }
+
+    // Get the markdown content as text
+    const markdownContent = await response.text();
+
+    // Get the element by id
+    const element = document.getElementById(id);
+    if (element) {
+      // Render the markdown content using marked.parse() (not marked())
+      element.innerHTML = marked.parse(markdownContent);
+    } else {
+      console.error(`Element with id '${id}' not found.`);
+    }
+  } catch (error) {
+    console.error('Error rendering markdown:', error);
+    const element = document.getElementById(id);
+    if (element) {
+      element.textContent = 'Failed to load content.';
+    }
   }
-
-  // 提取该元素的文本内容
-  const markdownContent = element.innerText || element.textContent;
-
-  // 使用 marked 解析 Markdown 内容为 HTML，启用 GitHub 风格的渲染
-  const htmlContent = marked.parse(markdownContent, {
-    renderer: new marked.Renderer(),
-    gfm: true, // 启用 GitHub 风格的 Markdown 渲染
-    tables: true, // 启用表格支持
-    breaks: true, // 启用换行支持
-    smartLists: true, // 启用智能列表
-    smartypants: true // 启用智能标点符号
-  });
-
-  // 将生成的 HTML 内容替换到原来的元素中
-  element.innerHTML = htmlContent;
 }
 
+// ----------------------------------------
 
 // 初始化应用
 async function initializeApp() {
