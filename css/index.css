@@ -69,6 +69,24 @@ button {
   /* 确保在背景层 */
 }
 
+
+
+#Mouse .cursor {
+  position: absolute;
+  width: 4vh;
+  /* 设置圆形指针的大小，适配视口 */
+  height: 4vh;
+  border-radius: 50%;
+  background-color: transparent;
+  /* 背景透明 */
+  border: 2px solid #000;
+  /* 通过边框显示反转效果 */
+  pointer-events: none;
+  transition: transform 0.1s ease-out;
+  mix-blend-mode: difference;
+  /* 反转色效果 */
+}
+
 /* 页面主要资源样式 */
 #Main {
   z-index: 0;
