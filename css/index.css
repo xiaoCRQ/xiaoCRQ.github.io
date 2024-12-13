@@ -15,7 +15,7 @@ body {
   overflow: hidden;
   /* 隐藏整个页面的滚动条 */
   /* 隐藏鼠标光标 */
-  background-color: #F5F5F5;
+  background-color: #FFFFFF;
   flex-direction: column;
 }
 
@@ -92,34 +92,38 @@ button {
 /* 动画路径样式 */
 .anime_path {
   fill: none;
-  stroke: #F5F5F5;
+  stroke: #FFFFFF;
 }
 
+/*--------------------------------*/
 /* 顶部导航样式 */
 #Nav_Main {
   position: fixed;
   top: 0;
   left: 0;
-  height: 8vh;
+  height: 15vh;
   width: 100vw;
   display: flex;
   flex-direction: column;
   /* 设置为垂直排列 */
-  align-items: center;
-  justify-content: center;
+  /*align-items: center;*/
+  align-items: flex-start;
+  /* 子元素左对齐 */
+  /*justify-content: center;*/
   /* 水平居中 */
   z-index: 9999;
   pointer-events: none;
   /* 不影响其他元素的交互 */
 }
 
+/* 导航按钮 */
 #Nav_Button {
-  border-radius: 5vh;
+  border-radius: 1.5vh;
   height: 5vh;
   width: 5vh;
   display: flex;
   /* 添加水平居中效果 */
-  align-items: center;
+  /*align-items: center;*/
   justify-content: center;
   pointer-events: auto;
   /* 确保接收鼠标事件 */
@@ -127,16 +131,57 @@ button {
   /* 向上移动按钮 */
   background-color: #100C08;
   /* 增加边框 */
-  border: 0.5vh solid #F5F5F5;
+  /*border: 0.5vh solid #FFFFFF;*/
+  margin-left: auto;
+  margin-right: 2vh;
+  margin-top: 2vh;
+  /* 将该元素推到右侧 */
 }
 
+.Nav_Options {
+  color: #FFFFFF;
+  margin: 0 1vw;
+  /* 简化 margin 设置 */
+  height: 3vh;
+  font-size: 2vh;
+}
+
+#Nav_Main_Options {
+  height: 100%;
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+}
+
+#Nav_Line {
+  height: 5vh;
+  width: 5vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#Nav_Line_1,
+#Nav_Line_2 {
+  height: 0.3vh;
+  width: 2.5vh;
+  border-radius: 1vh;
+  margin: 0.475vh;
+  background-color: #FFFFFF;
+}
+
+
+/*--------------------------------*/
 
 .Text_Line_Black {
   background: linear-gradient(to right, #100C08, #100C08) no-repeat right bottom;
 }
 
 .Text_Line_White {
-  background: linear-gradient(to right, #F5F5F5, #F5F5F5) no-repeat right bottom;
+  background: linear-gradient(to right, #FFFFFF, #FFFFFF) no-repeat right bottom;
 }
 
 
@@ -153,39 +198,44 @@ button {
   background-size: 100% 0.25vh;
 }
 
-.Nav_Options {
-  color: #F5F5F5;
-  margin: 0 1vw;
-  /* 简化 margin 设置 */
-  height: 3vh;
-  font-size: 2vh;
-}
 
-.Page {
+
+.Page,
+.Page_Level {
   width: 100%;
   height: 100%;
-  background-color: #F5F5F5;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 3vw;
+  font-size: 2.5vh;
   margin: 0;
   pointer-events: auto;
 }
 
 .Page_Level {
-  display: flex;
   flex-direction: row;
   /* 水平排列 */
-  align-items: center;
-  /* 垂直居中对齐 */
-  justify-content: center;
-  /* 水平居中对齐 */
 }
 
 #MarkDown_Resource {
-  overflow-y: auto
+  text-align: left;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  /* 防止水平滚动 */
+}
+
+/* 隐藏滚动条 */
+#MarkDown_Resource::-webkit-scrollbar {
+  display: none;
+  /* 对 Webkit 浏览器隐藏滚动条 */
+}
+
+#MarkDown_Resource {
+  -ms-overflow-style: none;
+  /* 对 IE 和 Edge 隐藏滚动条 */
+  scrollbar-width: none;
+  /* 对 Firefox 隐藏滚动条 */
 }
 
 

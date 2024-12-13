@@ -162,7 +162,7 @@ function waitForHTMLPage(resourceUrl, timeout) {
 }
 // -------------------------------------------------------------------------------------------
 // 动画资源函数
-async function animeResource(id, X, Y, Height, Width, Opacity, Easing = 'spring(0.5, 80, 10, 5)', Duration = 1250, Delay = 0) {
+async function animeResource(id, X, Y, Height, Width, Opacity, Easing = 'spring(0.5, 80, 10, 5)', Duration = 250, Delay = 0) {
   const element = document.getElementById(id);
   if (!element) {
     console.error(`ID为 "${id}" 的元素不存在，无法应用动画。`);
@@ -245,7 +245,8 @@ async function clearContent(id, useAnimation = true) {
       ['0vh', '-100vh'], // 动画结束位置
       [], // 高度
       [], // 宽度
-      [1, 0] // 动画透明度
+      [1, 0], // 动画透明度
+      'easeOutSine'
     );
 
     await new Promise(resolve => setTimeout(() => {
@@ -280,7 +281,7 @@ async function loadContent(id, path, useAnimation = true) {
     }
 
     if (useAnimation) {
-      animeResource(id, ['0vh', '0vh'], ['100vh', '0vh'], ['0%', '100vh'], ['0%', '100%'], [0, 1]);
+      animeResource(id, ['0vh'], ['100vh', '0vh'], ['100vh'], ['100%'], [0, 1], 'easeInSine');
     }
   } catch (error) {
     console.error('加载内容时出错:', error);
@@ -338,60 +339,6 @@ async function loadAndAnimateSVG(targetId) {
 }
 
 
-// 划过背景出现
-function animateElement(id) {
-  const element = document.getElementById(id);
-
-  if (!element) {
-    console.error(`元素 ${id} 未找到`);
-    return;
-  }
-
-  // 保存原有的CSS属性
-  const originalStyles = {
-    color: element.style.color,
-    background: element.style.background,
-    backgroundSize: element.style.backgroundSize,
-    // 可以根据需要添加更多的属性
-  };
-
-  // 添加黑色背景并从右到左划过
-  element.style.background = 'linear-gradient(to right, #100C08, #100C08) no-repeat right bottom';
-  element.style.backgroundSize = '0 0.25vh';
-
-  // 动画 1: 从左到右划过黑色背景
-  anime({
-    targets: element,
-    backgroundSize: ['0 0.25vh', '100% 0.25vh'],  // 背景从右侧拉到左侧
-    backgroundPosition: ['right bottom', 'left bottom'],
-    duration: 1000,  // 动画时间
-    easing: 'easeInOutSine',
-    complete: function () {
-      // 动画 2: 从左到右划过消失背景
-      element.style.background = 'linear-gradient(to right, #F5F5F5, #F5F5F5) no-repeat right bottom';
-      element.style.backgroundSize = '100% 0.25vh'; // 确保背景被填满
-
-      anime({
-        targets: element,
-        backgroundSize: ['100% 0.25vh', '0 0.25vh'],  // 背景逐渐消失
-        backgroundPosition: ['left bottom', 'right bottom'],
-        duration: 1000,
-        easing: 'easeInOutSine',
-        complete: function () {
-          // 动画 3: 移除背景并恢复文本颜色
-          element.style.background = 'none';  // 移除背景
-          element.style.color = '#000';  // 设置文本颜色为黑色
-
-          // 恢复原有的CSS属性
-          element.style.background = originalStyles.background;
-          element.style.backgroundSize == originalStyles.backgroundSize;
-          // 可以根据需要添加更多的属性恢复
-        }
-      });
-    }
-  });
-}
-
 
 async function Open() {
   // 获取 Anime 容器
@@ -419,13 +366,13 @@ async function Open() {
       duration: 750,
       targets: Square_Up,
       translateY: '-100vh',
-      easing: 'easeInOutSine',
+      easing: 'easeInSine',
     }).finished,
     anime({
       duration: 750,
       targets: Square_Down,
       translateY: '100vh',
-      easing: 'easeInOutSine',
+      easing: 'easeInSine',
     }).finished,
   ]);
 
@@ -449,27 +396,17 @@ async function Open() {
       duration: 375,
       targets: Square_Up,
       translateY: [100, 0],
-      easing: 'easeInOutSine',
+      easing: 'easeInSine',
     }).finished,
     anime({
       duration: 375,
       targets: Square_Down,
       translateY: [-100, 0],
-      easing: 'easeInOutSine',
+      easing: 'easeInSine',
     }).finished,
   ]);
 
   await loadContent('Main_Title', 'html/Main_Title.html', false);
-
-  // 修改 Main_Title 的样式
-  const Main_Title = document.getElementById('Main_Title');
-  Main_Title.style.width = '50vw';
-  Main_Title.style.left = 'auto';
-  Main_Title.style.right = '0';
-  Main_Title.style.background = '#F5F5F5';
-
-  // 设置背景图片
-  setBackgroundImage(resources[0]);
 
   // 同时运行 Square_Up 和 Square_Down 的第三组动画
   await Promise.all([
@@ -477,13 +414,13 @@ async function Open() {
       duration: 375,
       targets: Square_Up,
       translateY: [0, -100],
-      easing: 'easeInOutSine',
+      easing: 'easeOutSine',
     }).finished,
     anime({
       duration: 375,
       targets: Square_Down,
       translateY: [0, 100],
-      easing: 'easeInOutSine',
+      easing: 'easeOutSine',
     }).finished,
   ]);
 
@@ -491,13 +428,12 @@ async function Open() {
   AnimeContainer.removeChild(Square_Up);
   AnimeContainer.removeChild(Square_Down);
 
-  // 等待 1250ms 后返回
-  return new Promise(resolve => setTimeout(resolve, 750));
+  return new Promise(resolve => setTimeout(resolve, 350));
 }
 
 // 选项功能
 async function Options_Function() {
-  await loadContent('Nav_Button', './html/Nav_Options.html', false);
+  await loadContent('Nav_Main_Options', './html/Nav_Options.html', false);
   const options = ['Home', 'Blog', 'Github'];
 
   options.forEach(option => {
@@ -514,6 +450,24 @@ async function Options_Function() {
 
       // 添加点击事件
       element.addEventListener('click', () => {
+        // 特殊事件
+        if (option === 'Home') {
+          anime({
+            targets: document.getElementById('Main_Title'), // 获取 Main_Title 元素
+            easing: 'easeOutSine',
+            filter: 'blur(0vh)',
+            duration: 250,
+          })
+        }
+        else {
+          anime({
+            targets: document.getElementById('Main_Title'), // 获取 Main_Title 元素
+            easing: 'easeInSine',
+            filter: 'blur(2vh)',
+            duration: 250,
+            delay: 350,
+          })
+        }
         loadContent('Main_Resource', `./html/${option}.html`);
       });
     }
@@ -522,7 +476,12 @@ async function Options_Function() {
 
 // 动画化导航按钮
 function animateNav() {
+  let isExpanded = false; // 追踪当前状态（是否展开）
   const Nav = document.getElementById('Nav_Button');
+  const Nav_Line = document.getElementById('Nav_Line')
+  const Nav_Line_1 = document.getElementById('Nav_Line_1')
+  const Nav_Line_2 = document.getElementById('Nav_Line_2')
+
   if (!Nav) return;
 
   // 导航按钮进入动画
@@ -532,24 +491,92 @@ function animateNav() {
     easing: 'spring(0.5, 80, 10, 5)',
   });
 
+  // 鼠标点击效果
+  Nav_Line.addEventListener('click', () => {
+    if (!isExpanded) {
+      // 展开动画
+      anime({
+        targets: Nav,
+        width: '35vh',
+        easing: 'spring(0.5, 80, 10, 5)',
+      });
+      anime({
+        targets: Nav_Line_1,
+        easing: 'spring(0.5, 80, 10, 5)',
+        translateY: '0.645vh',
+        rotate: 45, // 顺时针旋转 45 度
+      });
+      anime({
+        targets: Nav_Line_2,
+        easing: 'spring(0.5, 80, 10, 5)',
+        translateY: '-0.645vh',
+        rotate: -45, // 逆时针旋转 45 度
+      });
+
+      Options_Function();
+
+      isExpanded = true; // 更新状态
+    } else {
+      // 收缩动画
+      clearContent('Nav_Main_Options', false); // 清除内容
+      anime({
+        targets: Nav,
+        width: '5vh',
+        height: '5vh',
+        easing: 'spring(0.5, 80, 10, 5)',
+      });
+      anime({
+        targets: [Nav_Line_1, Nav_Line_2],
+        easing: 'spring(0.5, 80, 10, 5)',
+        translateY: '0vh',
+        rotate: 0,
+      });
+
+      isExpanded = false; // 更新状态
+    }
+  });
+
   // 鼠标悬停效果
   Nav.addEventListener('mouseenter', () => {
-    anime({
-      targets: Nav,
-      width: '30vh',
-      easing: 'spring(0.5, 80, 10, 5)',
-    });
-    Options_Function();
+    // anime({
+    //   targets: Nav,
+    //   width: '35vh',
+    //   easing: 'spring(0.5, 80, 10, 5)',
+    // });
+    // anime({
+    //   targets: Nav_Line_1,
+    //   easing: 'spring(0.5, 80, 10, 5)',
+    //   translateY: '0.645vh',
+    //   rotate: 45, // 顺时针旋转 45 度
+    // });
+    // anime({
+    //   targets: Nav_Line_2,
+    //   easing: 'spring(0.5, 80, 10, 5)',
+    //   translateY: '-0.645vh',
+    //   rotate: -45, // 逆时针旋转 45 度
+    // });
+    //
+    // Options_Function();
+    //
+    // isExpanded = true; // 更新状态  
   });
 
   // 鼠标离开效果
   Nav.addEventListener('mouseleave', () => {
-    clearContent('Nav_Button', false);
+    clearContent('Nav_Main_Options', false);
     anime({
       targets: Nav,
       width: '5vh',
+      height: '5vh',
       easing: 'spring(0.5, 80, 10, 5)',
     });
+    anime({
+      targets: [Nav_Line_1, Nav_Line_2],
+      easing: 'spring(0.5, 80, 10, 5)',
+      translateY: '0vh',
+      rotate: 0
+    });
+    isExpanded = false; // 更新状态
   });
 }
 
@@ -644,6 +671,61 @@ async function renderMarkdownById(id, path) {
 }
 
 // ----------------------------------------
+// 文字动画
+
+// 划过背景出现
+function animateElement(id) {
+  const element = document.getElementById(id);
+
+  if (!element) {
+    console.error(`元素 ${id} 未找到`);
+    return;
+  }
+
+  // 保存原有的CSS属性
+  const originalStyles = {
+    color: element.style.color,
+    background: element.style.background,
+    backgroundSize: element.style.backgroundSize,
+    backgroundPosition: element.style.backgroundPosition,
+    // 可以根据需要添加更多的属性
+  };
+
+  // 添加黑色背景并从右到左划过
+  element.style.background = 'linear-gradient(to right, #100C08, #100C08) no-repeat right bottom';
+  element.style.backgroundSize = '0 100%';
+
+  // 动画 1: 从左到右划过黑色背景
+  anime({
+    targets: element,
+    backgroundSize: ['0 100%', '100% 100%'],  // 背景从右侧拉到左侧
+    duration: 1000,  // 动画时间
+    easing: 'easeInOutSine',
+    complete: function () {
+      // 动画 2: 从左到右划过消失背景
+      element.style.background = 'linear-gradient(to right, #FFFFFF, #FFFFFF) no-repeat right bottom';
+
+      anime({
+        targets: element,
+        backgroundSize: ['100% 100%', '0 100%'],  // 背景逐渐消失
+        duration: 1000,
+        easing: 'easeInOutSine',
+        complete: function () {
+          // 动画 3: 移除背景并恢复文本颜色
+          element.style.background = 'none';  // 移除背景
+          element.style.color = '#000';  // 设置文本颜色为黑色
+
+          // 恢复原有的CSS属性
+          element.style.background = originalStyles.background;
+          element.style.backgroundSize == originalStyles.backgroundSize;
+          // 可以根据需要添加更多的属性恢复
+        }
+      });
+    }
+  });
+}
+
+// ----------------------------------------
 
 // 初始化应用
 async function initializeApp() {
@@ -663,3 +745,4 @@ const resources = [
 
 // 启动应用
 initializeApp();
+
