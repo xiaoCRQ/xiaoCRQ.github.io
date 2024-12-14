@@ -1,130 +1,102 @@
-// 获取canvas元素
-const canvas = document.getElementById('Mouse');
-const ctx = canvas.getContext('2d');
-
-// 设置初始鼠标和触摸位置
-let mouseX = 0;
-let mouseY = 0;
-const touchPoints = []; // 记录触摸点
-
-// 创建小球对象
-const ball = {
-  x: 0,
-  y: 0,
-  radius: 0,
-  color: '#100C08',
-  opacity: 1
-};
-
-// 获取1vh的像素值
-function getVhValue(vh) {
-  return (vh / 100) * window.innerHeight;
+// 检测是否为移动设备
+function isMobileDevice() {
+  return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|webOS/i.test(navigator.userAgent);
 }
 
-// 调整画布分辨率
-function adjustCanvasResolution() {
-  const dpr = window.devicePixelRatio || 1;
-  const displayWidth = window.innerWidth;
-  const displayHeight = window.innerHeight;
+// 如果是移动设备，不执行后续代码
+if (!isMobileDevice()) {
+  // 获取canvas元素
+  const canvas = document.getElementById('Mouse');
+  const ctx = canvas.getContext('2d');
 
-  canvas.width = displayWidth * dpr;
-  canvas.height = displayHeight * dpr;
-  canvas.style.width = `${displayWidth}px`;
-  canvas.style.height = `${displayHeight}px`;
+  // 设置初始鼠标位置
+  let mouseX = 0;
+  let mouseY = 0;
 
-  ctx.scale(dpr, dpr);
+  // 创建小球对象
+  const ball = {
+    x: 0,
+    y: 0,
+    radius: 0,
+    color: '#100C08',
+    opacity: 1
+  };
 
-  // 更新小球半径
-  ball.radius = getVhValue(1);
-}
+  // 获取1vh的像素值
+  function getVhValue(vh) {
+    return (vh / 100) * window.innerHeight;
+  }
 
-// 更新小球位置
-function updateBallPosition(x, y) {
-  ball.x = x;
-  ball.y = y;
-}
+  // 调整画布分辨率
+  function adjustCanvasResolution() {
+    const dpr = window.devicePixelRatio || 1;
+    const displayWidth = window.innerWidth;
+    const displayHeight = window.innerHeight;
 
-// 绘制小球
-function drawBall() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.width = displayWidth * dpr;
+    canvas.height = displayHeight * dpr;
+    canvas.style.width = `${displayWidth}px`;
+    canvas.style.height = `${displayHeight}px`;
 
-  // 绘制鼠标或第一个触摸点的小球
-  ctx.beginPath();
-  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-  ctx.fillStyle = ball.color;
-  ctx.globalAlpha = ball.opacity;
-  ctx.fill();
-  ctx.closePath();
+    ctx.scale(dpr, dpr);
 
-  // 绘制其他触摸点的小球
-  touchPoints.forEach(({ x, y }) => {
+    // 更新小球半径
+    ball.radius = getVhValue(1);
+  }
+
+  // 更新小球位置
+  function updateBallPosition() {
+    ball.x = mouseX;
+    ball.y = mouseY;
+  }
+
+  // 绘制小球
+  function drawBall() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
-    ctx.arc(x, y, ball.radius, 0, Math.PI * 2);
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
     ctx.fillStyle = ball.color;
-    ctx.globalAlpha = ball.opacity * 0.7; // 较低透明度
+    ctx.globalAlpha = ball.opacity;
     ctx.fill();
     ctx.closePath();
+  }
+
+  // 动画循环
+  function animate() {
+    updateBallPosition();
+    drawBall();
+    requestAnimationFrame(animate);
+  }
+
+  // 鼠标移动事件监听
+  window.addEventListener('mousemove', (event) => {
+    mouseX = event.clientX;
+    mouseY = event.clientY;
+    // 直接更新和绘制，以降低延迟
+    updateBallPosition();
+    drawBall();
   });
-}
 
-// 动画循环
-function animate() {
-  drawBall();
-  requestAnimationFrame(animate);
-}
+  // 窗口大小变化事件监听
+  window.addEventListener('resize', () => {
+    adjustCanvasResolution();
+    updateBallPosition();
+    drawBall();
+  });
 
-// 鼠标移动事件监听
-window.addEventListener('mousemove', (event) => {
-  mouseX = event.clientX;
-  mouseY = event.clientY;
-  updateBallPosition(mouseX, mouseY);
-});
+  // 为Nav_Button添加鼠标悬停效果
+  const navButton = document.getElementById('Nav_Button');
+  navButton.addEventListener('mouseenter', () => {
+    ball.color = '#FFFFFF';
+    drawBall(); // 立即重绘以更新颜色
+  });
+  navButton.addEventListener('mouseleave', () => {
+    ball.color = '#100C08';
+    drawBall(); // 立即重绘以更新颜色
+  });
 
-// 触摸事件监听
-canvas.addEventListener('touchstart', (event) => {
-  touchPoints.length = 0; // 清除之前的触摸点
-  for (let touch of event.touches) {
-    touchPoints.push({ x: touch.clientX, y: touch.clientY });
-  }
-  if (touchPoints.length > 0) {
-    updateBallPosition(touchPoints[0].x, touchPoints[0].y);
-  }
-});
-
-canvas.addEventListener('touchmove', (event) => {
-  touchPoints.length = 0;
-  for (let touch of event.touches) {
-    touchPoints.push({ x: touch.clientX, y: touch.clientY });
-  }
-  if (touchPoints.length > 0) {
-    updateBallPosition(touchPoints[0].x, touchPoints[0].y);
-  }
-});
-
-canvas.addEventListener('touchend', (event) => {
-  touchPoints.length = 0;
-  for (let touch of event.touches) {
-    touchPoints.push({ x: touch.clientX, y: touch.clientY });
-  }
-  if (touchPoints.length > 0) {
-    updateBallPosition(touchPoints[0].x, touchPoints[0].y);
-  }
-});
-
-// 窗口大小变化事件监听
-window.addEventListener('resize', () => {
+  // 初始化
   adjustCanvasResolution();
-});
+  animate();
+}
 
-// 为Nav_Button添加鼠标悬停效果
-const navButton = document.getElementById('Nav_Button');
-navButton.addEventListener('mouseenter', () => {
-  ball.color = '#FFFFFF';
-});
-navButton.addEventListener('mouseleave', () => {
-  ball.color = '#100C08';
-});
-
-// 初始化
-adjustCanvasResolution();
-animate();
