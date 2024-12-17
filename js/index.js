@@ -193,8 +193,10 @@ async function OpeWebSite() {
     ease: "expo.inOut",
     repeat: -1,  // 无限循环
     yoyo: true,  // 往返效果
-    paused: false  // 初始时暂停
+    paused: true   // 初始时暂停
   });
+
+  widthAnimation.play();
 
   // 等待 loadMultipleFiles 执行完毕
   await loadMultipleFiles(ConfigData.FileLoadConfig)
