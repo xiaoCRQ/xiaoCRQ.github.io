@@ -5,6 +5,10 @@
       "path": "html/Options.html"
     },
     {
+      "id": "BackGrund",
+      "path": "html/BackGrund.html"
+    },
+    {
       "id": "Home_Resource",
       "path": "html/Home.html"
     },
