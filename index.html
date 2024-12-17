@@ -4,9 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <title>XiaoCRQ's Blog</title>
-  <link rel="stylesheet" href="css/index.css">
-  <link rel="stylesheet" href="css/Main_Title.css">
-  <!-- <script src='js/CheckIP.js'></script> -->
+  <link rel="stylesheet" href="css/Style.css">
+  <script src="js/loadfile.js"></script>
 </head>
 
 <body>
@@ -15,27 +14,29 @@
   <div id="Nav_Main">
     <div id="Nav_Button">
       <div id="Nav_Main_Options"></div>
-      <div id="Nav_Line">
+      <button id="Nav_Line">
         <div id="Nav_Line_1"></div>
         <div id="Nav_Line_2"></div>
-      </div>
+      </button>
     </div>
   </div>
 
-  <div id="Main_Title"></div>
-  <div id="Anime"></div>
 
   <main id="Main">
-    <div id="Main_Resource">
-    </div>
+    <div id="Home_Resource"></div>
+    <div id="Blog_Resource"></div>
+    <div id="Github_Resource"></div>
+    <div id="Thanks_Resource"></div>
   </main>
 
-  <canvas id="Mouse"></canvas>
-  <script src='js/animejs/anime.min.js'></script>
-  <script src="js/marked.min.js"></script>
+  <div id="Anime"></div>
+  <div id="HeadSVG"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.js"></script>
   <script src="js/index.js"></script>
-  <script src='js/mouse.js'></script>
-  <!-- <script type="text/javascript" color="#34495e" opacity='0.8' zIndex="-2" count="150" src="js/canvas-nest.js"></script> -->
+
 </body>
 
 </html>

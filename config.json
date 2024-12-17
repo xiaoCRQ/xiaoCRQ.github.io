@@ -1,0 +1,29 @@
+{
+  "FileLoadConfig": [
+    {
+      "id": "Nav_Main_Options",
+      "path": "html/Options.html"
+    },
+    {
+      "id": "Home_Resource",
+      "path": "html/Home.html"
+    },
+    {
+      "id": "Blog_Resource",
+      "path": "html/Blog.html"
+    },
+    {
+      "id": "Github_Resource",
+      "path": "html/Github.html"
+    },
+    {
+      "id": "Thanks_Resource",
+      "path": "html/Thanks.html"
+    },
+    {
+      "id": "HeadSVG",
+      "path": "svg/XiaoCRQwrite.svg"
+    }
+  ],
+  "Language": "en"
+}

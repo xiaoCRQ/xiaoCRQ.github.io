@@ -1,0 +1,17 @@
+/*--------------------------------*/
+/* 鼠标追踪器样式 */
+.mf-cursor {
+  mix-blend-mode: exclusion;
+}
+
+.mf-cursor:before {
+  top: -5vh;
+  left: -5vh;
+  width: 10vh;
+  height: 10vh;
+  background: white;
+}
+
+.mf-cursor.-pointer:before {
+  transform: scale(0.75)
+}

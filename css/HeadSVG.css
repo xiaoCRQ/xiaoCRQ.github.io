@@ -1,0 +1,28 @@
+#HeadSVG {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  /* 设置为垂直排列 */
+  justify-content: center;
+  /* 垂直居中 */
+  align-items: center;
+  /* 水平居中 */
+  z-index: 999;
+  pointer-events: none;
+}
+
+
+#XiaoCRQ {
+  width: 60vw;
+}
+
+/* 动画路径样式 */
+.anime_path {
+  fill: none;
+  stroke: #FFFFFF;
+  /*stroke: #000000;*/
+}
