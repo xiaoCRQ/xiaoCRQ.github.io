@@ -152,6 +152,7 @@ async function OpeWebSite() {
   AnimeContainer.appendChild(Square_Up);
   AnimeContainer.appendChild(Square_Down);
 
+  await loadFileContent("HeadSVG", "svg/XiaoCRQwrite.svg")
 
   // 先运行 anime.js 动画并等待它完成
   await new Promise((resolve) => {
@@ -163,7 +164,6 @@ async function OpeWebSite() {
       delay: (el, i) => i * 150,
       direction: 'alternate',
       loop: true,
-      complete: resolve // 动画完成时触发 resolve，保证顺序
     });
 
     loadMultipleFiles(ConfigData.FileLoadConfig)
