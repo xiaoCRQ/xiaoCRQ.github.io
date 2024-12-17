@@ -12,6 +12,6 @@
    /* 水平居中 */
    z-index: -1;
    pointer-events: auto;
-   background-color: black;
+   background-color: white;
    mix-blend-mode: exclusion;
  }

@@ -174,9 +174,8 @@ async function OpeWebSite() {
   // 然后运行 Square_Up 和 Square_Down 的第一组 gsap 动画
   await Promise.all([
     gsap.to(Progress, {
-      duration: 1.35,
+      duration: 1,
       ease: "expo.inOut",
-      width: '45vw',
       borderRadius: '1.5vh',
       height: '3vh',
     }),
@@ -187,17 +186,31 @@ async function OpeWebSite() {
     })
   ]);
 
+  // 循环的宽度动画
+  const widthAnimation = gsap.to(Progress, {
+    duration: 0.75,
+    width: ['45vh', '52vh'],
+    ease: "expo.inOut",
+    repeat: -1,  // 无限循环
+    yoyo: true,  // 往返效果
+    paused: true  // 初始时暂停
+  });
+
+  // 等待 loadMultipleFiles 执行完毕
   await loadMultipleFiles(ConfigData.FileLoadConfig)
 
+  // 在 loadMultipleFiles 完成后播放宽度动画
+  widthAnimation.play();
+
   await gsap.to(Progress, {
-    duration: 1.35,
-    ease: "expo.inOut",
+    duration: 1,
+    ease: "expo.in",
     width: '110vw',
     height: '1vh'
   });
 
   await gsap.to(Progress, {
-    duration: 1.35,
+    duration: 1,
     ease: "expo.inOut",
     height: '100vh'
   });
@@ -216,12 +229,12 @@ async function OpeWebSite() {
   // 然后运行 Square_Up 和 Square_Down 的第一组 gsap 动画
   await Promise.all([
     gsap.to(Square_Up, {
-      duration: 1.35,
+      duration: 1,
       y: '-100vh',
       ease: "expo.inOut",
     }),
     gsap.to(Square_Down, {
-      duration: 1.35,
+      duration: 1,
       y: '100vh',
       ease: "expo.inOut",
     })
