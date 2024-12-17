@@ -193,14 +193,14 @@ async function OpeWebSite() {
     ease: "expo.inOut",
     repeat: -1,  // 无限循环
     yoyo: true,  // 往返效果
-    paused: true  // 初始时暂停
+    paused: false  // 初始时暂停
   });
 
   // 等待 loadMultipleFiles 执行完毕
   await loadMultipleFiles(ConfigData.FileLoadConfig)
 
-  // 在 loadMultipleFiles 完成后播放宽度动画
-  widthAnimation.play();
+  // 在 loadMultipleFiles 完成后暂停宽度动画
+  widthAnimation.pause();
 
   await gsap.to(Progress, {
     duration: 1,
