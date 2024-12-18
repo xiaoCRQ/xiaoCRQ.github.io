@@ -177,7 +177,9 @@ async function OpeWebSite() {
       duration: 1,
       ease: "expo.inOut",
       borderRadius: '1.5vh',
+      width: '3vh',
       height: '3vh',
+      rotation: 360,
     }),
     gsap.to(Icon, {
       duration: 0.95,
@@ -186,17 +188,24 @@ async function OpeWebSite() {
     })
   ]);
 
-  // 循环的宽度动画
-  const widthAnimation = gsap.to(Progress, {
+  await gsap.to(Progress, {
     duration: 0.75,
-    width: ['45vh', '52vh'],
+    opacity: 1,
     ease: "expo.inOut",
-    repeat: -1,  // 无限循环
-    yoyo: true,  // 往返效果
-    paused: true   // 初始时暂停
+    width: '45vw',
   });
 
-  widthAnimation.play();
+  // 循环的宽度动画
+  const widthAnimation = gsap.fromTo(Progress, {
+    width: '45vw'  // 初始宽度
+  }, {
+    width: '55vw',  // 结束宽度
+    duration: 1.35,  // 动画持续时间
+    ease: "expo.inOut",  // 缓动效果
+    repeat: -1,  // 无限循环
+    yoyo: true,  // 往返效果
+    paused: false   // 初始时不暂停
+  });
 
   // 等待 loadMultipleFiles 执行完毕
   await loadMultipleFiles(ConfigData.FileLoadConfig)
