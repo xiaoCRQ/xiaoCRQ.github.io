@@ -54,7 +54,7 @@ async function NavAnime() {
         duration: 0.45
       })
       gsap.to(Nav, {
-        width: '48vh',
+        width: '45vh',
         ease: "expo.inOut",
         duration: 0.75
       });
@@ -177,8 +177,8 @@ async function OpeWebSite() {
       duration: 1,
       ease: "expo.inOut",
       borderRadius: '1.5vh',
-      width: '3vh',
-      height: '3vh',
+      width: '2vh',
+      height: '2vh',
       rotation: 360,
     }),
     gsap.to(Icon, {
@@ -206,7 +206,7 @@ async function OpeWebSite() {
     duration: 1,
     ease: "expo.in",
     width: '110vw',
-    height: '1vh'
+    height: '0.5vh'
   });
 
   await gsap.to(Progress, {

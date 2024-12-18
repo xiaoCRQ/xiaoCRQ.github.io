@@ -86,8 +86,8 @@ button {
 
 .Nav_Options {
   color: #FFFFFF;
-  margin: 0 1vw;
-  /* 简化 margin 设置 */
+  /*margin: 0 1vw;*/
+  margin-left: 1.5vw;
   height: 3vh;
   font-size: 2vh;
 }
