@@ -12,6 +12,10 @@
    /* 水平居中 */
    z-index: -1;
    pointer-events: auto;
-   background-color: white;
-   mix-blend-mode: exclusion;
+ }
+
+ #backgroundCanvas {
+   position: fixed;
+   top: 0;
+   left: 0;
  }

@@ -116,13 +116,14 @@ async function NavAnime() {
         duration: 0.75
       });
 
-      if (ElementIDLast) {
+      if (ElementIDLast && ElementIDLast != "Home_Resource") {
         NavPage(ElementIDLast, false);
         setTimeout(() => {
           NavPage(ElementIDNew);
         }, 350);
       }
       else NavPage(ElementIDNew);
+
       ElementIDLast = ElementIDNew;
     }
   };
@@ -149,12 +150,13 @@ async function OpeWebSite() {
 
   Square_Up.style.height = Square_Down.style.height = '50%';
   Square_Up.style.width = Square_Down.style.width = '100%';
-  Square_Up.style.backgroundColor = Square_Down.style.backgroundColor = '#100C08';
+  Square_Up.style.backgroundColor = Square_Down.style.backgroundColor = 'black';
 
+  Progress.className = 'Page'
   Progress.style.height = '0vh';
   Progress.style.width = '0vh';
   Progress.style.borderRadius = '5vh';
-  Progress.style.backgroundColor = '#100C08'
+  Progress.style.backgroundColor = 'black'
   Progress.style.opacity = 0
 
   // 将元素添加到 Anime 容器
@@ -188,6 +190,8 @@ async function OpeWebSite() {
     })
   ]);
 
+  await ClearRemoveElement('Progress')
+
   // 宽度动画
   const widthAnimation = gsap.to(Progress, {
     width: '60vw',  // 结束宽度
@@ -195,6 +199,7 @@ async function OpeWebSite() {
     ease: "expo.inOut",  // 缓动效果
     paused: false   // 初始时不暂停
   });
+
 
   // 等待 loadMultipleFiles 执行完毕
   await loadMultipleFiles(ConfigData.FileLoadConfig)
@@ -206,45 +211,41 @@ async function OpeWebSite() {
     duration: 1,
     ease: "expo.in",
     width: '110vw',
-    height: '0.5vh'
+    height: '0vh'
+  });
+
+  Progress.style.color = 'white'
+  Progress.style.fontSize = '25vh'
+  Progress.innerHTML = "Welcome!"
+
+  await gsap.to(Progress, {
+    duration: 1,
+    ease: "expo.inOut",
+    color: "black",
   });
 
   await gsap.to(Progress, {
     duration: 1,
     ease: "expo.inOut",
+    color: "white",
     height: '100vh'
   });
 
-  AnimeContainer.removeChild(Progress);
-  AnimeContainer.appendChild(Square_Up);
-  AnimeContainer.appendChild(Square_Down);
-  AnimeContainer.style.backgroundColor = ' rgba(0, 0, 0, 0)'
-
   const Home = document.getElementById('Home_Resource');
+  AnimeContainer.style.backgroundColor = 'rgba(0,0,0,0)'
 
   gsap.set(Home, {
     y: '0vh',
   })
 
-  // 然后运行 Square_Up 和 Square_Down 的第一组 gsap 动画
-  await Promise.all([
-    gsap.to(Square_Up, {
-      duration: 1,
-      y: '-100vh',
-      ease: "expo.inOut",
-    }),
-    gsap.to(Square_Down, {
-      duration: 1,
-      y: '100vh',
-      ease: "expo.inOut",
-    })
-  ]);
+  await gsap.to(Progress, {
+    duration: 1,
+    ease: "expo.inOut",
+    color: "white",
+    y: '-100vh',
+  });
 
-  // 删除 Square_Up 和 Square_Down 元素
-  AnimeContainer.removeChild(Square_Up);
-  AnimeContainer.removeChild(Square_Down);
-
-  return;
+  AnimeContainer.removeChild(Progress);
 }
 
 async function CursorDefine() {
@@ -255,7 +256,6 @@ async function CursorDefine() {
     skewing: 5,
   });
 }
-
 
 async function init() {
   await loadConfig("config.json");

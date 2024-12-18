@@ -1,6 +1,7 @@
 let ConfigData = {}; // 全局变量，用于存储配置文件内容
 
-async function loadFileContent(elementId, path) {
+
+async function loadFileContent(elementId, path, allowScripts = true) {
   const outputElement = document.getElementById(elementId);
 
   try {
@@ -20,7 +21,24 @@ async function loadFileContent(elementId, path) {
       result += decoder.decode(value, { stream: true });
     }
 
-    outputElement.innerHTML = result; // 将内容插入到指定元素中
+    if (allowScripts) {
+      outputElement.innerHTML = result;
+      // 查找并运行 script 标签中的代码
+      const scripts = outputElement.querySelectorAll('script');
+      scripts.forEach((script) => {
+        const newScript = document.createElement('script');
+        if (script.src) {
+          newScript.src = script.src;
+        } else {
+          newScript.textContent = script.textContent;
+        }
+        document.head.appendChild(newScript).parentNode.removeChild(newScript); // 确保执行后移除
+      });
+    } else {
+      // 不允许 script 标签时，将内容以文本形式插入
+      outputElement.textContent = result;
+    }
+
     console.log(`元素 ${elementId} 已加载`);
   } catch (error) {
     console.error("加载文件时出错:", error);
@@ -28,7 +46,8 @@ async function loadFileContent(elementId, path) {
   }
 }
 
-function ClearRemoveElement(elementId, removeElement = false) {
+
+async function ClearRemoveElement(elementId, removeElement = false) {
   const element = document.getElementById(elementId);
 
   if (!element) {
