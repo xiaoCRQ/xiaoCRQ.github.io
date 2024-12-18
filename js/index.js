@@ -155,7 +155,7 @@ async function OpeWebSite() {
   Progress.className = 'Page'
   Progress.style.height = '0vh';
   Progress.style.width = '0vh';
-  Progress.style.borderRadius = '5vh';
+  Progress.style.borderRadius = '5vw';
   Progress.style.backgroundColor = 'black'
   Progress.style.opacity = 0
 
@@ -169,8 +169,8 @@ async function OpeWebSite() {
     duration: 0.75,
     opacity: 1,
     ease: "expo.inOut",
-    width: '45vh',
-    height: '45vh',
+    width: '35vw',
+    height: '35vw',
   });
 
   // 然后运行 Square_Up 和 Square_Down 的第一组 gsap 动画
@@ -178,9 +178,9 @@ async function OpeWebSite() {
     gsap.to(Progress, {
       duration: 1,
       ease: "expo.inOut",
-      borderRadius: '1.5vh',
-      width: '2vh',
-      height: '2vh',
+      borderRadius: '1.5vw',
+      width: '2vw',
+      height: '2vw',
       rotation: 360,
     }),
     gsap.to(Icon, {
