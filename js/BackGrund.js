@@ -102,6 +102,21 @@ window.addEventListener('mousemove', (event) => {
   offsetY = ((mouseY / CanvasBackGrund.height) - 0.5) * maxOffset;
 });
 
+// 监听设备方向变化
+window.addEventListener('deviceorientation', (event) => {
+  const maxOffset = 50; // 最大偏移量
+
+  // 设备的alpha, beta, gamma值（分别对应绕z, x, y轴的旋转角度）
+  const alpha = event.alpha; // 绕z轴旋转
+  const beta = event.beta;   // 绕x轴旋转
+  const gamma = event.gamma; // 绕y轴旋转
+
+  // 将设备的旋转角度映射到画布的偏移量
+  // alpha (0-360°) 映射到 -maxOffset 到 +maxOffset
+  offsetX = (gamma / 90) * maxOffset; // gamma 值控制x轴偏移
+  offsetY = (beta / 90) * maxOffset;  // beta 值控制y轴偏移
+});
+
 // 开始动画
 drawMatrix();
 
@@ -122,3 +137,4 @@ window.addEventListener('orientationchange', () => {
   resizeCanvasBackGrund();
   updateMatrixSize();
 });
+

@@ -215,7 +215,7 @@ async function OpeWebSite() {
   });
 
   Progress.style.color = 'white'
-  Progress.style.fontSize = '25vh'
+  Progress.style.fontSize = '15vw'
   Progress.innerHTML = "Welcome!"
 
   await gsap.to(Progress, {
