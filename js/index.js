@@ -188,22 +188,11 @@ async function OpeWebSite() {
     })
   ]);
 
-  await gsap.to(Progress, {
-    duration: 0.75,
-    opacity: 1,
-    ease: "expo.inOut",
-    width: '45vw',
-  });
-
-  // 循环的宽度动画
-  const widthAnimation = gsap.fromTo(Progress, {
-    width: '45vw'  // 初始宽度
-  }, {
-    width: '55vw',  // 结束宽度
-    duration: 1.35,  // 动画持续时间
+  // 宽度动画
+  const widthAnimation = gsap.to(Progress, {
+    width: '110vw',  // 结束宽度
+    duration: 10,  // 动画持续时间
     ease: "expo.inOut",  // 缓动效果
-    repeat: -1,  // 无限循环
-    yoyo: true,  // 往返效果
     paused: false   // 初始时不暂停
   });
 
