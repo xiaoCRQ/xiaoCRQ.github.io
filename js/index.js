@@ -190,8 +190,8 @@ async function OpeWebSite() {
 
   // 宽度动画
   const widthAnimation = gsap.to(Progress, {
-    width: '110vw',  // 结束宽度
-    duration: 5,  // 动画持续时间
+    width: '90vw',  // 结束宽度
+    duration: 7.5,  // 动画持续时间
     ease: "expo.inOut",  // 缓动效果
     paused: false   // 初始时不暂停
   });
