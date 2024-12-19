@@ -86,7 +86,7 @@ function createEmoji(worldId, size, delay) {
     const body = Bodies.circle(x, y, size / 2, {
       render: {
         sprite: {
-          texture: `data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"${size}\" height=\"${size}\" viewBox=\"0 0 110 110\"><text y=\".9em\" font-size=\"90\">${emoji}</text></svg>`,
+          texture: `data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"${size}\" height=\"${size}\" viewBox=\"0 0 105 105\"><text y=\".9em\" font-size=\"90\">${emoji}</text></svg>`,
           xScale: 1,
           yScale: 1
         }
