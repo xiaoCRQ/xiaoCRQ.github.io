@@ -163,7 +163,7 @@ function init() {
 
     // 在物理世界中创建 N 个 Emoji
     for (let i = 0; i < 35; i++) {
-      const size = 50 + Math.random() * 30;  // 随机大小
+      const size = vhToPx(8) + Math.random() * vhToPx(5);  // 随机大小
       const delay = Math.random() * 10000;  // 随机最大延时
       createEmoji('Emoji', size, delay);  // 生成位置在屏幕上方，且具有随机延时
     }

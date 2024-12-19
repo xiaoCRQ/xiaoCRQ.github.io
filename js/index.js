@@ -1,3 +1,8 @@
+// 将vh单位转换为像素
+function vhToPx(vh) {
+  return (vh * window.innerHeight) / 100;
+}
+
 function isMobileDevice() {
   return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|webOS/i.test(navigator.userAgent);
 }

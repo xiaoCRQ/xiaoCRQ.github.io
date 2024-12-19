@@ -36,10 +36,6 @@ updateMatrixSize();
 let xOffset = 0;
 const speed = 0; // 每帧移动的vh单位数
 
-// 将vh单位转换为像素
-function vhToPx(vh) {
-  return (vh * window.innerHeight) / 100;
-}
 
 // 绘制小球
 function drawBall(x, y, isMouseEffect) {
