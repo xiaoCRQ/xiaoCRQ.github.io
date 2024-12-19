@@ -87,8 +87,8 @@ button {
 .Nav_Options {
   color: #FFFFFF;
   /*margin: 0 1vw;*/
-  margin-left: 1vh;
   height: 3vh;
+  width: 9vh;
   font-size: 2vh;
 }
 
@@ -145,11 +145,11 @@ button {
   /* 垂直居中对齐 */
   justify-content: center;
   /* 水平居中对齐 */
+  pointer-events: none;
 }
 
 #Anime {
   background-color: rgba(0, 0, 0, 0);
-  pointer-events: none;
   z-index: 1;
 }
 
@@ -187,7 +187,6 @@ button {
   align-items: center;
   justify-content: center;
   margin: 0;
-  pointer-events: auto;
 }
 
 .Page_Level {

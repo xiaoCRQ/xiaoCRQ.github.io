@@ -93,6 +93,9 @@ function drawMatrix() {
 
 // 鼠标移动事件监听
 window.addEventListener('mousemove', (event) => {
+
+  if (isMobileDevice()) return;
+
   const maxOffset = 50; // 最大偏移量
   mouseX = event.clientX;
   mouseY = event.clientY;
@@ -113,8 +116,8 @@ window.addEventListener('deviceorientation', (event) => {
 
   // 将设备的旋转角度映射到画布的偏移量
   // alpha (0-360°) 映射到 -maxOffset 到 +maxOffset
-  offsetX = (gamma / 90) * maxOffset; // gamma 值控制x轴偏移
-  offsetY = (beta / 90) * maxOffset;  // beta 值控制y轴偏移
+  offsetX = (gamma / 90) * maxOffset * 2; // gamma 值控制x轴偏移
+  offsetY = (beta / 90) * maxOffset * 2;  // beta 值控制y轴偏移
 });
 
 // 开始动画

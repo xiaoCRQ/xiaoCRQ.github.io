@@ -11,6 +11,6 @@
   /* 水平居中 */
   z-index: 1;
   transform: translateY(100vh);
-  pointer-events: auto;
+  pointer-events: none;
   color: white;
 }

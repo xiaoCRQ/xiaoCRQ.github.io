@@ -116,7 +116,7 @@ async function NavAnime() {
         duration: 0.75
       });
 
-      if (ElementIDLast && ElementIDLast != "Home_Resource") {
+      if (ElementIDLast && ElementIDLast) {
         NavPage(ElementIDLast, false);
         setTimeout(() => {
           NavPage(ElementIDNew);
