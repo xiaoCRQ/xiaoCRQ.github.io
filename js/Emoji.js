@@ -77,8 +77,9 @@ function createEmoji(worldId, size, delay) {
   const emoji = emojis[Math.floor(Math.random() * emojis.length)];
 
   // 设置生成位置：将 y 坐标设置为画布上方 (负值)，确保元素从上方进入
-  const x = Math.random() * physicsWorlds[worldId].render.options.width;
-  const y = -size;  // 设置在屏幕上方未显示区域，y = -size 确保它从上方进入画面
+  const x = Math.random() * physicsWorlds[worldId].render.options.width; 
+  const y = Math.random() * physicsWorlds[worldId].render.options.height;
+  // const y = -size;  // 设置在屏幕上方未显示区域，y = -size 确保它从上方进入画面
 
   // 延迟创建 Emoji
   setTimeout(() => {
