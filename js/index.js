@@ -223,11 +223,11 @@ async function OpeWebSite() {
     width: '100vw',
     height: '100vh',
     color: 'white',
-    fontSize: '10vw',
+    fontSize: '14vw',
     borderRadius: 0,
   })
 
-  Progress.innerHTML = "你好，陌生人！"
+  Progress.innerHTML = "你好"
 
   await gsap.to(Progress, {
     duration: 1,

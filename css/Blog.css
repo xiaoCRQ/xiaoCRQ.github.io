@@ -11,6 +11,25 @@
   /* 水平居中 */
   z-index: 1;
   transform: translateY(100vh);
-  pointer-events: auto;
+}
+
+#Blog_Page,
+#Blog_Nav {
+  height: 85vh;
   background-color: white;
+  border-radius: 5vh;
+  pointer-events: auto;
+  color: black;
+}
+
+#Blog_Nav {
+  margin-left: 1vw;
+  margin-right: 1vw;
+  width: 27vw;
+}
+
+
+#Blog_Page {
+  width: 70vw;
+  margin-right: 1vw;
 }

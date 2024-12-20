@@ -6,6 +6,7 @@
 @import url('Blog.css');
 @import url('Github.css');
 @import url('Thanks.css');
+@import url('Markdown.css');
 
 html {
   cursor: none;
@@ -47,46 +48,26 @@ button {
 
 /*--------------------------------*/
 /* 顶部导航样式 */
-#Nav_Main {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 15vh;
-  width: 100vw;
-  display: flex;
-  flex-direction: column;
-  /* 设置为垂直排列 */
-  /*align-items: center;*/
-  align-items: flex-start;
-  /* 子元素左对齐 */
-  /*justify-content: center;*/
-  /* 水平居中 */
-  z-index: 1;
-  pointer-events: none;
-  /* 不影响其他元素的交互 */
-}
 
 /* 导航按钮 */
 #Nav_Button {
+  position: fixed;
+  top: 2vh;
+  right: 2vh;
+  z-index: 1;
   border-radius: 1.5vh;
   height: 5vh;
   width: 5vh;
   display: flex;
   transform: translateY(-10vh);
-  /* 添加水平居中效果 */
-  /*align-items: center;*/
   justify-content: center;
   pointer-events: auto;
-  background-color: black;
-  margin-left: auto;
-  margin-right: 2vh;
-  margin-top: 2vh;
-  /* 将该元素推到右侧 */
+  background-color: white;
 }
 
 .Nav_Options {
-  color: #FFFFFF;
-  margin: 0 0.5vh;
+  color: black;
+  /*margin: 0 0.5vh;*/
   height: 3vh;
   width: 8vh;
   font-size: 2vh;
@@ -112,7 +93,7 @@ button {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: black;
+  background-color: white;
 }
 
 #Nav_Line_1,
@@ -121,7 +102,7 @@ button {
   width: 2.5vh;
   border-radius: 1vh;
   margin: 0.475vh;
-  background-color: #FFFFFF;
+  background-color: black;
 }
 
 

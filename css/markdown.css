@@ -1,0 +1,50 @@
+.MarkDown {
+  text-align: left;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+}
+
+/* 隐藏滚动条 */
+.MarkDown::-webkit-scrollbar {
+  display: none;
+  /* 隐藏所有的滚动条 */
+}
+
+/* 段落 */
+.MarkDown p {}
+
+/* 标题样式 */
+.MarkDown h1 {}
+
+.MarkDown h2 {}
+
+.MarkDown h3 {}
+
+.MarkDown h4 {}
+
+.MarkDown h5 {}
+
+.MarkDown h6 {}
+
+/* 图片样式 */
+.MarkDown img {
+  max-width: 100%;
+  /* 图片最大宽度为100% */
+  height: auto;
+  /* 高度自适应 */
+  display: block;
+  /* 块级元素，避免底部空隙 */
+}
+
+/* 列表样式 */
+.MarkDown ul,
+.MarkDown ol {}
+
+.MarkDown li {}
+
+/* 引用样式 */
+.MarkDown blockquote {}
+
+/* 水平线样式 */
+.MarkDown hr {}

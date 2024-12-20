@@ -94,22 +94,58 @@ async function loadMultipleFiles(dataArray) {
 
 async function loadConfig(path) {
   try {
-    const response = await fetch(path);  // 读取配置文件
+    const response = await fetch(path); // 从指定路径获取配置文件
     if (!response.ok) {
       throw new Error(`网络错误：${response.status}`);
     }
 
     const data = await response.json(); // 解析 JSON 数据
 
-    // 将配置文件内容存入 ConfigData 对象
-    ConfigData.FileLoadConfig = data.FileLoadConfig || []; // 文件加载配置
+    // 初始化配置对象
+    ConfigData.FileLoadConfig = [];
+    ConfigData.MarkdownInfo = [];
     ConfigData.Language = data.Language || 'en'; // 默认语言为 'en'
 
+    // 处理需要加载的内容
+    if (Array.isArray(data.FileLoadConfig)) {
+      data.FileLoadConfig.forEach((file) => {
+        if (file.id && file.path) {
+          ConfigData.FileLoadConfig.push({
+            id: file.id,   // 要加载内容的元素 ID
+            path: file.path, // 对应的文件路径
+          });
+        } else {
+          console.warn("文件加载配置无效:", file);
+        }
+      });
+    } else {
+      console.warn("FileLoadConfig 配置未找到或格式无效");
+    }
+
+    // 处理 Markdown 文件信息
+    if (Array.isArray(data.MarkdownFiles)) {
+      data.MarkdownFiles.forEach((file) => {
+        if (file.title && file.path) {
+          ConfigData.MarkdownInfo.push({
+            title: file.title, // Markdown 文档的标题
+            path: file.path,   // Markdown 文档的路径
+          });
+        } else {
+          console.warn("Markdown 文件信息无效:", file);
+        }
+      });
+    } else {
+      console.warn("MarkdownFiles 配置未找到或格式无效");
+    }
+
     // 输出加载的配置
-    console.log("文件加载配置:", ConfigData.FileLoadConfig); // 输出文件加载配置
-    console.log("语言配置:", ConfigData.Language);           // 输出语言配置
+    console.log("需要加载的文件配置:", ConfigData.FileLoadConfig); // 输出需要加载的文件配置
+    console.log("Markdown 文件信息:", ConfigData.MarkdownInfo);    // 输出 Markdown 文件信息
+    console.log("语言配置:", ConfigData.Language);                 // 输出语言配置
 
   } catch (error) {
     console.error("读取配置文件时出错:", error);
   }
 }
+
+
