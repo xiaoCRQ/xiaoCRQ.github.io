@@ -16,10 +16,10 @@
 #Blog_Page,
 #Blog_Nav {
   height: 85vh;
-  background-color: white;
   border-radius: 5vh;
   pointer-events: auto;
   color: black;
+  background-color: white;
 }
 
 #Blog_Nav {

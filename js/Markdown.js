@@ -13,6 +13,7 @@ async function renderMarkdownById(id) {
     // 使用 marked 库将 Markdown 内容解析为 HTML
     // 注意，这里使用的是 marked.parse() 方法
     element.innerHTML = marked.parse(markdownContent);
+    hljs.highlightAll();
   } catch (error) {
     // 捕获错误并输出到控制台
     console.error('渲染 Markdown 时出错：', error);

@@ -55,6 +55,79 @@ function initWorld(elementId, options = {}) {
   return physicsWorlds[elementId];
 }
 
+
+function createDeleteArea(worldId, x, y, width, height) {
+  const world = physicsWorlds[worldId]?.world;
+  if (!world) return null;
+
+  const deleteArea = Bodies.rectangle(x, y, width, height, {
+    isStatic: true,
+    render: { fillStyle: 'red', opacity: 0.3 }
+  });
+
+  Composite.add(world, deleteArea);
+
+  Events.on(physicsWorlds[worldId].engine, 'collisionStart', function (event) {
+    const pairs = event.pairs;
+
+    pairs.forEach(pair => {
+      const bodyA = pair.bodyA;
+      const bodyB = pair.bodyB;
+
+      // 检查是否有 null 值
+      if (bodyA && bodyB && (bodyA === deleteArea || bodyB === deleteArea)) {
+        const otherBody = bodyA === deleteArea ? bodyB : bodyA;
+
+        // 删除碰撞的其他物体
+        Composite.remove(world, otherBody);
+      }
+    });
+  });
+
+  return deleteArea;
+}
+
+
+// 删除删除区域
+function removeDeleteArea(worldId, deleteArea) {
+  const world = physicsWorlds[worldId]?.world;
+  if (!world || !deleteArea) return;
+
+  // 从物理世界中移除删除区域
+  Composite.remove(world, deleteArea);
+}
+
+// 预操作函数：创建或删除屏幕顶部或底部的删除区域
+function preOperateDeleteArea(worldId, direction = true, action = true) {
+  const world = physicsWorlds[worldId]?.world;
+  const render = physicsWorlds[worldId]?.render;
+  if (!world || !render) return;
+
+  const width = render.options.width;
+  const height = render.options.height;
+
+  let x = width / 2;
+  let y = direction === true ? -10 : height + 10;
+  let areaHeight = 1;
+  let areaWidth = width;
+
+  if (action) {
+    return createDeleteArea(worldId, x, y, areaWidth, areaHeight);
+  } else {
+    const bodies = Composite.allBodies(world);
+    bodies.forEach(body => {
+      if (body && body.position) {
+        // 检查位置是否匹配删除区域的中心点
+        if (Math.abs(body.position.x - x) < areaWidth / 2 &&
+          Math.abs(body.position.y - y) < areaHeight / 2) {
+          removeDeleteArea(worldId, body);
+        }
+      }
+    });
+  }
+}
+
+
 // 创建物理墙
 function createWall(worldId, x, y, width, height, options = {}) {
   const world = physicsWorlds[worldId]?.world;
@@ -70,15 +143,18 @@ function createWall(worldId, x, y, width, height, options = {}) {
 }
 
 // 创建Emoji物理元素
-function createEmoji(worldId, size, delay) {
+async function createEmoji(worldId, x, y, size, delay) {
   const world = physicsWorlds[worldId]?.world;
   if (!world) return null;
 
   const emoji = emojis[Math.floor(Math.random() * emojis.length)];
 
   // 设置生成位置：将 y 坐标设置为画布上方 (负值)，元素将从上方进入
-  const x = Math.random() * physicsWorlds[worldId].render.options.width;
-  const y = Math.random() * physicsWorlds[worldId].render.options.height;
+  if (x === 0) x = Math.random() * physicsWorlds[worldId].render.options.width;
+  else x = x * physicsWorlds[worldId].render.options.width;
+
+  if (y === 0) y = Math.random() * physicsWorlds[worldId].render.options.height;
+  else y = y * physicsWorlds[worldId].render.options.height;
   // const y = -size;
 
   // 延迟创建 Emoji
@@ -101,6 +177,22 @@ function createEmoji(worldId, size, delay) {
     // 将新创建的 Emoji 物体添加到世界中
     Composite.add(world, body);
   }, delay);  // 使用随机延迟
+}
+
+
+async function createEmojiS(count, Size, SizeRandom, x, y, Delay) {
+
+  // 在物理世界中创建 N 个 Emoji
+  for (let i = 0; i < count; i++) {
+    let size
+    if (isMobileDevice())
+      size = vhToPx(Size) + Math.random() * vhToPx(SizeRandom);  // 随机大小
+    else
+      size = vwToPx(Size) + Math.random() * vwToPx(SizeRandom);  // 随机大小
+    const delay = Math.random() * Delay;  // 随机最大延时
+    createEmoji('Emoji', x, y, size, delay);  // 生成位置在屏幕上方，且具有随机延时
+  }
+
 }
 
 
@@ -200,7 +292,7 @@ function applyUpwardForceToTop(worldId) {
   const forceX = 0;
   const forceY = -0.05;  // 向上的推力
 
-  applyForce(worldId, startX, startY, endX, endY, forceX, forceY, 500, width / 2);
+  applyForce(worldId, startX, startY, endX, endY, forceX, forceY, 500, width);
 }
 
 // 手机摇一摇功能
@@ -277,6 +369,7 @@ function clearAllWorlds() {
   });
 }
 
+
 // 初始化函数
 function init() {
   // 清除所有物理世界和元素
@@ -289,16 +382,7 @@ function init() {
     const { render } = specialWorld;
     createSpecialPhysicsArea('Emoji');
 
-    // 在物理世界中创建 N 个 Emoji
-    for (let i = 0; i < 35; i++) {
-      let size
-      if (isMobileDevice())
-        size = vhToPx(4) + Math.random() * vhToPx(4);  // 随机大小
-      else
-        size = vwToPx(4) + Math.random() * vwToPx(4);  // 随机大小
-      const delay = Math.random() * 0;  // 随机最大延时
-      createEmoji('Emoji', size, delay);  // 生成位置在屏幕上方，且具有随机延时
-    }
+    createEmojiS(35, 4, 4, 0, -1, 0)
 
     setGravity('Emoji', 0, 0.025);  // 设置适当的重力
   }
