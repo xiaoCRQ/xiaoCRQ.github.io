@@ -78,7 +78,7 @@ function createEmoji(worldId, size, delay) {
 
   // 设置生成位置：将 y 坐标设置为画布上方 (负值)，确保元素从上方进入
   const x = Math.random() * physicsWorlds[worldId].render.options.width;
-  const y = -size;  // 设置在屏幕上方未显示区域，y = -size 确保它从上方进入画面
+  const y = Math.random() * physicsWorlds[worldId].render.options.height;
 
   // 延迟创建 Emoji
   setTimeout(() => {
@@ -93,10 +93,15 @@ function createEmoji(worldId, size, delay) {
       restitution: 0.8  // 增加一些反弹效果
     });
 
+    // 设置随机旋转角度
+    const randomAngle = Math.random() * Math.PI * 2; // 随机角度 [0, 2π)
+    Body.setAngle(body, randomAngle);
+
     // 将新创建的 Emoji 物体添加到世界中
     Composite.add(world, body);
   }, delay);  // 使用随机延迟
 }
+
 
 // 创建特殊物理区域
 function createSpecialPhysicsArea(worldId, offset = 100, allowHorizontal = true, allowVertical = true) {
@@ -142,6 +147,83 @@ function setGravity(worldId, x, y) {
   world.gravity.y = y;
 }
 
+
+// 施加推力
+function applyForce(worldId, x, y, forceX, forceY) {
+  const world = physicsWorlds[worldId]?.world;
+  if (!world) return;
+
+  const bodies = Composite.allBodies(world);
+  bodies.forEach(body => {
+    // 检查是否在指定范围内
+    const distance = Vector.magnitude(Vector.sub(body.position, { x, y }));
+    if (distance < 100) { // 假定100为作用范围
+      Body.applyForce(body, { x: body.position.x, y: body.position.y }, { x: forceX, y: forceY });
+    }
+  });
+}
+
+// 手机摇一摇功能
+function initShakeDetection() {
+  let lastShakeTime = 0;
+
+  window.addEventListener('devicemotion', event => {
+    const acceleration = event.accelerationIncludingGravity;
+    if (!acceleration) return;
+
+    const shakeStrength = Math.abs(acceleration.x) + Math.abs(acceleration.y) + Math.abs(acceleration.z);
+    const now = Date.now();
+
+    if (shakeStrength > 20 && now - lastShakeTime > 500) { // 摇动阈值和冷却时间
+      lastShakeTime = now;
+
+      // 遍历所有物理世界，随机施加冲击力
+      Object.keys(physicsWorlds).forEach(worldId => {
+        const world = physicsWorlds[worldId]?.world;
+        if (!world) return;
+
+        const bodies = Composite.allBodies(world);
+        bodies.forEach(body => {
+          const randomForce = Vector.create((Math.random() - 0.5) * 3.5, (Math.random() - 0.5) * 3.5);
+          Body.applyForce(body, body.position, randomForce);
+        });
+      });
+    }
+  });
+}
+
+// 添加按键控制功能
+function initKeyboardControls() {
+  window.addEventListener('keydown', event => {
+    if (event.code === 'Space') {
+      // 空格键：随机施加冲击力，与手机摇一摇相同
+      Object.keys(physicsWorlds).forEach(worldId => {
+        const world = physicsWorlds[worldId]?.world;
+        if (!world) return;
+
+        const bodies = Composite.allBodies(world);
+        bodies.forEach(body => {
+          const randomForce = Vector.create((Math.random() - 0.5) * 3.5, (Math.random() - 0.5) * 3.5);
+          Body.applyForce(body, body.position, randomForce);
+        });
+      });
+    }
+  });
+
+  window.addEventListener('wheel', event => {
+    Object.keys(physicsWorlds).forEach(worldId => {
+      const world = physicsWorlds[worldId]?.world;
+      if (!world) return;
+
+      const bodies = Composite.allBodies(world);
+      const forceY = event.deltaY < 0 ? 0.025 : -0.025; // 滚轮向上为负值，向下为正值
+      bodies.forEach(body => {
+        Body.applyForce(body, body.position, { x: 0, y: forceY });
+      });
+    });
+  });
+}
+
 // 初始化函数
 function init() {
   // 清除所有物理世界和元素
@@ -163,13 +245,21 @@ function init() {
 
     // 在物理世界中创建 N 个 Emoji
     for (let i = 0; i < 35; i++) {
-      const size = vhToPx(8) + Math.random() * vhToPx(5);  // 随机大小
-      const delay = Math.random() * 10000;  // 随机最大延时
+      let size
+      if (isMobileDevice())
+        size = vhToPx(4) + Math.random() * vhToPx(4);  // 随机大小
+      else
+        size = vwToPx(4) + Math.random() * vwToPx(4);  // 随机大小
+      const delay = Math.random() * 0;  // 随机最大延时
       createEmoji('Emoji', size, delay);  // 生成位置在屏幕上方，且具有随机延时
     }
 
     setGravity('Emoji', 0, 0.025);  // 设置适当的重力
   }
+
+  // 初始化手机摇一摇功能
+  if (isMobileDevice())
+    initShakeDetection();
 }
 
 // 窗口大小调整时重新初始化
@@ -205,3 +295,4 @@ window.addEventListener('resize', () => {
 // 当DOM加载完成时初始化
 // document.addEventListener('DOMContentLoaded', init);
 init()
+initKeyboardControls()
