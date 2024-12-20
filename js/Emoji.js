@@ -76,9 +76,10 @@ function createEmoji(worldId, size, delay) {
 
   const emoji = emojis[Math.floor(Math.random() * emojis.length)];
 
-  // 设置生成位置：将 y 坐标设置为画布上方 (负值)，确保元素从上方进入
+  // 设置生成位置：将 y 坐标设置为画布上方 (负值)，元素将从上方进入
   const x = Math.random() * physicsWorlds[worldId].render.options.width;
   const y = Math.random() * physicsWorlds[worldId].render.options.height;
+  // const y = -size;
 
   // 延迟创建 Emoji
   setTimeout(() => {
@@ -147,20 +148,59 @@ function setGravity(worldId, x, y) {
   world.gravity.y = y;
 }
 
-
-// 施加推力
-function applyForce(worldId, x, y, forceX, forceY) {
+// 施加推力，支持起始点、时间和范围控制
+function applyForce(worldId, startX, startY, endX, endY, forceX, forceY, duration = 1000, range = 100) {
   const world = physicsWorlds[worldId]?.world;
   if (!world) return;
 
   const bodies = Composite.allBodies(world);
-  bodies.forEach(body => {
-    // 检查是否在指定范围内
-    const distance = Vector.magnitude(Vector.sub(body.position, { x, y }));
-    if (distance < 100) { // 假定100为作用范围
-      Body.applyForce(body, { x: body.position.x, y: body.position.y }, { x: forceX, y: forceY });
+  const startTime = Date.now();
+
+  // 定时施加推力，直到时间到达设定的持续时间
+  const interval = setInterval(() => {
+    const elapsedTime = Date.now() - startTime;
+    if (elapsedTime > duration) {
+      clearInterval(interval); // 超过持续时间后停止施加推力
+      return;
     }
-  });
+
+    // 计算当前位置的推力作用点
+    const progress = elapsedTime / duration;
+    const currentX = startX + (endX - startX) * progress;
+    const currentY = startY + (endY - startY) * progress;
+
+    bodies.forEach(body => {
+      // 计算物体与作用点 (currentX, currentY) 的距离
+      const distance = Vector.magnitude(Vector.sub(body.position, { x: currentX, y: currentY }));
+
+      // 只对距离小于作用范围的物体施加推力
+      if (distance < range) {
+        // 施加推力
+        const force = Vector.create(forceX, forceY);
+        Body.applyForce(body, body.position, force);
+      }
+    });
+  }, 1000 / 60);  // 每秒更新60次
+}
+
+// 屏幕底部中心施加向上的推力，持续一秒，推力作用范围为100像素
+function applyUpwardForceToTop(worldId) {
+  const width = physicsWorlds[worldId]?.render.options.width;
+  const height = physicsWorlds[worldId]?.render.options.height;
+
+  // 屏幕底部中心坐标
+  const startX = width / 2;
+  const startY = height;
+
+  // 屏幕顶部中心坐标
+  const endX = width / 2;
+  const endY = 0;
+
+  // 向上的推力
+  const forceX = 0;
+  const forceY = -0.05;  // 向上的推力
+
+  applyForce(worldId, startX, startY, endX, endY, forceX, forceY, 500, width / 2);
 }
 
 // 手机摇一摇功能
@@ -184,7 +224,7 @@ function initShakeDetection() {
 
         const bodies = Composite.allBodies(world);
         bodies.forEach(body => {
-          const randomForce = Vector.create((Math.random() - 0.5) * 3.5, (Math.random() - 0.5) * 3.5);
+          const randomForce = Vector.create((Math.random() - 0.5) * 5, (Math.random() - 0.5) * 5);
           Body.applyForce(body, body.position, randomForce);
         });
       });
@@ -224,9 +264,11 @@ function initKeyboardControls() {
   });
 }
 
-// 初始化函数
-function init() {
-  // 清除所有物理世界和元素
+
+
+
+// 清除所有物理世界的元素和配置
+function clearAllWorlds() {
   Object.keys(physicsWorlds).forEach(worldId => {
     const { world, render } = physicsWorlds[worldId] || {};
     if (world) Composite.clear(world);
@@ -235,6 +277,12 @@ function init() {
       render.canvas.height = 0;
     }
   });
+}
+
+// 初始化函数
+function init() {
+  // 清除所有物理世界和元素
+  clearAllWorlds()
 
   // 初始化物理世界（右侧）
   const specialWorld = initWorld('Emoji', { background: 'rgba(0, 0, 0, 0)' });

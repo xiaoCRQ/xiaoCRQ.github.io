@@ -55,6 +55,7 @@ async function NavAnime() {
   });
 
   Nav_Line.addEventListener('click', () => {
+
     if (!isExpanded) {
       isExpanded = true;
       Nav_Option.style.pointerEvents = 'auto'
@@ -125,6 +126,8 @@ async function NavAnime() {
         ease: "power3.inOut",
         duration: 0.75
       });
+
+      applyUpwardForceToTop('Emoji')
 
       if (ElementIDLast && ElementIDLast) {
         NavPage(ElementIDLast, false);
@@ -248,12 +251,17 @@ async function OpeWebSite() {
     y: '0vh',
   })
 
+  setTimeout(() => {
+    applyUpwardForceToTop('Emoji')
+  }, 400);
+
   await gsap.to(Progress, {
     duration: 1,
     ease: "expo.inOut",
     color: "white",
     y: '-100vh',
   });
+
 
   AnimeContainer.removeChild(Progress);
 }
