@@ -214,7 +214,7 @@ function initShakeDetection() {
     const shakeStrength = Math.abs(acceleration.x) + Math.abs(acceleration.y) + Math.abs(acceleration.z);
     const now = Date.now();
 
-    if (shakeStrength > 20 && now - lastShakeTime > 500) { // 摇动阈值和冷却时间
+    if (shakeStrength > 100 && now - lastShakeTime > 100) { // 摇动阈值和冷却时间
       lastShakeTime = now;
 
       // 遍历所有物理世界，随机施加冲击力
