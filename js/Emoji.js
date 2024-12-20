@@ -265,8 +265,6 @@ function initKeyboardControls() {
 }
 
 
-
-
 // 清除所有物理世界的元素和配置
 function clearAllWorlds() {
   Object.keys(physicsWorlds).forEach(worldId => {

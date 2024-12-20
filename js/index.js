@@ -153,17 +153,10 @@ async function OpeWebSite() {
   const AnimeContainer = document.getElementById('Anime');
   AnimeContainer.style.backgroundColor = '#FFFFFF'
 
-  // 创建 Square_Up 和 Square_Down 元素
-  const Square_Up = document.createElement('div');
-  Square_Up.id = 'Square_Up';
-  const Square_Down = document.createElement('div');
-  Square_Down.id = 'Square_Down';
+  const Square = document.createElement('div');
+  Square.id = 'Square';
   const Progress = document.createElement('div');
   Progress.id = 'Progress';
-
-  Square_Up.style.height = Square_Down.style.height = '50%';
-  Square_Up.style.width = Square_Down.style.width = '100%';
-  Square_Up.style.backgroundColor = Square_Down.style.backgroundColor = 'black';
 
   Progress.className = 'Page'
   Progress.style.height = '0vh';
@@ -176,7 +169,7 @@ async function OpeWebSite() {
   AnimeContainer.appendChild(Progress);
 
   await loadFileContent('Progress', 'html/Icon.html')
-  const Icon = document.getElementById('Icon')
+  let Icon = document.getElementById('Icon')
 
   await gsap.to(Progress, {
     duration: 0.75,
@@ -186,7 +179,6 @@ async function OpeWebSite() {
     height: '35vw',
   });
 
-  // 然后运行 Square_Up 和 Square_Down 的第一组 gsap 动画
   await Promise.all([
     gsap.to(Progress, {
       duration: 1,
@@ -213,7 +205,6 @@ async function OpeWebSite() {
     paused: false   // 初始时不暂停
   });
 
-
   // 等待 loadMultipleFiles 执行完毕
   await loadMultipleFiles(ConfigData.FileLoadConfig)
 
@@ -224,28 +215,51 @@ async function OpeWebSite() {
     duration: 1,
     ease: "expo.in",
     width: '110vw',
-    height: '0vh'
+    height: '0vh',
   });
 
-  Progress.style.color = 'white'
-  Progress.style.fontSize = '15vw'
-  Progress.innerHTML = "Welcome!"
+  gsap.set(Progress, {
+    y: '100vh',
+    width: '100vw',
+    height: '100vh',
+    color: 'white',
+    fontSize: '10vw',
+    borderRadius: 0,
+  })
+
+  Progress.innerHTML = "你好，陌生人！"
 
   await gsap.to(Progress, {
     duration: 1,
     ease: "expo.inOut",
-    color: "black",
+    y: '0vh',
   });
 
-  await gsap.to(Progress, {
-    duration: 1,
-    ease: "expo.inOut",
-    color: "white",
-    height: '100vh'
-  });
+  Square.className = 'Page'
+  Square.style.position = 'fixed';
+  Square.style.top = Square.style.left = 0;
+  Square.style.zIndex = 1;
+
+  AnimeContainer.appendChild(Square);
+  await loadFileContent('Square', 'html/Icon.html')
+  Icon = document.getElementById('Icon')
+  Icon.style.mixBlendMode = 'exclusion'
+  Icon.style.width = '45%'
+  Square.style.backgroundColor = 'white';
+
+  await gsap.fromTo(Square, {
+    y: '100vh'
+  }, {
+    duration: 0.5,
+    ease: "expo.in",
+    y: '0vh',
+  })
+
+  AnimeContainer.removeChild(Progress);
 
   const Home = document.getElementById('Home_Resource');
-  AnimeContainer.style.backgroundColor = 'rgba(0,0,0,0)'
+
+  AnimeContainer.style.backgroundColor = 'rgba(255,255,255,0)'
 
   gsap.set(Home, {
     y: '0vh',
@@ -253,17 +267,15 @@ async function OpeWebSite() {
 
   setTimeout(() => {
     applyUpwardForceToTop('Emoji')
-  }, 400);
+  }, 0);
 
-  await gsap.to(Progress, {
-    duration: 1,
-    ease: "expo.inOut",
-    color: "white",
-    y: '-100vh',
-  });
+  await gsap.to(Square, {
+    duration: 0.5,
+    ease: "expo.out",
+    y: '-100vh'
+  })
 
-
-  AnimeContainer.removeChild(Progress);
+  AnimeContainer.removeChild(Square);
 }
 
 async function CursorDefine() {

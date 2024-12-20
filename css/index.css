@@ -86,9 +86,9 @@ button {
 
 .Nav_Options {
   color: #FFFFFF;
-  /*margin: 0 1vw;*/
+  margin: 0 0.5vh;
   height: 3vh;
-  width: 9vh;
+  width: 8vh;
   font-size: 2vh;
 }
 
