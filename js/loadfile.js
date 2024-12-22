@@ -83,7 +83,7 @@ async function loadMultipleFiles(dataArray) {
 }
 
 // 处理 FileLoadConfig 配置部分
-function processFileLoadConfig(fileLoadConfig) {
+async function processFileLoadConfig(fileLoadConfig) {
   if (Array.isArray(fileLoadConfig)) {
     fileLoadConfig.forEach(file => {
       if (file.id && file.path) {
@@ -101,7 +101,7 @@ function processFileLoadConfig(fileLoadConfig) {
 }
 
 // 处理 MarkdownFiles 配置部分
-function processMarkdownFiles(markdownFiles) {
+async function processMarkdownFiles(markdownFiles) {
   if (Array.isArray(markdownFiles)) {
     markdownFiles.forEach(file => {
       if (file.title && file.path) {
@@ -119,20 +119,29 @@ function processMarkdownFiles(markdownFiles) {
 }
 
 // 处理 PhotoConfig 配置部分
-function processPhotoConfig(photoConfig) {
+async function processPhotoConfig(photoConfig) {
   if (Array.isArray(photoConfig)) {
     ConfigData.PhotoConfig = photoConfig.map(path => {
       if (typeof path === 'string') {
-        return path;  // 直接存储路径字符串
+        const img = new Image();
+        img.src = path;  // 将路径设置为图片源
+        img.onload = () => {
+          console.log(`图片加载成功: ${path}`);
+        };
+        img.onerror = (error) => {
+          console.warn(`图片加载失败: ${path}`, error);
+        };
+        return img;  // 返回图片对象
       } else {
         console.warn("无效的照片配置路径:", path);
         return null; // 无效路径忽略
       }
-    }).filter(path => path !== null);  // 过滤掉无效路径
+    }).filter(img => img !== null);  // 过滤掉无效路径
   } else {
     console.warn("PhotoConfig 配置无效或未找到");
   }
 }
+
 
 function waitForMediaLoaded(ID, MaxDelay = 10000) {
   return new Promise((resolve, reject) => {
@@ -187,9 +196,9 @@ async function loadConfig(path) {
     ConfigData.PhotoConfig = [];
     ConfigData.Language = config.Language || 'en';  // 默认语言为 'en'
 
-    processFileLoadConfig(config.FileLoadConfig); // 处理文件加载配置
-    processMarkdownFiles(config.MarkdownFiles);   // 处理 Markdown 文件信息
-    processPhotoConfig(config.PhotoConfig);       // 处理 Photo 配置
+    await processFileLoadConfig(config.FileLoadConfig); // 处理文件加载配置
+    await processMarkdownFiles(config.MarkdownFiles);   // 处理 Markdown 文件信息
+    await processPhotoConfig(config.PhotoConfig);       // 处理 Photo 配置
 
     // 输出加载的配置
     console.log("文件加载配置:", ConfigData.FileLoadConfig);

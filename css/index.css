@@ -88,6 +88,7 @@ code {
   justify-content: center;
   pointer-events: auto;
   background-color: white;
+  user-select: none;
 }
 
 .Nav_Options {

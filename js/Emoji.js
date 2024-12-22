@@ -13,6 +13,8 @@ const emojis = ['😀', '😂', '🤣', '😊', '😍', '🤩', '😎', '🤔', 
   '🧐',
   '😻',
 ];
+
+// 当前渲染模式
 let UseFunction_Emoji = 1
 
 // Matter.js 模块
@@ -27,7 +29,7 @@ const Engine = Matter.Engine,
   Body = Matter.Body,
   Events = Matter.Events;
 
-// 初始化物理世界
+
 function initWorld(elementId, options = {}) {
   const element = document.getElementById(elementId);
   if (!element) return null;
@@ -61,12 +63,65 @@ function initWorld(elementId, options = {}) {
     }
   });
 
+  // 存储原始宽度、高度和角度
+  const originalDimensions = new Map();
+  const originalAngles = new Map();
+
+  // 监听鼠标开始拖动事件
+  Events.on(mouseConstraint, 'startdrag', function (event) {
+    const body = event.body;
+    if (body) {
+      // 存储原始宽度、高度和角度
+      originalDimensions.set(body.id, { width: body.bounds.max.x - body.bounds.min.x, height: body.bounds.max.y - body.bounds.min.y });
+      originalAngles.set(body.id, body.angle);
+
+      // 将旋转角度归零并放大元素
+      Body.setAngle(body, 0);
+      // 放大元素
+      const scaleFactor = 2; // 放大2倍
+      Body.scale(body, scaleFactor, scaleFactor);
+    }
+  });
+
+  // 监听鼠标结束拖动事件
+  Events.on(mouseConstraint, 'enddrag', function (event) {
+    const body = event.body;
+    if (body) {
+      // 恢复原始尺寸
+      const originalDimensionsData = originalDimensions.get(body.id);
+      if (originalDimensionsData) {
+        const { width, height } = originalDimensionsData;
+
+        // 恢复为原始宽度和高度
+        const currentWidth = body.bounds.max.x - body.bounds.min.x;
+        const currentHeight = body.bounds.max.y - body.bounds.min.y;
+
+        const scaleX = width / currentWidth;
+        const scaleY = height / currentHeight;
+
+        // 按比例恢复大小
+        Body.scale(body, scaleX, scaleY);
+      }
+
+      // 恢复旋转角度
+      const originalAngle = originalAngles.get(body.id);
+      if (originalAngle !== undefined) {
+        Body.setAngle(body, originalAngle); // 恢复旋转角度
+      }
+
+      // 清除存储的原始比例和角度
+      originalDimensions.delete(body.id);
+      originalAngles.delete(body.id);
+    }
+  });
+
   Composite.add(world, mouseConstraint);
   render.mouse = mouse;
 
   physicsWorlds[elementId] = { engine, world, render, runner, mouse, mouseConstraint };
   return physicsWorlds[elementId];
 }
+
 
 
 function createDeleteArea(worldId, x, y, width, height) {
@@ -252,7 +307,7 @@ function applyUpwardForceToTop(worldId) {
   const forceX = 0;
   const forceY = -0.05;  // 向上的推力
 
-  applyForce(worldId, startX, startY, endX, endY, forceX, forceY, 500, width);
+  applyForce(worldId, startX, startY, endX, endY, forceX, forceY, 500, width * 2);
 }
 
 // 手机摇一摇功能
@@ -316,8 +371,6 @@ function initKeyboardControls() {
   });
 }
 
-
-// 清除所有物理世界的元素和配置
 function clearWorlds() {
   // 清除特殊区域和墙壁
   Object.keys(physicsWorlds).forEach(worldId => {
@@ -345,27 +398,22 @@ function clearWorlds() {
   });
 }
 
-function clearAllWorlds() {
+function WorldRefresh() {
+  clearWorlds()
+  // 重新创建特殊区域和墙壁
   Object.keys(physicsWorlds).forEach(worldId => {
-    const { world, render, runner, engine } = physicsWorlds[worldId] || {};
-    if (world) {
-      Composite.clear(world);
-      deleteSpecialArea(worldId);
-    }
+    const { render } = physicsWorlds[worldId] || {};
     if (render) {
-      Render.stop(render);
-      render.canvas.width = 0;
-      render.canvas.height = 0;
-      render.canvas.remove();
+      createSpecialPhysicsArea(worldId); // 重新创建特殊区域
     }
-    if (runner) {
-      Runner.stop(runner);
-    }
-    if (engine) {
-      Engine.clear(engine);
-    }
-    delete physicsWorlds[worldId];
   });
+
+  // 重新添加所有元素
+  if (UseFunction_Emoji === 1)
+    createEmojiS(15, 4, 4, 0, 0, 0)
+  else
+    if (UseFunction_Emoji === 2)
+      createPhotoS(15, 8, 4, 0, 0, 0)
 }
 
 
@@ -380,6 +428,9 @@ function init() {
 
     if (UseFunction_Emoji === 1)
       createEmojiS(15, 4, 4, 0, 0, 0)
+    else
+      if (UseFunction_Emoji === 2)
+        createPhotoS(15, 8, 4, 0, 0, 0)
 
     setGravity('Emoji', 0, 0.025);  // 设置适当的重力
   }
@@ -391,19 +442,7 @@ function init() {
 
 // 窗口大小调整时重新初始化
 window.addEventListener('resize', () => {
-  clearWorlds()
-  // 重新创建特殊区域和墙壁
-  Object.keys(physicsWorlds).forEach(worldId => {
-    const { render } = physicsWorlds[worldId] || {};
-    if (render) {
-      createSpecialPhysicsArea(worldId); // 重新创建特殊区域
-    }
-  });
-
-  // 重新添加所有元素
-  if (UseFunction_Emoji === 1) {
-    createEmojiS(15, 4, 4, 0, 0, 0); // 重新生成Emoji
-  }
+  WorldRefresh()
 });
 
 // 当DOM加载完成时初始化
@@ -452,6 +491,7 @@ async function createEmoji(worldId, x, y, size, delay) {
 
 
 async function createEmojiS(count, Size, SizeRandom, x, y, Delay) {
+  UseFunction_Emoji = 1
   // 在物理世界中创建 N 个 Emoji
   for (let i = 0; i < count; i++) {
     let size
@@ -467,5 +507,70 @@ async function createEmojiS(count, Size, SizeRandom, x, y, Delay) {
 // ------------------------------------------------
 // 鸣谢图册
 
+function createPhoto(worldId, x, y, width, delay) {
+  const world = physicsWorlds[worldId]?.world;
+  if (!world) return null;
+
+  // 随机选择一张图片对象
+  const photoObject = ConfigData.PhotoConfig[Math.floor(Math.random() * ConfigData.PhotoConfig.length)];
+
+  // 确保 photoObject 是有效的 <img> 对象，并获取其 src 属性
+  const photoPath = photoObject?.src;
+  if (!photoPath) {
+    console.warn("无效的图片对象，跳过创建");
+    return null;
+  }
+
+  // 设置生成位置
+  if (x === 0) x = Math.random() * physicsWorlds[worldId].render.options.width;
+  else x = x * physicsWorlds[worldId].render.options.width;
+
+  if (y === 0) y = Math.random() * physicsWorlds[worldId].render.options.height;
+  else y = y * physicsWorlds[worldId].render.options.height;
+
+  // 创建一个临时的 Image 对象来获取图片的原始尺寸
+  const img = new Image();
+  img.src = photoPath;
+
+  // 延迟创建图片
+  setTimeout(() => {
+    // 计算高度，保持原始宽高比
+    const aspectRatio = img.naturalHeight / img.naturalWidth;
+    const height = width * aspectRatio;
+
+    const body = Bodies.rectangle(x, y, width, height, {
+      render: {
+        sprite: {
+          texture: photoPath,
+          xScale: width / img.naturalWidth,
+          yScale: height / img.naturalHeight
+        }
+      },
+      restitution: 0.8,  // 增加一些反弹效果
+    });
+
+    // 设置随机旋转角度
+    const randomAngle = Math.random() * Math.PI * 2;
+    Body.setAngle(body, randomAngle);
+
+    // 将新创建的图片物体添加到世界中
+    Composite.add(world, body);
+  }, delay);
+}
+
+// 创建多个图片物理元素
+function createPhotoS(count, Size, SizeRandom, x, y, Delay) {
+  UseFunction_Emoji = 2
+  // 在物理世界中创建 N 个图片
+  for (let i = 0; i < count; i++) {
+    let size;
+    if (isMobileDevice())
+      size = vhToPx(Size) + Math.random() * vhToPx(SizeRandom);  // 随机大小
+    else
+      size = vwToPx(Size) + Math.random() * vwToPx(SizeRandom);  // 随机大小
+    const delay = Math.random() * Delay;  // 随机最大延时
+    createPhoto('Emoji', x, y, size, delay);  // 生成位置在屏幕上，且具有随机延时
+  }
+}
 
 // ------------------------------------------------

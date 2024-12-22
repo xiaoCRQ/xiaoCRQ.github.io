@@ -24,6 +24,11 @@ async function loadIcon(Motion = true) {
   }
   else {
     await gsap.to(Anime, {
+      y: '-100vh',
+      ease: "expo.inOut",
+      duration: 0.75
+    });
+    gsap.set(Anime, {
       y: '100vh',
       ease: "expo.inOut",
       duration: 0.75
@@ -59,14 +64,17 @@ async function BlogNav(Motion = true) {
 
 async function NavPage(ElementID, Motion = true) {
   const Element = document.getElementById(ElementID)
-  if (Motion)
+  if (Motion) {
+    loadIcon(false);
     await gsap.to(Element, {
       y: '0vh',
       // ease: "elastic.out(1, 0.85)",
       ease: "expo.inOut",
       duration: 0.75
     });
+  }
   else {
+    loadIcon(true);
     await gsap.to(Element, {
       y: '-100vh',
       // ease: "elastic.in(1, 0.85)",
@@ -170,15 +178,37 @@ async function NavAnime() {
 
       applyUpwardForceToTop('Emoji')
 
+
       if (ElementIDLast && ElementIDLast) {
         NavPage(ElementIDLast, false);
-        setTimeout(() => {
-          NavPage(ElementIDNew);
-        }, 350);
-      }
-      else NavPage(ElementIDNew);
 
-      ElementIDLast = ElementIDNew;
+        setTimeout(() => {
+
+          if (ElementIDNew === "Thanks_Resource") {
+            UseFunction_Emoji = 2
+            WorldRefresh()
+            setTimeout(() => {
+              applyUpwardForceToTop('Emoji')
+            }, 100)
+          }
+
+          if (ElementIDLast === "Thanks_Resource") {
+            UseFunction_Emoji = 1
+            WorldRefresh()
+            setTimeout(() => {
+              applyUpwardForceToTop('Emoji')
+            }, 100)
+          }
+
+          NavPage(ElementIDNew);
+          ElementIDLast = ElementIDNew;
+        }, 750);
+      }
+      else {
+        NavPage(ElementIDNew);
+        ElementIDLast = ElementIDNew;
+      }
+
 
       if (ElementIDLast !== 'Blog_Resource');
       BlogNav(false)
@@ -320,14 +350,14 @@ async function OpeWebSite() {
   })
 
   gsap.set(Square, {
-    borderRadius: '1.5vh',
-    width: '98vw',
-    height: '96vh',
+    // borderRadius: '1.5vh',
+    // width: '98vw',
+    // height: '96vh',
     y: '100vh'
   })
 
-  Square.style.top = '2vh';
-  Square.style.left = '1vw';
+  // Square.style.top = '2vh';
+  // Square.style.left = '1vw';
 
   gsap.to(Icon, {
     rotation: 360,
