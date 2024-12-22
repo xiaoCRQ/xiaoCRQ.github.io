@@ -14,6 +14,8 @@ async function renderMarkdownById(id) {
     // 注意，这里使用的是 marked.parse() 方法
     element.innerHTML = marked.parse(markdownContent);
     hljs.highlightAll();
+
+    console.log(element.id, '已渲染');
   } catch (error) {
     // 捕获错误并输出到控制台
     console.error('渲染 Markdown 时出错：', error);
@@ -47,13 +49,18 @@ async function loadMarkdownTitles(elementId, renderId = 'Blog_Page') {
     return;
   }
 
+  const div1 = document.createElement('div');
+  const div2 = document.createElement('div');
+  div1.className = div2.className = 'BlogNav_Line'
+
+  container.appendChild(div1);
+
   // 遍历 MarkdownInfo 并为每个标题创建 div
   ConfigData.MarkdownInfo.forEach((file, index) => {
     if (file.title && file.path) {
       // 创建 div 元素
-      const div = document.createElement('div');
-      const randomId = `md-title-${Math.random().toString(36).substr(2, 9)}`; // 生成随机 ID
-      div.id = randomId;
+      const div = document.createElement('a');
+      div.id = `md-title-${Math.random().toString(36).substr(2, 9)}`; // 生成随机 ID
       div.className = "MD-Title Text_Line_Black";
       div.textContent = file.title; // 设置标题内容
       div.setAttribute('data-path', file.path); // 添加路径信息作为自定义属性
@@ -70,7 +77,7 @@ async function loadMarkdownTitles(elementId, renderId = 'Blog_Page') {
             await loadIcon();
             await loadFileContent(renderId, dataPath); // 加载文件内容 
             await renderMarkdownById(renderId, dataPath); // 渲染 Markdown 内容
-            // await waitForMediaLoaded(renderId);
+            await waitForMediaLoaded(renderId);
             await loadIcon(false);
           }
         } catch (error) {
@@ -84,13 +91,21 @@ async function loadMarkdownTitles(elementId, renderId = 'Blog_Page') {
 
       // 默认加载第一篇 Markdown 文件
       if (index === 0) {
-        div.click(); // 自动触发点击事件以加载内容
-        MD_NOW = file.path; // 设置 MD_NOW 为第一篇文件路径
+        const dataPath = div.getAttribute('data-path');
+        console.log(`加载文件路径: ${dataPath}`);
+        MD_NOW = dataPath; // 更新当前加载的文件路径
+
+        loadFileContent(renderId, dataPath)
+          .then(() => renderMarkdownById(renderId, dataPath))
+          .catch(error => console.error('发生错误:', error));
       }
+
     } else {
       console.warn("Markdown 文件信息无效:", file);
     }
   });
+
+  container.appendChild(div2);
 
   console.log(`Markdown 文件标题已加载到 ID 为 '${elementId}' 的元素`);
 }

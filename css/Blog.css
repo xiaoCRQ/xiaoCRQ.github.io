@@ -29,12 +29,30 @@
   height: 96vh;
   flex-shrink: 0;
   /* 防止压缩 */
+  white-space: nowrap;
   background-color: white;
   margin-right: 1vw;
   color: black;
   border-radius: 1.5vh;
   pointer-events: auto;
   user-select: none;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+/* 隐藏滚动条 */
+#Blog_Nav::-webkit-scrollbar {
+  display: none;
+  /* 隐藏所有的滚动条 */
+}
+
+.BlogNav_Line {
+  width: 75%;
+  height: 0.35vh;
+  margin: 5vh;
+  border-radius: 1vh;
+  background-color: black;
+  flex-shrink: 0;
 }
 
 .MD-Title {

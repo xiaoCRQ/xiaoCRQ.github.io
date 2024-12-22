@@ -431,7 +431,7 @@ function init() {
     createSpecialPhysicsArea('Emoji');
 
     if (UseFunction_Emoji === 1)
-      createEmojiS(35, 4, 4, 0, 0, 0)
+      createEmojiS(15, 4, 4, 0, 0, 0)
 
     setGravity('Emoji', 0, 0.025);  // 设置适当的重力
   }
@@ -454,7 +454,7 @@ window.addEventListener('resize', () => {
 
   // 重新添加所有元素
   if (UseFunction_Emoji === 1) {
-    createEmojiS(35, 4, 4, 0, 0, 0); // 重新生成Emoji
+    createEmojiS(15, 4, 4, 0, 0, 0); // 重新生成Emoji
   }
 });
 

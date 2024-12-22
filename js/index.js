@@ -33,7 +33,6 @@ async function loadIcon(Motion = true) {
 
 async function BlogNav(Motion = true) {
   const Nav = document.getElementById('Blog_Nav')
-  const Page = document.getElementById('Blog_Page')
   if (Motion) {
     await Promise.all([
       gsap.to(Nav, {
@@ -344,6 +343,10 @@ async function CursorDefine() {
   const cursor = new MouseFollower({
     speed: 0.35,
     skewing: 5,
+    stateDetection: {
+      '-pointer': 'a,button,h1,h2,h3,h4,h5,h6,h7,h8,h9,code',
+      '-hidden': 'iframe'
+    },
   });
 }
 
@@ -352,6 +355,7 @@ async function init() {
   await OpeWebSite()
   await CursorDefine()
   await NavAnime()
+  await loadMarkdownTitles('Blog_Nav')
 }
 
 

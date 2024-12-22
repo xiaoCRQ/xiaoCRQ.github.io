@@ -183,43 +183,46 @@ function processMarkdownFiles(markdownFiles) {
 }
 
 
-// 等待所有媒体元素加载完毕或者超时
-function waitForMediaLoaded(ID, MaxDelay = 5000) {
+
+// 优化后的等待媒体加载函数
+function waitForMediaLoaded(ID, MaxDelay = 10000) {
   return new Promise((resolve, reject) => {
     const element = document.getElementById(ID);
-    if (!element) return reject('元素未找到');
+    if (!element) return reject(new Error('元素未找到'));
 
     const mediaElements = element.querySelectorAll('img, audio, video');
     if (mediaElements.length === 0) return resolve('没有媒体元素');
 
     let loadedCount = 0;
-    let timeout;
+    let hasError = false;
 
-    const onMediaLoad = () => {
-      loadedCount++;
+    const checkAllLoaded = () => {
       if (loadedCount === mediaElements.length) {
         clearTimeout(timeout);
-        resolve('所有媒体已加载');
+        hasError ? reject(new Error('部分媒体加载失败')) : resolve('所有媒体已加载');
       }
     };
 
-    const onMediaError = () => {
+    const onMediaEvent = (event) => {
+      if (event.type === 'error') hasError = true;
       loadedCount++;
-      if (loadedCount === mediaElements.length) {
-        clearTimeout(timeout);
-        reject('部分媒体加载失败');
-      }
+      checkAllLoaded();
     };
 
-    mediaElements.forEach(media => {
-      if (media.complete || (media instanceof HTMLAudioElement || media instanceof HTMLVideoElement) && media.readyState >= 3) {
+    mediaElements.forEach((media) => {
+      if (media.complete || (media instanceof HTMLMediaElement && media.readyState >= 3)) {
         loadedCount++;
       } else {
-        media.addEventListener('load', onMediaLoad);
-        media.addEventListener('error', onMediaError);
+        media.addEventListener('load', onMediaEvent, { once: true });
+        media.addEventListener('error', onMediaEvent, { once: true });
       }
     });
 
-    timeout = setTimeout(() => reject('超时超过最大延迟'), MaxDelay); // 设置最大等待时间
+    const timeout = setTimeout(() => {
+      reject(new Error('加载超时'));
+    }, MaxDelay);
+
+    checkAllLoaded(); // 初次检查是否所有媒体已经加载
   });
 }
+

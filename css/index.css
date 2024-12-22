@@ -1,3 +1,4 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css');
 @import url('https://unpkg.com/mouse-follower@1/dist/mouse-follower.min.css');
 @import url('Cursor.css');
 @import url('index.css');
@@ -8,8 +9,27 @@
 @import url('Thanks.css');
 @import url('Markdown.css');
 
+@font-face {
+  font-family: 'CaskaydiaCove Nerd Font';
+  src: url('../font-family/CaskaydiaCoveNerdFont-Regular.ttf') format('truetype');
+  /* 替换为实际路径 */
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SmileySans-Oblique';
+  src: url('../font-family/SmileySans-Oblique.otf.woff2') format('truetype');
+  /* 替换为实际路径 */
+  font-weight: normal;
+  font-style: normal;
+}
+
 html {
   cursor: none;
+  font-family: 'SmileySans-Oblique';
+  letter-spacing: 0.18vh;
+  /* 调整字间距 */
 }
 
 body {
@@ -46,11 +66,16 @@ button {
   /* 去掉下划线 */
 }
 
+code {
+  font-family: 'CaskaydiaCove Nerd Font', 'SmileySans-Oblique';
+}
+
 /*--------------------------------*/
 /* 顶部导航样式 */
 
 /* 导航按钮 */
 #Nav_Button {
+  white-space: nowrap;
   position: fixed;
   top: 2vh;
   right: 1vw;
@@ -67,10 +92,9 @@ button {
 
 .Nav_Options {
   color: black;
-  /*margin: 0 0.5vh;*/
+  margin: 1.5vh;
   height: 3vh;
-  width: 8vh;
-  font-size: 2vh;
+  font-weight: bold;
 }
 
 #Nav_Main_Options {

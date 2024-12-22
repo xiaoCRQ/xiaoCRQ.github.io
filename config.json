@@ -28,15 +28,15 @@
   ],
   "MarkdownFiles": [
     {
-      "title": "个人简介",
+      "title": "About Me",
       "path": "https://raw.githubusercontent.com/xiaoCRQ/xiaoCRQ/main/README.md"
     },
     {
-      "title": "Neovim 配置",
+      "title": "Neovim",
       "path": "https://raw.githubusercontent.com/xiaoCRQ/WhimsVim/main/README.md"
     },
     {
-      "title": "Arch Linux 安装",
+      "title": "Arch Linux",
       "path": "https://raw.githubusercontent.com/xiaoCRQ/archlinux_config/main/install.md"
     }
   ]
