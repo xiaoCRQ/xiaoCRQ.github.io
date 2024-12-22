@@ -4,7 +4,7 @@
 @import url('BackGrund.css');
 @import url('Home.css');
 @import url('Blog.css');
-@import url('Github.css');
+@import url('ChatAI.css');
 @import url('Thanks.css');
 @import url('Markdown.css');
 
@@ -53,7 +53,7 @@ button {
 #Nav_Button {
   position: fixed;
   top: 2vh;
-  right: 2vh;
+  right: 1vw;
   z-index: 1;
   border-radius: 1.5vh;
   height: 5vh;

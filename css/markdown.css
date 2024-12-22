@@ -2,7 +2,6 @@
   text-align: left;
   overflow-y: scroll;
   overflow-x: hidden;
-
 }
 
 /* 隐藏滚动条 */
@@ -12,29 +11,42 @@
 }
 
 /* 段落 */
-.MarkDown p {}
+.MarkDown p {
+  margin-top: 0;
+  margin-bottom: 1vh;
+}
 
 /* 标题样式 */
-.MarkDown h1 {}
+.MarkDown h1 {
+  display: flex;
+}
 
-.MarkDown h2 {}
+.MarkDown h2 {
+  display: flex;
+}
 
-.MarkDown h3 {}
+.MarkDown h3 {
+  display: flex;
+}
 
-.MarkDown h4 {}
+.MarkDown h4 {
+  display: flex;
+}
 
-.MarkDown h5 {}
+.MarkDown h5 {
+  display: flex;
+}
 
-.MarkDown h6 {}
+.MarkDown h6 {
+  display: flex;
+}
 
 /* 图片样式 */
 .MarkDown img {
   max-width: 100%;
-  /* 图片最大宽度为100% */
+  width: auto;
   height: auto;
-  /* 高度自适应 */
   display: block;
-  /* 块级元素，避免底部空隙 */
 }
 
 /* 列表样式 */

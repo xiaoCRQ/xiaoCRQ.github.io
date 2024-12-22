@@ -27,6 +27,9 @@ async function renderMarkdownById(id) {
 }
 
 
+
+let MD_NOW;
+
 async function loadMarkdownTitles(elementId, renderId = 'Blog_Page') {
   const container = document.getElementById(elementId);
 
@@ -45,12 +48,13 @@ async function loadMarkdownTitles(elementId, renderId = 'Blog_Page') {
   }
 
   // 遍历 MarkdownInfo 并为每个标题创建 div
-  ConfigData.MarkdownInfo.forEach((file) => {
+  ConfigData.MarkdownInfo.forEach((file, index) => {
     if (file.title && file.path) {
       // 创建 div 元素
       const div = document.createElement('div');
       const randomId = `md-title-${Math.random().toString(36).substr(2, 9)}`; // 生成随机 ID
       div.id = randomId;
+      div.className = "MD-Title Text_Line_Black";
       div.textContent = file.title; // 设置标题内容
       div.setAttribute('data-path', file.path); // 添加路径信息作为自定义属性
 
@@ -58,16 +62,31 @@ async function loadMarkdownTitles(elementId, renderId = 'Blog_Page') {
       div.addEventListener('click', async () => {
         try {
           const dataPath = div.getAttribute('data-path');
-          console.log(`加载文件路径: ${dataPath}`);
-          await loadFileContent(renderId, dataPath); // 加载文件内容 
-          await renderMarkdownById(renderId, dataPath); // 渲染 Markdown 内容
+          if (dataPath !== MD_NOW) {
+            console.log(`加载文件路径: ${dataPath}`);
+            MD_NOW = dataPath; // 更新当前加载的文件路径
+            BlogNav(false)
+            NavAnimes(false)
+            await loadIcon();
+            await loadFileContent(renderId, dataPath); // 加载文件内容 
+            await renderMarkdownById(renderId, dataPath); // 渲染 Markdown 内容
+            // await waitForMediaLoaded(renderId);
+            await loadIcon(false);
+          }
         } catch (error) {
+          await loadIcon(false);
           console.error('加载或渲染 Markdown 时出错:', error);
         }
       });
 
       // 将 div 插入到容器中
       container.appendChild(div);
+
+      // 默认加载第一篇 Markdown 文件
+      if (index === 0) {
+        div.click(); // 自动触发点击事件以加载内容
+        MD_NOW = file.path; // 设置 MD_NOW 为第一篇文件路径
+      }
     } else {
       console.warn("Markdown 文件信息无效:", file);
     }

@@ -1,151 +1,225 @@
-let ConfigData = {}; // 全局变量，用于存储配置文件内容
+// 全局变量，用于存储配置文件内容
+let ConfigData = {};
 
+// 辅助函数：处理文件的网络请求和错误管理
+async function fetchFile(path) {
+  const response = await fetch(path);
+  if (!response.ok) {
+    throw new Error(`网络错误: ${response.status}`);
+  }
+  return await response.text(); // 返回文件内容
+}
 
+// 辅助函数：执行页面中的 script 标签中的代码
+function executeScripts(element) {
+  const scripts = element.querySelectorAll('script');
+  scripts.forEach(script => {
+    const newScript = document.createElement('script');
+    if (script.src) {
+      newScript.src = script.src;
+    } else {
+      newScript.textContent = script.textContent;
+    }
+    document.head.appendChild(newScript).parentNode.removeChild(newScript); // 确保脚本执行后移除
+  });
+}
+
+// 加载文件内容到指定的元素中
 async function loadFileContent(elementId, path, allowScripts = true) {
   const outputElement = document.getElementById(elementId);
 
   try {
-    const response = await fetch(path); // 从指定路径获取文件
-    if (!response.ok) {
-      throw new Error(`网络错误：${response.status}`);
-    }
+    const content = await fetchFile(path); // 获取文件内容
+    outputElement.innerHTML = content; // 将内容插入元素中
 
-    // 直接将响应体插入到指定元素中
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder("utf-8");
-    let result = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      result += decoder.decode(value, { stream: true });
-    }
-
+    // 如果允许执行脚本，则执行其中的 script 标签中的代码
     if (allowScripts) {
-      outputElement.innerHTML = result;
-      // 查找并运行 script 标签中的代码
-      const scripts = outputElement.querySelectorAll('script');
-      scripts.forEach((script) => {
-        const newScript = document.createElement('script');
-        if (script.src) {
-          newScript.src = script.src;
-        } else {
-          newScript.textContent = script.textContent;
-        }
-        document.head.appendChild(newScript).parentNode.removeChild(newScript); // 确保执行后移除
-      });
+      executeScripts(outputElement);
     } else {
-      // 不允许 script 标签时，将内容以文本形式插入
-      outputElement.textContent = result;
+      outputElement.textContent = content; // 如果不允许脚本，直接作为文本内容显示
     }
 
-    console.log(`元素 ${elementId} 已加载`);
+    console.log(`元素 ${elementId} 加载成功`);
   } catch (error) {
     console.error("加载文件时出错:", error);
     outputElement.textContent = "加载文件时出错，请检查路径或网络连接。";
   }
 }
 
-
-async function ClearRemoveElement(elementId, removeElement = false) {
-  const element = document.getElementById(elementId);
-
-  if (!element) {
-    console.error(`元素 ${elementId} 未找到`);
-    return; // 如果没有找到该元素，退出函数
-  }
-
-  if (removeElement) {
-    // 删除整个元素
-    element.remove();
-    console.log(`元素 ${elementId} 已删除`);
-  } else {
-    // 仅清空元素内容
-    element.innerHTML = '';
-    console.log(`元素 ${elementId} 内容已清空`);
-  }
-}
-
-async function loadMultipleFiles(dataArray) {
-  // 检查 dataArray 是否是有效的数组
-  if (!Array.isArray(dataArray) || dataArray.length === 0) {
-    console.error("无效的文件加载配置数据：", dataArray);
-    return;  // 如果配置无效，退出函数
-  }
-
-  // 遍历配置数组，依次调用 loadFileContent 函数
-  for (let i = 0; i < dataArray.length; i++) {
-    const item = dataArray[i];
-
-    // 检查 item 是否是一个包含 id 和 path 的对象
-    if (item && typeof item === 'object' && item.id && item.path) {
-      const elementId = item.id;
-      const path = item.path;
-      await loadFileContent(elementId, path);  // 等待当前文件加载完成
-    } else {
-      console.error(`无效的项：${JSON.stringify(item)}，应为包含 'id' 和 'path' 属性的对象`);
-    }
-  }
-
-  // 处理完成后的回调或返回结果
-  console.log("所有文件已加载完成");
-  return "加载完成";  // 或者你可以根据需要返回任何值
-}
-
+// 加载配置文件并处理不同的配置部分
 async function loadConfig(path) {
   try {
-    const response = await fetch(path); // 从指定路径获取配置文件
-    if (!response.ok) {
-      throw new Error(`网络错误：${response.status}`);
-    }
-
-    const data = await response.json(); // 解析 JSON 数据
+    const data = await fetchFile(path); // 获取配置文件
+    const config = JSON.parse(data); // 解析 JSON 配置
 
     // 初始化配置对象
     ConfigData.FileLoadConfig = [];
     ConfigData.MarkdownInfo = [];
-    ConfigData.Language = data.Language || 'en'; // 默认语言为 'en'
+    ConfigData.Language = config.Language || 'en';  // 默认语言为 'en'
 
-    // 处理需要加载的内容
-    if (Array.isArray(data.FileLoadConfig)) {
-      data.FileLoadConfig.forEach((file) => {
-        if (file.id && file.path) {
-          ConfigData.FileLoadConfig.push({
-            id: file.id,   // 要加载内容的元素 ID
-            path: file.path, // 对应的文件路径
-          });
-        } else {
-          console.warn("文件加载配置无效:", file);
-        }
-      });
-    } else {
-      console.warn("FileLoadConfig 配置未找到或格式无效");
-    }
-
-    // 处理 Markdown 文件信息
-    if (Array.isArray(data.MarkdownFiles)) {
-      data.MarkdownFiles.forEach((file) => {
-        if (file.title && file.path) {
-          ConfigData.MarkdownInfo.push({
-            title: file.title, // Markdown 文档的标题
-            path: file.path,   // Markdown 文档的路径
-          });
-        } else {
-          console.warn("Markdown 文件信息无效:", file);
-        }
-      });
-    } else {
-      console.warn("MarkdownFiles 配置未找到或格式无效");
-    }
+    processFileLoadConfig(config.FileLoadConfig); // 处理文件加载配置
+    processMarkdownFiles(config.MarkdownFiles);   // 处理 Markdown 文件信息
 
     // 输出加载的配置
-    console.log("需要加载的文件配置:", ConfigData.FileLoadConfig); // 输出需要加载的文件配置
-    console.log("Markdown 文件信息:", ConfigData.MarkdownInfo);    // 输出 Markdown 文件信息
-    console.log("语言配置:", ConfigData.Language);                 // 输出语言配置
+    console.log("文件加载配置:", ConfigData.FileLoadConfig);
+    console.log("Markdown 文件信息:", ConfigData.MarkdownInfo);
+    console.log("语言配置:", ConfigData.Language);
+
+    // 在配置文件加载完毕后，等待页面中的媒体资源加载
+    if (ConfigData.FileLoadConfig.length > 0) {
+      for (const file of ConfigData.FileLoadConfig) {
+        await loadFileContent(file.id, file.path);
+        await waitForMediaLoaded(file.id); // 等待每个文件加载的媒体元素
+      }
+    }
+
+    if (ConfigData.MarkdownInfo.length > 0) {
+      for (const file of ConfigData.MarkdownInfo) {
+        await loadFileContent(file.title, file.path);
+        await waitForMediaLoaded(file.title); // 等待每个 Markdown 文件加载的媒体元素
+      }
+    }
+
+    console.log("所有文件和媒体已加载完毕");
 
   } catch (error) {
     console.error("读取配置文件时出错:", error);
   }
 }
 
+// 清空元素内容或删除元素本身
+async function ClearRemoveElement(elementId, removeElement = false) {
+  const element = document.getElementById(elementId);
+  if (!element) {
+    console.error(`元素 ${elementId} 未找到`);
+    return;
+  }
 
+  if (removeElement) {
+    element.remove(); // 删除元素
+    console.log(`元素 ${elementId} 已删除`);
+  } else {
+    element.innerHTML = ''; // 清空元素内容
+    console.log(`元素 ${elementId} 内容已清空`);
+  }
+}
+
+// 根据配置加载多个文件，依次加载
+async function loadMultipleFiles(dataArray) {
+  if (!Array.isArray(dataArray) || dataArray.length === 0) {
+    console.error("无效的文件加载配置:", dataArray);
+    return;
+  }
+
+  for (let item of dataArray) {
+    if (item && item.id && item.path) {
+      await loadFileContent(item.id, item.path); // 按照配置加载文件
+    } else {
+      console.error(`无效项: ${JSON.stringify(item)} (应包含 'id' 和 'path' 属性)`);
+    }
+  }
+
+  console.log("所有文件已加载完成");
+  return "加载完成"; // 或根据需要返回其他值
+}
+
+// 加载配置文件并处理不同的配置部分
+async function loadConfig(path) {
+  try {
+    const data = await fetchFile(path); // 获取配置文件
+    const config = JSON.parse(data); // 解析 JSON 配置
+
+    // 初始化配置对象
+    ConfigData.FileLoadConfig = [];
+    ConfigData.MarkdownInfo = [];
+    ConfigData.Language = config.Language || 'en';  // 默认语言为 'en'
+
+    processFileLoadConfig(config.FileLoadConfig); // 处理文件加载配置
+    processMarkdownFiles(config.MarkdownFiles);   // 处理 Markdown 文件信息
+
+    // 输出加载的配置
+    console.log("文件加载配置:", ConfigData.FileLoadConfig);
+    console.log("Markdown 文件信息:", ConfigData.MarkdownInfo);
+    console.log("语言配置:", ConfigData.Language);
+  } catch (error) {
+    console.error("读取配置文件时出错:", error);
+  }
+}
+
+// 处理 FileLoadConfig 配置部分
+function processFileLoadConfig(fileLoadConfig) {
+  if (Array.isArray(fileLoadConfig)) {
+    fileLoadConfig.forEach(file => {
+      if (file.id && file.path) {
+        ConfigData.FileLoadConfig.push({
+          id: file.id,
+          path: file.path
+        });
+      } else {
+        console.warn("无效的文件加载配置:", file);
+      }
+    });
+  } else {
+    console.warn("FileLoadConfig 配置无效或未找到");
+  }
+}
+
+// 处理 MarkdownFiles 配置部分
+function processMarkdownFiles(markdownFiles) {
+  if (Array.isArray(markdownFiles)) {
+    markdownFiles.forEach(file => {
+      if (file.title && file.path) {
+        ConfigData.MarkdownInfo.push({
+          title: file.title,
+          path: file.path
+        });
+      } else {
+        console.warn("无效的 Markdown 文件信息:", file);
+      }
+    });
+  } else {
+    console.warn("MarkdownFiles 配置无效或未找到");
+  }
+}
+
+
+// 等待所有媒体元素加载完毕或者超时
+function waitForMediaLoaded(ID, MaxDelay = 5000) {
+  return new Promise((resolve, reject) => {
+    const element = document.getElementById(ID);
+    if (!element) return reject('元素未找到');
+
+    const mediaElements = element.querySelectorAll('img, audio, video');
+    if (mediaElements.length === 0) return resolve('没有媒体元素');
+
+    let loadedCount = 0;
+    let timeout;
+
+    const onMediaLoad = () => {
+      loadedCount++;
+      if (loadedCount === mediaElements.length) {
+        clearTimeout(timeout);
+        resolve('所有媒体已加载');
+      }
+    };
+
+    const onMediaError = () => {
+      loadedCount++;
+      if (loadedCount === mediaElements.length) {
+        clearTimeout(timeout);
+        reject('部分媒体加载失败');
+      }
+    };
+
+    mediaElements.forEach(media => {
+      if (media.complete || (media instanceof HTMLAudioElement || media instanceof HTMLVideoElement) && media.readyState >= 3) {
+        loadedCount++;
+      } else {
+        media.addEventListener('load', onMediaLoad);
+        media.addEventListener('error', onMediaError);
+      }
+    });
+
+    timeout = setTimeout(() => reject('超时超过最大延迟'), MaxDelay); // 设置最大等待时间
+  });
+}

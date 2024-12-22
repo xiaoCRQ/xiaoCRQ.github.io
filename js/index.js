@@ -12,10 +12,56 @@ function isMobileDevice() {
   return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|webOS/i.test(navigator.userAgent);
 }
 
+
+async function loadIcon(Motion = true) {
+  const Anime = document.getElementById('Square');
+  if (Motion) {
+    await gsap.to(Anime, {
+      y: '0vh',
+      ease: "expo.inOut",
+      duration: 0.75
+    });
+  }
+  else {
+    await gsap.to(Anime, {
+      y: '100vh',
+      ease: "expo.inOut",
+      duration: 0.75
+    });
+  }
+}
+
+async function BlogNav(Motion = true) {
+  const Nav = document.getElementById('Blog_Nav')
+  const Page = document.getElementById('Blog_Page')
+  if (Motion) {
+    await Promise.all([
+      gsap.to(Nav, {
+        marginLeft: '1vw',
+        color: 'black',
+        width: '45vh',
+        ease: "expo.inOut",
+        duration: 0.65
+      }),
+    ])
+  }
+  else {
+    await Promise.all([
+      gsap.to(Nav, {
+        marginLeft: '0vw',
+        color: 'rgba(255,255,255,0)',
+        width: '0vh',
+        ease: "expo.inOut",
+        duration: 0.85
+      }),
+    ])
+  }
+}
+
 async function NavPage(ElementID, Motion = true) {
   const Element = document.getElementById(ElementID)
   if (Motion)
-    gsap.to(Element, {
+    await gsap.to(Element, {
       y: '0vh',
       // ease: "elastic.out(1, 0.85)",
       ease: "expo.inOut",
@@ -32,21 +78,71 @@ async function NavPage(ElementID, Motion = true) {
   }
 }
 
-async function NavAnime() {
-  let isExpanded = false;
-  let ElementIDLast = "Home_Resource";
+let isExpanded = false;
+async function NavAnimes(Motion = true) {
   const Nav = document.getElementById('Nav_Button');
   const Nav_Line = document.getElementById('Nav_Line');
   const Nav_Line_1 = document.getElementById('Nav_Line_1');
   const Nav_Line_2 = document.getElementById('Nav_Line_2');
   const Nav_Option = document.getElementById('Nav_Main_Options');
+  if (!Nav || !Nav_Line || !Nav_Line_1 || !Nav_Line_2 || !Nav_Option) return;
+
+  isExpanded = Motion;
+  if (Motion) {
+    Nav_Option.style.pointerEvents = 'auto'
+    gsap.to(Nav_Option, {
+      ease: "expo.in",
+      opacity: 1,
+      duration: 0.45
+    })
+    gsap.to(Nav, {
+      width: '45vh',
+      ease: "expo.inOut",
+      duration: 0.75
+    });
+    gsap.to(Nav_Line_1, {
+      y: '0.645vh',
+      rotation: 45,
+      ease: "power3.inOut",
+      duration: 0.75
+    });
+    gsap.to(Nav_Line_2, {
+      y: '-0.645vh',
+      rotation: -45,
+      ease: "power3.inOut",
+      duration: 0.75
+    });
+  }
+  else {
+    Nav_Option.style.pointerEvents = 'none';
+    gsap.to(Nav_Option, {
+      ease: "expo.inOut",
+      opacity: 0,
+      duration: 0.65
+    })
+    gsap.to(Nav, {
+      width: '5vh',
+      height: '5vh',
+      ease: "expo.inOut",
+      duration: 0.75
+    });
+    gsap.to([Nav_Line_1, Nav_Line_2], {
+      y: '0vh',
+      rotation: 0,
+      ease: "power3.inOut",
+      duration: 0.75
+    });
+  }
+}
+
+async function NavAnime() {
+  let ElementIDLast = "Home_Resource";
+  const Nav = document.getElementById('Nav_Button');
 
   const Home = document.getElementById('Home')
   const Blog = document.getElementById('Blog')
-  const Github = document.getElementById('Github')
+  const ChatAI = document.getElementById('ChatAI')
   const Thanks = document.getElementById('Thanks')
-
-  if (!Nav || !Nav_Line || !Nav_Line_1 || !Nav_Line_2 || !Nav_Option) return;
 
   gsap.to(Nav, {
     y: '0vh',
@@ -55,77 +151,23 @@ async function NavAnime() {
   });
 
   Nav_Line.addEventListener('click', () => {
-
     if (!isExpanded) {
-      isExpanded = true;
-      Nav_Option.style.pointerEvents = 'auto'
-      gsap.to(Nav_Option, {
-        ease: "expo.in",
-        opacity: 1,
-        duration: 0.45
-      })
-      gsap.to(Nav, {
-        width: '45vh',
-        ease: "expo.inOut",
-        duration: 0.75
-      });
-      gsap.to(Nav_Line_1, {
-        y: '0.645vh',
-        rotation: 45,
-        ease: "power3.inOut",
-        duration: 0.75
-      });
-      gsap.to(Nav_Line_2, {
-        y: '-0.645vh',
-        rotation: -45,
-        ease: "power3.inOut",
-        duration: 0.75
-      });
+      NavAnimes();
+      if (ElementIDLast === 'Blog_Resource');
+      BlogNav()
+
     } else {
-      isExpanded = false;
-      Nav_Option.style.pointerEvents = 'none';
-      gsap.to(Nav_Option, {
-        ease: "expo.inOut",
-        opacity: 0,
-        duration: 0.65
-      })
-      gsap.to(Nav, {
-        width: '5vh',
-        height: '5vh',
-        ease: "expo.inOut",
-        duration: 0.75
-      });
-      gsap.to([Nav_Line_1, Nav_Line_2], {
-        y: '0vh',
-        rotation: 0,
-        ease: "power3.inOut",
-        duration: 0.75
-      });
+      NavAnimes(false);
+      if (ElementIDLast === 'Blog_Resource');
+      BlogNav(false)
     }
+
   });
 
   const NavPageFunction = (ElementIDNew) => {
     // 执行跳转操作
     if (ElementIDNew && ElementIDNew != ElementIDLast) {
-      isExpanded = false;
-      Nav_Option.style.pointerEvents = 'none';
-      gsap.to(Nav_Option, {
-        ease: "expo.inOut",
-        opacity: 0,
-        duration: 0.65
-      })
-      gsap.to(Nav, {
-        width: '5vh',
-        height: '5vh',
-        ease: "expo.inOut",
-        duration: 0.75
-      });
-      gsap.to([Nav_Line_1, Nav_Line_2], {
-        y: '0vh',
-        rotation: 0,
-        ease: "power3.inOut",
-        duration: 0.75
-      });
+      NavAnimes(false);
 
       applyUpwardForceToTop('Emoji')
 
@@ -138,12 +180,15 @@ async function NavAnime() {
       else NavPage(ElementIDNew);
 
       ElementIDLast = ElementIDNew;
+
+      if (ElementIDLast !== 'Blog_Resource');
+      BlogNav(false)
     }
   };
 
   Home.addEventListener('click', () => NavPageFunction("Home_Resource"));
   Blog.addEventListener('click', () => NavPageFunction("Blog_Resource"));
-  Github.addEventListener('click', () => NavPageFunction("Github_Resource"));
+  ChatAI.addEventListener('click', () => NavPageFunction("ChatAI_Resource"));
   Thanks.addEventListener('click', () => NavPageFunction("Thanks_Resource"));
 }
 
@@ -275,7 +320,22 @@ async function OpeWebSite() {
     y: '-100vh'
   })
 
-  AnimeContainer.removeChild(Square);
+  gsap.set(Square, {
+    borderRadius: '1.5vh',
+    width: '98vw',
+    height: '96vh',
+    y: '100vh'
+  })
+
+  Square.style.top = '2vh';
+  Square.style.left = '1vw';
+
+  gsap.to(Icon, {
+    rotation: 360,
+    duration: 3.5,
+    repeat: -1,
+    ease: "expo.inOut",
+  });
 }
 
 async function CursorDefine() {

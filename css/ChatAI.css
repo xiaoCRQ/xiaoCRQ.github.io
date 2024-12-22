@@ -1,4 +1,4 @@
-#Github_Resource {
+#ChatAI_Resource {
   position: fixed;
   top: 0;
   left: 0;
@@ -6,11 +6,16 @@
   width: 100vw;
   display: flex;
   flex-direction: column;
-  /* 设置为垂直排列 */
+  align-items: center;
   justify-content: center;
-  /* 水平居中 */
   z-index: 1;
   transform: translateY(100vh);
   pointer-events: auto;
-  background-color: white;
+}
+
+#Chat_Web {
+  border-radius: 1.5vh;
+  width: 98vw;
+  height: 96vh;
+  cursor: none;
 }

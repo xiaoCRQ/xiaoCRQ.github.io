@@ -5,6 +5,7 @@
       this.last = Date.now();
       this.ticks = 0;
       this.fpsElement = null;
+      this.isVisible = false; // 默认隐藏
 
       this.init();
     }
@@ -22,10 +23,21 @@
       this.fpsElement.style.borderRadius = '5px';
       this.fpsElement.style.fontFamily = 'Arial, sans-serif';
       this.fpsElement.style.pointerEvents = 'none';
+      this.fpsElement.style.display = 'none'; // 默认隐藏
       document.body.appendChild(this.fpsElement);
 
       // 开始请求动画帧
       requestAnimationFrame(this.rafLoop.bind(this));
+
+      // 监听键盘事件
+      window.addEventListener('keydown', this.toggleVisibility.bind(this));
+    }
+
+    toggleVisibility(event) {
+      if (event.key.toLowerCase() === '\\') {
+        this.isVisible = !this.isVisible;
+        this.fpsElement.style.display = this.isVisible ? 'block' : 'none';
+      }
     }
 
     rafLoop() {
@@ -38,7 +50,9 @@
         this.ticks = 0;
 
         // 更新FPS显示
-        this.fpsElement.textContent = `FPS: ${fps}`;
+        if (this.isVisible) {
+          this.fpsElement.textContent = `FPS: ${fps}`;
+        }
       }
       requestAnimationFrame(this.rafLoop.bind(this));
     }

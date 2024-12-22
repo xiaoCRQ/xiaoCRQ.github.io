@@ -1,6 +1,19 @@
 // 全局变量
 const physicsWorlds = {};
-const emojis = ['😀', '😂', '🤣', '😊', '😍', '🤩', '😎', '🤔', '🤯', '🥳', '😴', '🤑', '🤠', '👻', '👽', '🤖', '🎃', '🦄', '🐶', '🐱'];
+const emojis = ['😀', '😂', '🤣', '😊', '😍', '🤩', '😎', '🤔', '🤯', '🥳', '😴', '🤑', '🤠', '👻', '👽', '🤖', '🎃', '🦄', '🐶', '🐱', '🚀', '🌟', '🎉',
+  '🥰',
+  '😘',
+  '🫠',
+  '🤗',
+  '😶‍🌫️',
+  '😪',
+  '😵‍💫',
+  '😵',
+  '😎',
+  '🧐',
+  '😻',
+];
+let UseFunction_Emoji = 1
 
 // Matter.js 模块
 const Engine = Matter.Engine,
@@ -192,7 +205,6 @@ async function createEmojiS(count, Size, SizeRandom, x, y, Delay) {
     const delay = Math.random() * Delay;  // 随机最大延时
     createEmoji('Emoji', x, y, size, delay);  // 生成位置在屏幕上方，且具有随机延时
   }
-
 }
 
 
@@ -358,31 +370,68 @@ function initKeyboardControls() {
 
 
 // 清除所有物理世界的元素和配置
+function clearWorlds() {
+  // 清除特殊区域和墙壁
+  Object.keys(physicsWorlds).forEach(worldId => {
+    const { world, render, engine, mouseConstraint } = physicsWorlds[worldId] || {};
+    if (world && render) {
+
+      // 临时保存 MouseConstraint
+      const tempMouseConstraint = mouseConstraint;
+
+      // 清除所有物理元素，但保留 MouseConstraint
+      Composite.clear(world, false, true);
+
+      // 重新添加 MouseConstraint
+      if (tempMouseConstraint) {
+        Composite.add(world, tempMouseConstraint);
+      }
+
+      // 删除特殊区域
+      Events.off(engine, 'afterUpdate'); // 移除相关事件监听器
+
+      // 清空画布并调整尺寸
+      render.canvas.width = render.options.width = render.element.clientWidth;
+      render.canvas.height = render.options.height = render.element.clientHeight;
+    }
+  });
+}
+
 function clearAllWorlds() {
   Object.keys(physicsWorlds).forEach(worldId => {
-    const { world, render } = physicsWorlds[worldId] || {};
-    if (world) Composite.clear(world);
-    if (render) {
-      render.canvas.width = 0;  // 清空画布
-      render.canvas.height = 0;
+    const { world, render, runner, engine } = physicsWorlds[worldId] || {};
+    if (world) {
+      Composite.clear(world);
+      deleteSpecialArea(worldId);
     }
+    if (render) {
+      Render.stop(render);
+      render.canvas.width = 0;
+      render.canvas.height = 0;
+      render.canvas.remove();
+    }
+    if (runner) {
+      Runner.stop(runner);
+    }
+    if (engine) {
+      Engine.clear(engine);
+    }
+    delete physicsWorlds[worldId];
   });
 }
 
 
 // 初始化函数
 function init() {
-  // 清除所有物理世界和元素
-  clearAllWorlds()
-
-  // 初始化物理世界（右侧）
+  // 初始化物理世界
   const specialWorld = initWorld('Emoji', { background: 'rgba(0, 0, 0, 0)' });
 
   if (specialWorld) {
     const { render } = specialWorld;
     createSpecialPhysicsArea('Emoji');
 
-    createEmojiS(35, 4, 4, 0, -1, 0)
+    if (UseFunction_Emoji === 1)
+      createEmojiS(35, 4, 4, 0, 0, 0)
 
     setGravity('Emoji', 0, 0.025);  // 设置适当的重力
   }
@@ -394,33 +443,22 @@ function init() {
 
 // 窗口大小调整时重新初始化
 window.addEventListener('resize', () => {
-  // 获取每个物理世界的配置
+  clearWorlds()
+  // 重新创建特殊区域和墙壁
   Object.keys(physicsWorlds).forEach(worldId => {
-    const { render, engine } = physicsWorlds[worldId] || {};
-    const element = document.getElementById(worldId);
-    if (element && render) {
-      // 更新画布尺寸
-      render.canvas.width = element.clientWidth;
-      render.canvas.height = element.clientHeight;
-      render.options.width = element.clientWidth;
-      render.options.height = element.clientHeight;
-
-      // 重新创建特殊物理区域和元素
-      createSpecialPhysicsArea(worldId);
-
-      // 更新所有物理物体位置，避免错位
-      const bodies = Composite.allBodies(engine.world);
-      bodies.forEach(body => {
-        const randomX = Math.random() * render.options.width;
-        const randomY = -body.circleRadius;  // 让元素从画面上方生成
-        Body.setPosition(body, { x: randomX, y: randomY });
-      });
+    const { render } = physicsWorlds[worldId] || {};
+    if (render) {
+      createSpecialPhysicsArea(worldId); // 重新创建特殊区域
     }
   });
 
-  // 重新初始化物理世界和所有元素
-  init();
+  // 重新添加所有元素
+  if (UseFunction_Emoji === 1) {
+    createEmojiS(35, 4, 4, 0, 0, 0); // 重新生成Emoji
+  }
 });
+
+
 
 // 当DOM加载完成时初始化
 // document.addEventListener('DOMContentLoaded', init);

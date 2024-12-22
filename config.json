@@ -18,8 +18,8 @@
       "path": "html/Blog.html"
     },
     {
-      "id": "Github_Resource",
-      "path": "html/Github.html"
+      "id": "ChatAI_Resource",
+      "path": "html/ChatAI.html"
     },
     {
       "id": "Thanks_Resource",
@@ -34,6 +34,10 @@
     {
       "title": "Neovim 配置",
       "path": "https://raw.githubusercontent.com/xiaoCRQ/WhimsVim/main/README.md"
+    },
+    {
+      "title": "Arch Linux 安装",
+      "path": "https://raw.githubusercontent.com/xiaoCRQ/archlinux_config/main/install.md"
     }
   ]
 }
