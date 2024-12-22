@@ -55,14 +55,17 @@ async function loadConfig(path) {
     // 初始化配置对象
     ConfigData.FileLoadConfig = [];
     ConfigData.MarkdownInfo = [];
+    ConfigData.PhotoInfo = []; // 新增 PhotoInfo 数组
     ConfigData.Language = config.Language || 'en';  // 默认语言为 'en'
 
     processFileLoadConfig(config.FileLoadConfig); // 处理文件加载配置
     processMarkdownFiles(config.MarkdownFiles);   // 处理 Markdown 文件信息
+    processPhotoConfig(config.PhotoConfig);       // 处理 Photo 配置信息
 
     // 输出加载的配置
     console.log("文件加载配置:", ConfigData.FileLoadConfig);
     console.log("Markdown 文件信息:", ConfigData.MarkdownInfo);
+    console.log("Photo 配置信息:", ConfigData.PhotoInfo);
     console.log("语言配置:", ConfigData.Language);
 
     // 在配置文件加载完毕后，等待页面中的媒体资源加载
@@ -164,6 +167,24 @@ function processFileLoadConfig(fileLoadConfig) {
   }
 }
 
+// 处理 FileLoadConfig 配置部分
+function processFileLoadConfig(fileLoadConfig) {
+  if (Array.isArray(fileLoadConfig)) {
+    fileLoadConfig.forEach(file => {
+      if (file.id && file.path) {
+        ConfigData.FileLoadConfig.push({
+          id: file.id,
+          path: file.path
+        });
+      } else {
+        console.warn("无效的文件加载配置:", file);
+      }
+    });
+  } else {
+    console.warn("FileLoadConfig 配置无效或未找到");
+  }
+}
+
 // 处理 MarkdownFiles 配置部分
 function processMarkdownFiles(markdownFiles) {
   if (Array.isArray(markdownFiles)) {
@@ -182,7 +203,20 @@ function processMarkdownFiles(markdownFiles) {
   }
 }
 
-
+// 修改后的：处理 PhotoConfig 配置部分
+function processPhotoConfig(photoConfig) {
+  if (Array.isArray(photoConfig)) {
+    photoConfig.forEach(photoPath => {
+      if (typeof photoPath === 'string' && photoPath.trim() !== '') {
+        ConfigData.PhotoInfo.push(photoPath);
+      } else {
+        console.warn("无效的 Photo 路径:", photoPath);
+      }
+    });
+  } else {
+    console.warn("PhotoConfig 配置无效或未找到");
+  }
+}
 
 // 优化后的等待媒体加载函数
 function waitForMediaLoaded(ID, MaxDelay = 10000) {
@@ -225,4 +259,3 @@ function waitForMediaLoaded(ID, MaxDelay = 10000) {
     checkAllLoaded(); // 初次检查是否所有媒体已经加载
   });
 }
-

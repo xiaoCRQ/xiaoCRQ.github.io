@@ -39,5 +39,10 @@
       "title": "Arch Linux",
       "path": "https://raw.githubusercontent.com/xiaoCRQ/archlinux_config/main/install.md"
     }
+  ],
+  "PhotoConfig": [
+    "img/嘿嘿嘿",
+    "img/帽子",
+    "img/开心"
   ]
 }
