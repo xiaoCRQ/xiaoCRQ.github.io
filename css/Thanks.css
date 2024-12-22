@@ -10,7 +10,7 @@
   justify-content: center;
   /* 水平居中 */
   z-index: 1;
+  color: white;
+  font-size: 13.5vw;
   transform: translateY(100vh);
-  pointer-events: auto;
-  background-color: white;
 }

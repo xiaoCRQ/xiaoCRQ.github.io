@@ -46,50 +46,6 @@ async function loadFileContent(elementId, path, allowScripts = true) {
   }
 }
 
-// 加载配置文件并处理不同的配置部分
-async function loadConfig(path) {
-  try {
-    const data = await fetchFile(path); // 获取配置文件
-    const config = JSON.parse(data); // 解析 JSON 配置
-
-    // 初始化配置对象
-    ConfigData.FileLoadConfig = [];
-    ConfigData.MarkdownInfo = [];
-    ConfigData.PhotoInfo = []; // 新增 PhotoInfo 数组
-    ConfigData.Language = config.Language || 'en';  // 默认语言为 'en'
-
-    processFileLoadConfig(config.FileLoadConfig); // 处理文件加载配置
-    processMarkdownFiles(config.MarkdownFiles);   // 处理 Markdown 文件信息
-    processPhotoConfig(config.PhotoConfig);       // 处理 Photo 配置信息
-
-    // 输出加载的配置
-    console.log("文件加载配置:", ConfigData.FileLoadConfig);
-    console.log("Markdown 文件信息:", ConfigData.MarkdownInfo);
-    console.log("Photo 配置信息:", ConfigData.PhotoInfo);
-    console.log("语言配置:", ConfigData.Language);
-
-    // 在配置文件加载完毕后，等待页面中的媒体资源加载
-    if (ConfigData.FileLoadConfig.length > 0) {
-      for (const file of ConfigData.FileLoadConfig) {
-        await loadFileContent(file.id, file.path);
-        await waitForMediaLoaded(file.id); // 等待每个文件加载的媒体元素
-      }
-    }
-
-    if (ConfigData.MarkdownInfo.length > 0) {
-      for (const file of ConfigData.MarkdownInfo) {
-        await loadFileContent(file.title, file.path);
-        await waitForMediaLoaded(file.title); // 等待每个 Markdown 文件加载的媒体元素
-      }
-    }
-
-    console.log("所有文件和媒体已加载完毕");
-
-  } catch (error) {
-    console.error("读取配置文件时出错:", error);
-  }
-}
-
 // 清空元素内容或删除元素本身
 async function ClearRemoveElement(elementId, removeElement = false) {
   const element = document.getElementById(elementId);
@@ -124,47 +80,6 @@ async function loadMultipleFiles(dataArray) {
 
   console.log("所有文件已加载完成");
   return "加载完成"; // 或根据需要返回其他值
-}
-
-// 加载配置文件并处理不同的配置部分
-async function loadConfig(path) {
-  try {
-    const data = await fetchFile(path); // 获取配置文件
-    const config = JSON.parse(data); // 解析 JSON 配置
-
-    // 初始化配置对象
-    ConfigData.FileLoadConfig = [];
-    ConfigData.MarkdownInfo = [];
-    ConfigData.Language = config.Language || 'en';  // 默认语言为 'en'
-
-    processFileLoadConfig(config.FileLoadConfig); // 处理文件加载配置
-    processMarkdownFiles(config.MarkdownFiles);   // 处理 Markdown 文件信息
-
-    // 输出加载的配置
-    console.log("文件加载配置:", ConfigData.FileLoadConfig);
-    console.log("Markdown 文件信息:", ConfigData.MarkdownInfo);
-    console.log("语言配置:", ConfigData.Language);
-  } catch (error) {
-    console.error("读取配置文件时出错:", error);
-  }
-}
-
-// 处理 FileLoadConfig 配置部分
-function processFileLoadConfig(fileLoadConfig) {
-  if (Array.isArray(fileLoadConfig)) {
-    fileLoadConfig.forEach(file => {
-      if (file.id && file.path) {
-        ConfigData.FileLoadConfig.push({
-          id: file.id,
-          path: file.path
-        });
-      } else {
-        console.warn("无效的文件加载配置:", file);
-      }
-    });
-  } else {
-    console.warn("FileLoadConfig 配置无效或未找到");
-  }
 }
 
 // 处理 FileLoadConfig 配置部分
@@ -203,22 +118,22 @@ function processMarkdownFiles(markdownFiles) {
   }
 }
 
-// 修改后的：处理 PhotoConfig 配置部分
+// 处理 PhotoConfig 配置部分
 function processPhotoConfig(photoConfig) {
   if (Array.isArray(photoConfig)) {
-    photoConfig.forEach(photoPath => {
-      if (typeof photoPath === 'string' && photoPath.trim() !== '') {
-        ConfigData.PhotoInfo.push(photoPath);
+    ConfigData.PhotoConfig = photoConfig.map(path => {
+      if (typeof path === 'string') {
+        return path;  // 直接存储路径字符串
       } else {
-        console.warn("无效的 Photo 路径:", photoPath);
+        console.warn("无效的照片配置路径:", path);
+        return null; // 无效路径忽略
       }
-    });
+    }).filter(path => path !== null);  // 过滤掉无效路径
   } else {
     console.warn("PhotoConfig 配置无效或未找到");
   }
 }
 
-// 优化后的等待媒体加载函数
 function waitForMediaLoaded(ID, MaxDelay = 10000) {
   return new Promise((resolve, reject) => {
     const element = document.getElementById(ID);
@@ -258,4 +173,32 @@ function waitForMediaLoaded(ID, MaxDelay = 10000) {
 
     checkAllLoaded(); // 初次检查是否所有媒体已经加载
   });
+}
+
+// 加载配置文件并处理不同的配置部分
+async function loadConfig(path) {
+  try {
+    const data = await fetchFile(path); // 获取配置文件
+    const config = JSON.parse(data); // 解析 JSON 配置
+
+    // 初始化配置对象
+    ConfigData.FileLoadConfig = [];
+    ConfigData.MarkdownInfo = [];
+    ConfigData.PhotoConfig = [];
+    ConfigData.Language = config.Language || 'en';  // 默认语言为 'en'
+
+    processFileLoadConfig(config.FileLoadConfig); // 处理文件加载配置
+    processMarkdownFiles(config.MarkdownFiles);   // 处理 Markdown 文件信息
+    processPhotoConfig(config.PhotoConfig);       // 处理 Photo 配置
+
+    // 输出加载的配置
+    console.log("文件加载配置:", ConfigData.FileLoadConfig);
+    console.log("Markdown 文件信息:", ConfigData.MarkdownInfo);
+    console.log("照片配置:", ConfigData.PhotoConfig);
+    console.log("语言配置:", ConfigData.Language);
+    console.log("所有文件和媒体已加载完毕");
+
+  } catch (error) {
+    console.error("读取配置文件时出错:", error);
+  }
 }

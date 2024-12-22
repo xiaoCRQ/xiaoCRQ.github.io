@@ -344,7 +344,7 @@ async function CursorDefine() {
     speed: 0.35,
     skewing: 5,
     stateDetection: {
-      '-pointer': 'a,button,h1,h2,h3,h4,h5,h6,h7,h8,h9,code',
+      '-pointer': 'a,button,code',
       '-hidden': 'iframe'
     },
   });

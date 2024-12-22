@@ -155,58 +155,6 @@ function createWall(worldId, x, y, width, height, options = {}) {
   return wall;
 }
 
-// 创建Emoji物理元素
-async function createEmoji(worldId, x, y, size, delay) {
-  const world = physicsWorlds[worldId]?.world;
-  if (!world) return null;
-
-  const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-
-  // 设置生成位置：将 y 坐标设置为画布上方 (负值)，元素将从上方进入
-  if (x === 0) x = Math.random() * physicsWorlds[worldId].render.options.width;
-  else x = x * physicsWorlds[worldId].render.options.width;
-
-  if (y === 0) y = Math.random() * physicsWorlds[worldId].render.options.height;
-  else y = y * physicsWorlds[worldId].render.options.height;
-  // const y = -size;
-
-  // 延迟创建 Emoji
-  setTimeout(() => {
-    const body = Bodies.circle(x, y, size / 2, {
-      render: {
-        sprite: {
-          texture: `data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"${size}\" height=\"${size}\" viewBox=\"0 0 110 110\"><text y=\".9em\" font-size=\"90\">${emoji}</text></svg>`,
-          xScale: 1,
-          yScale: 1
-        }
-      },
-      restitution: 0.8  // 增加一些反弹效果
-    });
-
-    // 设置随机旋转角度
-    const randomAngle = Math.random() * Math.PI * 2; // 随机角度 [0, 2π)
-    Body.setAngle(body, randomAngle);
-
-    // 将新创建的 Emoji 物体添加到世界中
-    Composite.add(world, body);
-  }, delay);  // 使用随机延迟
-}
-
-
-async function createEmojiS(count, Size, SizeRandom, x, y, Delay) {
-
-  // 在物理世界中创建 N 个 Emoji
-  for (let i = 0; i < count; i++) {
-    let size
-    if (isMobileDevice())
-      size = vhToPx(Size) + Math.random() * vhToPx(SizeRandom);  // 随机大小
-    else
-      size = vwToPx(Size) + Math.random() * vwToPx(SizeRandom);  // 随机大小
-    const delay = Math.random() * Delay;  // 随机最大延时
-    createEmoji('Emoji', x, y, size, delay);  // 生成位置在屏幕上方，且具有随机延时
-  }
-}
-
 
 // 创建特殊物理区域
 function createSpecialPhysicsArea(worldId, offset = 100, allowHorizontal = true, allowVertical = true) {
@@ -458,9 +406,66 @@ window.addEventListener('resize', () => {
   }
 });
 
-
-
 // 当DOM加载完成时初始化
 // document.addEventListener('DOMContentLoaded', init);
 init()
 initKeyboardControls()
+
+
+// ------------------------------------------------
+// 创建Emoji物理元素
+async function createEmoji(worldId, x, y, size, delay) {
+  const world = physicsWorlds[worldId]?.world;
+  if (!world) return null;
+
+  const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+
+  // 设置生成位置：将 y 坐标设置为画布上方 (负值)，元素将从上方进入
+  if (x === 0) x = Math.random() * physicsWorlds[worldId].render.options.width;
+  else x = x * physicsWorlds[worldId].render.options.width;
+
+  if (y === 0) y = Math.random() * physicsWorlds[worldId].render.options.height;
+  else y = y * physicsWorlds[worldId].render.options.height;
+  // const y = -size;
+
+  // 延迟创建 Emoji
+  setTimeout(() => {
+    const body = Bodies.circle(x, y, size / 2, {
+      render: {
+        sprite: {
+          texture: `data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"${size}\" height=\"${size}\" viewBox=\"0 0 110 110\"><text y=\".9em\" font-size=\"90\">${emoji}</text></svg>`,
+          xScale: 1,
+          yScale: 1
+        }
+      },
+      restitution: 0.8  // 增加一些反弹效果
+    });
+
+    // 设置随机旋转角度
+    const randomAngle = Math.random() * Math.PI * 2; // 随机角度 [0, 2π)
+    Body.setAngle(body, randomAngle);
+
+    // 将新创建的 Emoji 物体添加到世界中
+    Composite.add(world, body);
+  }, delay);  // 使用随机延迟
+}
+
+
+async function createEmojiS(count, Size, SizeRandom, x, y, Delay) {
+  // 在物理世界中创建 N 个 Emoji
+  for (let i = 0; i < count; i++) {
+    let size
+    if (isMobileDevice())
+      size = vhToPx(Size) + Math.random() * vhToPx(SizeRandom);  // 随机大小
+    else
+      size = vwToPx(Size) + Math.random() * vwToPx(SizeRandom);  // 随机大小
+    const delay = Math.random() * Delay;  // 随机最大延时
+    createEmoji('Emoji', x, y, size, delay);  // 生成位置在屏幕上方，且具有随机延时
+  }
+}
+
+// ------------------------------------------------
+// 鸣谢图册
+
+
+// ------------------------------------------------
