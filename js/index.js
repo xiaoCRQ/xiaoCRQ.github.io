@@ -354,19 +354,22 @@ async function OpeWebSite() {
 
   AnimeContainer.style.backgroundColor = 'rgba(255,255,255,0)'
 
-  gsap.set(Home, {
-    y: '0vh',
-  })
-
   setTimeout(() => {
     applyUpwardForceToTop('Emoji')
   }, 350);
 
-  await gsap.to(Square, {
-    duration: 1,
-    ease: "expo.inOut",
-    y: '-100vh'
-  })
+  await Promise.all([
+    gsap.to(Square, {
+      duration: 1,
+      ease: "expo.inOut",
+      y: '-100vh'
+    }),
+    gsap.to(Home, {
+      duration: 1,
+      ease: "expo.inOut",
+      y: '0vh',
+    })
+  ]);
 
   gsap.set(Square, {
     // borderRadius: '1.5vh',
