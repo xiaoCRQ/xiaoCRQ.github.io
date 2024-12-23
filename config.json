@@ -42,18 +42,21 @@
   ],
   "PhotoConfig": [
     "img/1.jpg",
-    "img/2.webp",
+    "img/2.png",
     "img/3.jpg",
-    "img/4.webp",
+    "img/4.png",
     "img/5.jpg",
     "img/6.png",
     "img/7.jpg",
-    "img/8.webp",
-    "img/9.webp",
+    "img/8.png",
+    "img/9.png",
     "img/10.jpg",
-    "img/11.webp",
+    "img/11.png",
     "img/12.png",
     "img/13.png",
-    "img/14.png"
+    "img/14.png",
+    "img/15.jpg",
+    "img/16.jpg",
+    "img/17.jpg"
   ]
 }
