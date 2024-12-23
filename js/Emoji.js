@@ -63,60 +63,69 @@ function initWorld(elementId, options = {}) {
     }
   });
 
-  // 存储原始宽度、高度和角度
-  const originalDimensions = new Map();
-  const originalAngles = new Map();
-
-  // 监听鼠标开始拖动事件
-  Events.on(mouseConstraint, 'startdrag', function (event) {
-    const body = event.body;
-    if (body) {
-      // 存储原始宽度、高度和角度
-      originalDimensions.set(body.id, { width: body.bounds.max.x - body.bounds.min.x, height: body.bounds.max.y - body.bounds.min.y });
-      originalAngles.set(body.id, body.angle);
-
-      // 将旋转角度归零并放大元素
-      Body.setAngle(body, 0);
-      // 放大元素
-      const scaleFactor = 2; // 放大2倍
-      Body.scale(body, scaleFactor, scaleFactor);
-    }
-  });
-
-  // 监听鼠标结束拖动事件
-  Events.on(mouseConstraint, 'enddrag', function (event) {
-    const body = event.body;
-    if (body) {
-      // 恢复原始尺寸
-      const originalDimensionsData = originalDimensions.get(body.id);
-      if (originalDimensionsData) {
-        const { width, height } = originalDimensionsData;
-
-        // 恢复为原始宽度和高度
-        const currentWidth = body.bounds.max.x - body.bounds.min.x;
-        const currentHeight = body.bounds.max.y - body.bounds.min.y;
-
-        const scaleX = width / currentWidth;
-        const scaleY = height / currentHeight;
-
-        // 按比例恢复大小
-        Body.scale(body, scaleX, scaleY);
-      }
-
-      // 恢复旋转角度
-      const originalAngle = originalAngles.get(body.id);
-      if (originalAngle !== undefined) {
-        Body.setAngle(body, originalAngle); // 恢复旋转角度
-      }
-
-      // 清除存储的原始比例和角度
-      originalDimensions.delete(body.id);
-      originalAngles.delete(body.id);
-    }
-  });
-
   Composite.add(world, mouseConstraint);
   render.mouse = mouse;
+
+  let MouseUse = false;
+  let Scale = 3;
+  let previousAngularVelocity = {}; // 存储每个物体的之前角速度
+
+  // 添加鼠标点击事件监听器
+  Events.on(mouseConstraint, 'mousedown', function (event) {
+    const mousePosition = event.mouse.position;
+    const bodiesAtMousePosition = Composite.allBodies(world).filter(body =>
+      Matter.Bounds.contains(body.bounds, mousePosition)
+    );
+
+    if (bodiesAtMousePosition.length > 0) {
+      const clickedBody = bodiesAtMousePosition[0]; // 获取第一个被点击的物体
+      console.log('Clicked body texture:', clickedBody.render.sprite.texture); // 输出纹理到控制台
+
+      MouseUse = true;
+
+      // 放大纹理和尺寸
+      Body.scale(clickedBody, Scale, Scale); // 将物体尺寸放大两倍
+
+      // 放大纹理
+      if (clickedBody.render.sprite) {
+        clickedBody.render.sprite.xScale *= Scale; // 水平放大纹理
+        clickedBody.render.sprite.yScale *= Scale; // 垂直放大纹理
+      }
+
+      // 将物体角度归零并停止旋转
+      Body.setAngle(clickedBody, 0); // 设置物体的角度为0
+      previousAngularVelocity[clickedBody.id] = clickedBody.angularVelocity; // 保存之前的角速度
+      Body.setAngularVelocity(clickedBody, 0); // 设置角速度为0，禁止旋转
+    }
+  });
+
+  // 添加鼠标松开事件监听器
+  Events.on(mouseConstraint, 'mouseup', function (event) {
+    const mousePosition = event.mouse.position;
+    const bodiesAtMousePosition = Composite.allBodies(world).filter(body =>
+      Matter.Bounds.contains(body.bounds, mousePosition)
+    );
+
+    if (bodiesAtMousePosition.length > 0 && MouseUse === true) {
+      MouseUse = false;
+      const clickedBody = bodiesAtMousePosition[0]; // 获取第一个被点击的物体
+
+      // 恢复物体尺寸和纹理
+      Body.scale(clickedBody, 1 / Scale, 1 / Scale); // 将物体尺寸恢复到原来的一半
+
+      // 恢复纹理
+      if (clickedBody.render.sprite) {
+        clickedBody.render.sprite.xScale *= 1 / Scale; // 恢复水平纹理缩放
+        clickedBody.render.sprite.yScale *= 1 / Scale; // 恢复垂直纹理缩放
+      }
+
+      // 恢复之前的角速度，但不改变角度
+      if (previousAngularVelocity[clickedBody.id] !== undefined) {
+        Body.setAngularVelocity(clickedBody, previousAngularVelocity[clickedBody.id]); // 恢复之前的角速度
+        delete previousAngularVelocity[clickedBody.id]; // 清除记录，避免内存泄漏
+      }
+    }
+  });
 
   physicsWorlds[elementId] = { engine, world, render, runner, mouse, mouseConstraint };
   return physicsWorlds[elementId];
@@ -212,7 +221,7 @@ function createWall(worldId, x, y, width, height, options = {}) {
 
 
 // 创建特殊物理区域
-function createSpecialPhysicsArea(worldId, offset = 100, allowHorizontal = true, allowVertical = true) {
+function createSpecialPhysicsArea(worldId, offset = 300, allowHorizontal = true, allowVertical = true) {
   const { world, render, engine } = physicsWorlds[worldId] || {};
   if (!world || !render || !engine) return;
 
@@ -305,7 +314,7 @@ function applyUpwardForceToTop(worldId) {
 
   // 向上的推力
   const forceX = 0;
-  const forceY = -0.05;  // 向上的推力
+  const forceY = -0.1;  // 向上的推力
 
   applyForce(worldId, startX, startY, endX, endY, forceX, forceY, 500, width * 2);
 }
@@ -331,7 +340,7 @@ function initShakeDetection() {
 
         const bodies = Composite.allBodies(world);
         bodies.forEach(body => {
-          const randomForce = Vector.create((Math.random() - 0.5) * 5, (Math.random() - 0.5) * 5);
+          const randomForce = Vector.create((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10);
           Body.applyForce(body, body.position, randomForce);
         });
       });
@@ -350,7 +359,7 @@ function initKeyboardControls() {
 
         const bodies = Composite.allBodies(world);
         bodies.forEach(body => {
-          const randomForce = Vector.create((Math.random() - 0.5) * 3.5, (Math.random() - 0.5) * 3.5);
+          const randomForce = Vector.create((Math.random() - 0.5) * 5, (Math.random() - 0.5) * 5);
           Body.applyForce(body, body.position, randomForce);
         });
       });
@@ -363,7 +372,7 @@ function initKeyboardControls() {
       if (!world) return;
 
       const bodies = Composite.allBodies(world);
-      const forceY = event.deltaY < 0 ? 0.025 : -0.025; // 滚轮向上为负值，向下为正值
+      const forceY = event.deltaY < 0 ? 0.05 : -0.05; // 滚轮向上为负值，向下为正值
       bodies.forEach(body => {
         Body.applyForce(body, body.position, { x: 0, y: forceY });
       });
@@ -410,7 +419,7 @@ function WorldRefresh() {
 
   // 重新添加所有元素
   if (UseFunction_Emoji === 1)
-    createEmojiS(15, 4, 4, 0, 0, 0)
+    createEmojiS(15, 6, 4, 0, 0, 0)
   else
     if (UseFunction_Emoji === 2)
       createPhotoS(15, 8, 4, 0, 0, 0)
@@ -427,7 +436,7 @@ function init() {
     createSpecialPhysicsArea('Emoji');
 
     if (UseFunction_Emoji === 1)
-      createEmojiS(15, 4, 4, 0, 0, 0)
+      createEmojiS(15, 6, 4, 0, 0, 0)
     else
       if (UseFunction_Emoji === 2)
         createPhotoS(15, 8, 4, 0, 0, 0)

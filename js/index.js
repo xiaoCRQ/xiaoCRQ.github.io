@@ -65,7 +65,6 @@ async function BlogNav(Motion = true) {
 async function NavPage(ElementID, Motion = true) {
   const Element = document.getElementById(ElementID)
   if (Motion) {
-    loadIcon(false);
     await gsap.to(Element, {
       y: '0vh',
       // ease: "elastic.out(1, 0.85)",
@@ -74,7 +73,6 @@ async function NavPage(ElementID, Motion = true) {
     });
   }
   else {
-    loadIcon(true);
     await gsap.to(Element, {
       y: '-100vh',
       // ease: "elastic.in(1, 0.85)",
@@ -144,7 +142,9 @@ async function NavAnimes(Motion = true) {
 
 async function NavAnime() {
   let ElementIDLast = "Home_Resource";
+  let delay = 0;
   const Nav = document.getElementById('Nav_Button');
+  const Back = document.getElementById('BackGrund');
 
   const Home = document.getElementById('Home')
   const Blog = document.getElementById('Blog')
@@ -160,13 +160,13 @@ async function NavAnime() {
   Nav_Line.addEventListener('click', () => {
     if (!isExpanded) {
       NavAnimes();
-      if (ElementIDLast === 'Blog_Resource');
-      BlogNav()
+      if (ElementIDLast === 'Blog_Resource')
+        BlogNav()
 
     } else {
       NavAnimes(false);
-      if (ElementIDLast === 'Blog_Resource');
-      BlogNav(false)
+      if (ElementIDLast === 'Blog_Resource')
+        BlogNav(false)
     }
 
   });
@@ -182,27 +182,38 @@ async function NavAnime() {
       if (ElementIDLast && ElementIDLast) {
         NavPage(ElementIDLast, false);
 
+        if (ElementIDNew === "Thanks_Resource") {
+          delay = 1500;
+          loadIcon(true);
+          UseFunction_Emoji = 2
+          setTimeout(() => {
+            // Back.style.backgroundColor = 'white'
+            WorldRefresh()
+            loadIcon(false);
+          }, 750)
+          setTimeout(() => {
+            applyUpwardForceToTop('Emoji')
+          }, 1000)
+        }
+
+        if (ElementIDLast === "Thanks_Resource") {
+          delay = 0;
+          loadIcon(true);
+          UseFunction_Emoji = 1
+          setTimeout(() => {
+            // Back.style.backgroundColor = 'black'
+            WorldRefresh()
+            loadIcon(false);
+          }, 750)
+          setTimeout(() => {
+            applyUpwardForceToTop('Emoji')
+          }, 1000)
+        }
+
         setTimeout(() => {
-
-          if (ElementIDNew === "Thanks_Resource") {
-            UseFunction_Emoji = 2
-            WorldRefresh()
-            setTimeout(() => {
-              applyUpwardForceToTop('Emoji')
-            }, 100)
-          }
-
-          if (ElementIDLast === "Thanks_Resource") {
-            UseFunction_Emoji = 1
-            WorldRefresh()
-            setTimeout(() => {
-              applyUpwardForceToTop('Emoji')
-            }, 100)
-          }
-
           NavPage(ElementIDNew);
           ElementIDLast = ElementIDNew;
-        }, 750);
+        }, 0);
       }
       else {
         NavPage(ElementIDNew);
