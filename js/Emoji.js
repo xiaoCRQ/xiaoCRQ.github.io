@@ -77,7 +77,7 @@ function initWorld(elementId, options = {}) {
       Matter.Bounds.contains(body.bounds, mousePosition)
     );
 
-    if (bodiesAtMousePosition.length > 0) {
+    if (bodiesAtMousePosition.length > 0 && UseFunction_Emoji === 2) {
       const clickedBody = bodiesAtMousePosition[0]; // 获取第一个被点击的物体
       console.log('Clicked body texture:', clickedBody.render.sprite.texture); // 输出纹理到控制台
 
@@ -106,7 +106,7 @@ function initWorld(elementId, options = {}) {
       Matter.Bounds.contains(body.bounds, mousePosition)
     );
 
-    if (bodiesAtMousePosition.length > 0 && MouseUse === true) {
+    if (bodiesAtMousePosition.length > 0 && MouseUse === true && UseFunction_Emoji === 2) {
       MouseUse = false;
       const clickedBody = bodiesAtMousePosition[0]; // 获取第一个被点击的物体
 
