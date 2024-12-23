@@ -1,3 +1,7 @@
+let MobileDevice = false
+let NavMove = '45vh'
+let BlogNavMargin = '1vw'
+
 // 将vh单位转换为像素
 function vhToPx(vh) {
   return (vh * window.innerHeight) / 100;
@@ -9,7 +13,10 @@ function vwToPx(vw) {
 }
 
 function isMobileDevice() {
-  return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|webOS/i.test(navigator.userAgent);
+  MobileDevice = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|webOS/i.test(navigator.userAgent)
+  if (MobileDevice) NavMove = '98vw', BlogNavMargin = '0vw';
+  else NavMove = '45vh', BlogNavMargin = '1vw';
+  return MobileDevice;
 }
 
 
@@ -39,26 +46,22 @@ async function loadIcon(Motion = true) {
 async function BlogNav(Motion = true) {
   const Nav = document.getElementById('Blog_Nav')
   if (Motion) {
-    await Promise.all([
-      gsap.to(Nav, {
-        marginLeft: '1vw',
-        color: 'black',
-        width: '45vh',
-        ease: "expo.inOut",
-        duration: 0.65
-      }),
-    ])
+    await gsap.to(Nav, {
+      marginLeft: BlogNavMargin,
+      color: 'black',
+      width: NavMove,
+      ease: "expo.inOut",
+      duration: 0.65
+    })
   }
   else {
-    await Promise.all([
-      gsap.to(Nav, {
-        marginLeft: '0vw',
-        color: 'rgba(255,255,255,0)',
-        width: '0vh',
-        ease: "expo.inOut",
-        duration: 0.85
-      }),
-    ])
+    await gsap.to(Nav, {
+      marginLeft: '0vw',
+      color: 'rgba(255,255,255,0)',
+      width: '0vh',
+      ease: "expo.inOut",
+      duration: 0.85
+    })
   }
 }
 
@@ -101,7 +104,7 @@ async function NavAnimes(Motion = true) {
       duration: 0.45
     })
     gsap.to(Nav, {
-      width: '45vh',
+      width: NavMove,
       ease: "expo.inOut",
       duration: 0.75
     });

@@ -445,7 +445,7 @@ function init() {
   }
 
   // 初始化手机摇一摇功能
-  if (isMobileDevice())
+  if (MobileDevice)
     initShakeDetection();
 }
 
@@ -504,7 +504,7 @@ async function createEmojiS(count, Size, SizeRandom, x, y, Delay) {
   // 在物理世界中创建 N 个 Emoji
   for (let i = 0; i < count; i++) {
     let size
-    if (isMobileDevice())
+    if (MobileDevice)
       size = vhToPx(Size) + Math.random() * vhToPx(SizeRandom);  // 随机大小
     else
       size = vwToPx(Size) + Math.random() * vwToPx(SizeRandom);  // 随机大小
@@ -573,7 +573,7 @@ function createPhotoS(count, Size, SizeRandom, x, y, Delay) {
   // 在物理世界中创建 N 个图片
   for (let i = 0; i < count; i++) {
     let size;
-    if (isMobileDevice())
+    if (MobileDevice)
       size = vhToPx(Size) + Math.random() * vhToPx(SizeRandom);  // 随机大小
     else
       size = vwToPx(Size) + Math.random() * vwToPx(SizeRandom);  // 随机大小
