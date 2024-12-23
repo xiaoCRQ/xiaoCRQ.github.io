@@ -327,43 +327,26 @@ async function OpeWebSite() {
   Square.style.position = 'fixed';
   Square.style.top = Square.style.left = 0;
   Square.style.zIndex = 1;
+  Square.style.fontSize = '14vw';
+  Square.style.color = 'black';
+  Square.style.backgroundColor = 'white';
+  Square.innerHTML = "I'm...";
 
   AnimeContainer.appendChild(Square);
-  await loadFileContent('Square', 'html/Icon.html')
-  Icon = document.getElementById('Icon')
-  Icon.style.mixBlendMode = 'exclusion'
-  Icon.style.width = '45%'
-  Square.style.backgroundColor = 'white';
-  gsap.to(Icon, {
-    rotation: 360,
-    duration: 3.5,
-    repeat: -1,
-    ease: "expo.inOut",
-  });
-
-  await gsap.fromTo(Square, {
-    y: '100vh'
-  }, {
-    duration: 0.5,
-    ease: "expo.in",
-    y: '0vh',
-  })
-
-  Progress.innerHTML = "I'm ..."
-
-  await gsap.to(Square, {
-    duration: 0.5,
-    ease: "expo.out",
-    y: '-100vh'
-  })
-
-  await gsap.fromTo(Square, {
-    y: '100vh'
-  }, {
-    duration: 0.5,
-    ease: "expo.in",
-    y: '0vh',
-  })
+  await Promise.all([
+    gsap.fromTo(Square, {
+      y: '-100vh'
+    }, {
+      duration: 1,
+      ease: "expo.inOut",
+      y: '0vh',
+    }),
+    gsap.to(Progress, {
+      duration: 1,
+      ease: "expo.inOut",
+      y: '100vh',
+    })
+  ]);
 
   AnimeContainer.removeChild(Progress);
 
@@ -377,11 +360,11 @@ async function OpeWebSite() {
 
   setTimeout(() => {
     applyUpwardForceToTop('Emoji')
-  }, 0);
+  }, 350);
 
   await gsap.to(Square, {
-    duration: 0.5,
-    ease: "expo.out",
+    duration: 1,
+    ease: "expo.inOut",
     y: '-100vh'
   })
 
@@ -394,6 +377,18 @@ async function OpeWebSite() {
 
   // Square.style.top = '2vh';
   // Square.style.left = '1vw';
+
+  await loadFileContent('Square', 'html/Icon.html')
+  Icon = document.getElementById('Icon')
+  Icon.style.mixBlendMode = 'exclusion'
+  Icon.style.width = '45%'
+
+  gsap.to(Icon, {
+    rotation: 360,
+    duration: 3.5,
+    repeat: -1,
+    ease: "expo.inOut",
+  });
 
 }
 
