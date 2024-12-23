@@ -315,7 +315,7 @@ async function OpeWebSite() {
     borderRadius: 0,
   })
 
-  Progress.innerHTML = "你好"
+  Progress.innerHTML = "Hey!"
 
   await gsap.to(Progress, {
     duration: 1,
@@ -334,6 +334,28 @@ async function OpeWebSite() {
   Icon.style.mixBlendMode = 'exclusion'
   Icon.style.width = '45%'
   Square.style.backgroundColor = 'white';
+  gsap.to(Icon, {
+    rotation: 360,
+    duration: 3.5,
+    repeat: -1,
+    ease: "expo.inOut",
+  });
+
+  await gsap.fromTo(Square, {
+    y: '100vh'
+  }, {
+    duration: 0.5,
+    ease: "expo.in",
+    y: '0vh',
+  })
+
+  Progress.innerHTML = "I'm ..."
+
+  await gsap.to(Square, {
+    duration: 0.5,
+    ease: "expo.out",
+    y: '-100vh'
+  })
 
   await gsap.fromTo(Square, {
     y: '100vh'
@@ -373,12 +395,6 @@ async function OpeWebSite() {
   // Square.style.top = '2vh';
   // Square.style.left = '1vw';
 
-  gsap.to(Icon, {
-    rotation: 360,
-    duration: 3.5,
-    repeat: -1,
-    ease: "expo.inOut",
-  });
 }
 
 async function CursorDefine() {

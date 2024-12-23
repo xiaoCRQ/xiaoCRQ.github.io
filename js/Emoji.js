@@ -419,13 +419,14 @@ function WorldRefresh() {
 
   // 重新添加所有元素
   if (UseFunction_Emoji === 1)
-    createEmojiS(15, 6, 4, 0, 0, 0)
+    createEmojiS(CountS, 6, 4, 0, 0, 0)
   else
     if (UseFunction_Emoji === 2)
-      createPhotoS(15, 8, 4, 0, 0, 0)
+      createPhotoS(CountS, 8, 4, 0, 0, 0)
 }
 
 
+let CountS = 25
 // 初始化函数
 function init() {
   // 初始化物理世界
@@ -436,10 +437,10 @@ function init() {
     createSpecialPhysicsArea('Emoji');
 
     if (UseFunction_Emoji === 1)
-      createEmojiS(15, 6, 4, 0, 0, 0)
+      createEmojiS(CountS, 6, 4, 0, 0, 0)
     else
       if (UseFunction_Emoji === 2)
-        createPhotoS(15, 8, 4, 0, 0, 0)
+        createPhotoS(CountS, 8, 4, 0, 0, 0)
 
     setGravity('Emoji', 0, 0.025);  // 设置适当的重力
   }
