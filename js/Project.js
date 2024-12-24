@@ -103,29 +103,28 @@ const ProjectResources = {
     // 当鼠标移动时，调用move_imgs函数，只允许y轴拖动
     this.canvas.addEventListener("mousemove", (e) => {
       if (!this.if_movable) return;
-      this.move_imgs(e.movementY);
+      this.move_imgs(0, e.movementY);
     });
     // 鼠标滚轮事件，上下滚动背景
     this.canvas.addEventListener("wheel", (e) => {
       e.preventDefault(); // 禁止默认滚动行为
-      this.move_imgs(e.deltaY < 0 ? 50 : -50); // 根据滚轮方向移动
+      this.move_imgs(0, e.deltaY < 0 ? 50 : -50); // 根据滚轮方向移动
     });
   },
+
   // 移动所有背景
-  move_imgs(dy) {
+  move_imgs(x, y) {
     // 清除content，重新进行绘制
     this.content.clearRect(0, 0, this.canvas.width, this.canvas.height);
     // 遍历所有背景，对每一个背景进行移动，并进行判断
     this.img_data.forEach((img) => {
-      img.y += dy;
+      img.y += y;
       // 当背景块超出总高度范围时，将其移到最上方
       if (img.y > (this.total_height - vhToPx(this.img_height)))
         img.y -= this.total_height + vhToPx(this.img_margin);
       // 当背景块小于负的高度范围时，将其移到最下方
       if (img.y < -vhToPx(this.img_height))
         img.y += this.total_height + vhToPx(this.img_margin);
-      // 绘制白色背景，更新画布
-      this.content.fillStyle = "#ffffff"; // 设置背景颜色为白色
       this.content.fillRect(img.x, img.y, vhToPx(this.img_width), vhToPx(this.img_height));
     });
   }

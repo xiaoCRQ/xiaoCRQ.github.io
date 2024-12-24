@@ -15,25 +15,21 @@
 
 #Blog_Page {
   background-color: white;
-  margin-left: 1vw;
-  height: 96vh;
+  height: 100vh;
   flex-grow: 1;
   /* 占据剩余宽度 */
   color: black;
-  border-radius: 1.5vh;
   pointer-events: auto;
 }
 
 #Blog_Nav {
   width: 0;
-  height: 96vh;
+  height: 100vh;
   flex-shrink: 0;
   /* 防止压缩 */
   white-space: nowrap;
   background-color: white;
-  margin-right: 1vw;
   color: black;
-  border-radius: 1.5vh;
   pointer-events: auto;
   user-select: none;
   overflow-y: scroll;

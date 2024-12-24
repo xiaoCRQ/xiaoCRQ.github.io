@@ -1,6 +1,6 @@
 let MobileDevice = false
 let NavMove = '45vh'
-let BlogNavMargin = '1vw'
+let BlogNavMove = '48vh'
 
 // 将vh单位转换为像素
 function vhToPx(vh) {
@@ -14,8 +14,8 @@ function vwToPx(vw) {
 
 function isMobileDevice() {
   MobileDevice = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|webOS/i.test(navigator.userAgent)
-  if (MobileDevice) NavMove = '98vw', BlogNavMargin = '0vw';
-  else NavMove = '45vh', BlogNavMargin = '1vw';
+  if (MobileDevice) BlogNavMove = NavMove = '100vw'
+  else NavMove = '45vh', BlogNavMove = '48vh'
   return MobileDevice;
 }
 
@@ -46,16 +46,14 @@ async function BlogNav(Motion = true) {
   const Nav = document.getElementById('Blog_Nav')
   if (Motion) {
     await gsap.to(Nav, {
-      marginLeft: BlogNavMargin,
       color: 'black',
-      width: NavMove,
+      width: BlogNavMove,
       ease: "expo.inOut",
       duration: 0.65
     })
   }
   else {
     await gsap.to(Nav, {
-      marginLeft: '0vw',
       color: 'rgba(255,255,255,0)',
       width: '0vh',
       ease: "expo.inOut",
@@ -143,6 +141,7 @@ async function NavAnimes(Motion = true) {
 }
 
 async function NavAnime() {
+  let ElementLast = null;
   let ElementIDLast = "Home_Resource";
   let delay = 0;
   const Nav = document.getElementById('Nav_Button');
@@ -229,10 +228,10 @@ async function NavAnime() {
     }
   };
 
-  Home.addEventListener('click', () => NavPageFunction("Home_Resource"));
-  Blog.addEventListener('click', () => NavPageFunction("Blog_Resource"));
-  Project.addEventListener('click', () => NavPageFunction("Project_Resource"));
-  Thanks.addEventListener('click', () => NavPageFunction("Thanks_Resource"));
+  Home.addEventListener('click', () => { NavPageFunction("Home_Resource") });
+  Blog.addEventListener('click', () => { NavPageFunction("Blog_Resource") });
+  Project.addEventListener('click', () => { NavPageFunction("Project_Resource") });
+  Thanks.addEventListener('click', () => { NavPageFunction("Thanks_Resource") });
 }
 
 
