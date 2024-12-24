@@ -13,12 +13,10 @@
   pointer-events: auto;
 }
 
-#Web {
-  transform: translateY(100vh);
+#Project_Web {
   border-radius: 1.5vh;
   width: 98vw;
   height: 96vh;
-  cursor: none;
 }
 
 #Project_Resources {
@@ -27,5 +25,4 @@
   left: 0;
   height: 100vh;
   width: 100vw;
-
 }

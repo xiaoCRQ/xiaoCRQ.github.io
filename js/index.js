@@ -13,8 +13,9 @@ function vwToPx(vw) {
 }
 
 function isMobileDevice() {
+  const Project = document.getElementById('Project_Web');
   MobileDevice = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|webOS/i.test(navigator.userAgent)
-  if (MobileDevice) BlogNavMove = NavMove = '100vw'
+  if (MobileDevice) BlogNavMove = NavMove = '100vw', Project.src = "";
   else NavMove = '45vh', BlogNavMove = '48vh'
   return MobileDevice;
 }
