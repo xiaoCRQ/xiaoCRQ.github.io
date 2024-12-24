@@ -77,7 +77,7 @@ function initWorld(elementId, options = {}) {
       Matter.Bounds.contains(body.bounds, mousePosition)
     );
 
-    if (bodiesAtMousePosition.length > 0 && UseFunction_Emoji === 2) {
+    if (bodiesAtMousePosition.length > 0 && UseFunction_Emoji === 2 && MouseUse === false) {
       const clickedBody = bodiesAtMousePosition[0]; // 获取第一个被点击的物体
       console.log('Clicked body texture:', clickedBody.render.sprite.texture); // 输出纹理到控制台
 
@@ -314,7 +314,7 @@ function applyUpwardForceToTop(worldId) {
 
   // 向上的推力
   const forceX = 0;
-  const forceY = -0.1;  // 向上的推力
+  const forceY = -0.05;  // 向上的推力
 
   applyForce(worldId, startX, startY, endX, endY, forceX, forceY, 500, width * 2);
 }
