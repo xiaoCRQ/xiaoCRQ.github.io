@@ -239,7 +239,6 @@ async function NavAnime() {
 async function OpeWebSite() {
   // 获取 Anime 容器
   const AnimeContainer = document.getElementById('Anime');
-  AnimeContainer.style.backgroundColor = '#FFFFFF'
 
   const Square = document.createElement('div');
   Square.id = 'Square';
@@ -247,11 +246,10 @@ async function OpeWebSite() {
   Progress.id = 'Progress';
 
   Progress.className = 'Page'
-  Progress.style.height = '0vh';
-  Progress.style.width = '0vh';
+  Progress.style.width = '0vw';
+  Progress.style.height = '0vw';
   Progress.style.borderRadius = '5vw';
   Progress.style.backgroundColor = 'black'
-  Progress.style.opacity = 0
 
   // 将元素添加到 Anime 容器
   AnimeContainer.appendChild(Progress);
@@ -261,7 +259,6 @@ async function OpeWebSite() {
 
   await gsap.to(Progress, {
     duration: 0.75,
-    opacity: 1,
     ease: "expo.inOut",
     width: '35vw',
     height: '35vw',
@@ -272,9 +269,8 @@ async function OpeWebSite() {
       duration: 1,
       ease: "expo.inOut",
       borderRadius: '1.5vw',
-      width: '2vw',
       height: '2vw',
-      rotation: 360,
+      rotation: 0,
     }),
     gsap.to(Icon, {
       duration: 0.95,
@@ -287,8 +283,8 @@ async function OpeWebSite() {
 
   // 宽度动画
   const widthAnimation = gsap.to(Progress, {
-    width: '60vw',  // 结束宽度
-    duration: 10,  // 动画持续时间
+    width: '75vw',  // 结束宽度
+    duration: 5,  // 动画持续时间
     ease: "expo.inOut",  // 缓动效果
     paused: false   // 初始时不暂停
   });

@@ -30,6 +30,7 @@ const Engine = Matter.Engine,
   Events = Matter.Events;
 
 
+let MouseUse = false;
 function initWorld(elementId, options = {}) {
   const element = document.getElementById(elementId);
   if (!element) return null;
@@ -44,8 +45,8 @@ function initWorld(elementId, options = {}) {
       width: element.clientWidth,
       height: element.clientHeight,
       wireframes: false,
-      background: options.background || '#ffffff'
-    }
+      background: options.background || '#ffffff',
+    },
   });
 
   Render.run(render);
@@ -59,18 +60,17 @@ function initWorld(elementId, options = {}) {
     mouse: mouse,
     constraint: {
       stiffness: 0.2,
-      render: { visible: false }
-    }
+      render: { visible: false },
+    },
   });
 
   Composite.add(world, mouseConstraint);
   render.mouse = mouse;
 
-  let MouseUse = false;
+  let clickedBody = null; // 存储当前点击的物体
   let Scale = 3;
-  let previousAngularVelocity = {}; // 存储每个物体的之前角速度
 
-  // 添加鼠标点击事件监听器
+  // 鼠标按下事件
   Events.on(mouseConstraint, 'mousedown', function (event) {
     const mousePosition = event.mouse.position;
     const bodiesAtMousePosition = Composite.allBodies(world).filter(body =>
@@ -78,52 +78,55 @@ function initWorld(elementId, options = {}) {
     );
 
     if (bodiesAtMousePosition.length > 0 && UseFunction_Emoji === 2 && MouseUse === false) {
-      const clickedBody = bodiesAtMousePosition[0]; // 获取第一个被点击的物体
-      console.log('Clicked body texture:', clickedBody.render.sprite.texture); // 输出纹理到控制台
+      clickedBody = bodiesAtMousePosition[0]; // 存储当前点击的物体
+      console.log('Clicked body texture:', clickedBody.render.sprite.texture);
 
       MouseUse = true;
 
-      // 放大纹理和尺寸
-      Body.scale(clickedBody, Scale, Scale); // 将物体尺寸放大两倍
+      // 禁用物理碰撞
+      clickedBody.collisionFilter.mask = 0; // 使其与所有物体无碰撞
 
-      // 放大纹理
-      if (clickedBody.render.sprite) {
-        clickedBody.render.sprite.xScale *= Scale; // 水平放大纹理
-        clickedBody.render.sprite.yScale *= Scale; // 垂直放大纹理
-      }
+      // 将物体移到 Composite 的最后
+      Composite.remove(world, clickedBody);
+      Composite.add(world, clickedBody);
 
-      // 将物体角度归零并停止旋转
-      Body.setAngle(clickedBody, 0); // 设置物体的角度为0
-      previousAngularVelocity[clickedBody.id] = clickedBody.angularVelocity; // 保存之前的角速度
-      Body.setAngularVelocity(clickedBody, 0); // 设置角速度为0，禁止旋转
+      // 使用 GSAP 动画实现角度归零和平滑放大
+      gsap.to(clickedBody, {
+        rotation: 0, // 平滑将角度归零
+        duration: 0.5,
+        onUpdate: function () {
+          Body.setAngle(clickedBody, this.targets()[0].rotation); // 同步更新物理引擎
+        },
+      });
+
+      // 使用 GSAP 动画放大纹理
+      gsap.to(clickedBody.render.sprite, {
+        xScale: clickedBody.render.sprite.xScale * Scale,
+        yScale: clickedBody.render.sprite.yScale * Scale,
+        ease: "expo.out",
+        duration: 0.5,
+      });
     }
   });
 
-  // 添加鼠标松开事件监听器
-  Events.on(mouseConstraint, 'mouseup', function (event) {
-    const mousePosition = event.mouse.position;
-    const bodiesAtMousePosition = Composite.allBodies(world).filter(body =>
-      Matter.Bounds.contains(body.bounds, mousePosition)
-    );
+  // 鼠标松开事件
+  Events.on(mouseConstraint, 'mouseup', function () {
+    if (clickedBody && UseFunction_Emoji === 2 && MouseUse === true) {
+      // 使用 GSAP 动画缩小纹理
+      gsap.to(clickedBody.render.sprite, {
+        xScale: clickedBody.render.sprite.xScale / Scale,
+        yScale: clickedBody.render.sprite.yScale / Scale,
+        ease: "expo.out",
+        duration: 0.5,
+      });
 
-    if (bodiesAtMousePosition.length > 0 && MouseUse === true && UseFunction_Emoji === 2) {
-      MouseUse = false;
-      const clickedBody = bodiesAtMousePosition[0]; // 获取第一个被点击的物体
+      setTimeout(() => {
+        // 恢复物理碰撞
+        clickedBody.collisionFilter.mask = 0xFFFFFFFF; // 恢复与所有物体的碰撞
+        clickedBody = null; // 清理存储，释放内存
+      }, 500);
 
-      // 恢复物体尺寸和纹理
-      Body.scale(clickedBody, 1 / Scale, 1 / Scale); // 将物体尺寸恢复到原来的一半
-
-      // 恢复纹理
-      if (clickedBody.render.sprite) {
-        clickedBody.render.sprite.xScale *= 1 / Scale; // 恢复水平纹理缩放
-        clickedBody.render.sprite.yScale *= 1 / Scale; // 恢复垂直纹理缩放
-      }
-
-      // 恢复之前的角速度，但不改变角度
-      if (previousAngularVelocity[clickedBody.id] !== undefined) {
-        Body.setAngularVelocity(clickedBody, previousAngularVelocity[clickedBody.id]); // 恢复之前的角速度
-        delete previousAngularVelocity[clickedBody.id]; // 清除记录，避免内存泄漏
-      }
+      MouseUse = false
     }
   });
 
@@ -363,6 +366,8 @@ function initKeyboardControls() {
           Body.applyForce(body, body.position, randomForce);
         });
       });
+      if (UseFunction_Emoji === 2)
+        WorldRefresh();
     }
   });
 
@@ -423,6 +428,8 @@ function WorldRefresh() {
   else
     if (UseFunction_Emoji === 2)
       createPhotoS(CountS, 8, 4, 0, 0, 0)
+
+  MouseUse = false
 }
 
 
