@@ -16,6 +16,7 @@ const emojis = ['😀', '😂', '🤣', '😊', '😍', '🤩', '😎', '🤔', 
 
 // 当前渲染模式
 let UseFunction_Emoji = 1
+let MouseUse = false;
 
 // Matter.js 模块
 const Engine = Matter.Engine,
@@ -30,7 +31,6 @@ const Engine = Matter.Engine,
   Events = Matter.Events;
 
 
-let MouseUse = false;
 function initWorld(elementId, options = {}) {
   const element = document.getElementById(elementId);
   if (!element) return null;
@@ -69,6 +69,7 @@ function initWorld(elementId, options = {}) {
 
   let clickedBody = null; // 存储当前点击的物体
   let Scale = 3;
+  let originalScales = {}; // 存储物体的原始缩放比例
 
   // 鼠标按下事件
   Events.on(mouseConstraint, 'mousedown', function (event) {
@@ -89,6 +90,20 @@ function initWorld(elementId, options = {}) {
       // 将物体移到 Composite 的最后
       Composite.remove(world, clickedBody);
       Composite.add(world, clickedBody);
+
+      // 动画效果：缩小其他物体
+      const otherBodies = Composite.allBodies(world).filter(body => body !== clickedBody);
+      otherBodies.forEach(body => {
+        // 记录物体的原始缩放比例
+        originalScales[body.id] = { xScale: body.render.sprite.xScale, yScale: body.render.sprite.yScale };
+
+        gsap.to(body.render.sprite, {
+          xScale: 0, // 缩小到0
+          yScale: 0,
+          ease: "expo.out",
+          duration: 0.5,
+        });
+      });
 
       // 使用 GSAP 动画实现角度归零和平滑放大
       gsap.to(clickedBody, {
@@ -112,6 +127,20 @@ function initWorld(elementId, options = {}) {
   // 鼠标松开事件
   Events.on(mouseConstraint, 'mouseup', function () {
     if (clickedBody && UseFunction_Emoji === 2 && MouseUse === true) {
+      // 动画效果：还原其他物体
+      const otherBodies = Composite.allBodies(world).filter(body => body !== clickedBody);
+      otherBodies.forEach(body => {
+        const originalScale = originalScales[body.id];
+        if (originalScale) {
+          gsap.to(body.render.sprite, {
+            xScale: originalScale.xScale, // 恢复原始缩放
+            yScale: originalScale.yScale,
+            ease: "expo.out",
+            duration: 0.5,
+          });
+        }
+      });
+
       // 使用 GSAP 动画缩小纹理
       gsap.to(clickedBody.render.sprite, {
         xScale: clickedBody.render.sprite.xScale / Scale,
@@ -126,7 +155,7 @@ function initWorld(elementId, options = {}) {
         clickedBody = null; // 清理存储，释放内存
       }, 500);
 
-      MouseUse = false
+      MouseUse = false;
     }
   });
 
@@ -226,7 +255,6 @@ function createWall(worldId, x, y, width, height, options = {}) {
 // 创建特殊物理区域
 function createSpecialPhysicsArea(worldId, offset = 300, allowHorizontal = true, allowVertical = true) {
   const { world, render, engine } = physicsWorlds[worldId] || {};
-  if (!world || !render || !engine) return;
 
   const width = render.options.width;
   const height = render.options.height;
@@ -303,7 +331,7 @@ function applyForce(worldId, startX, startY, endX, endY, forceX, forceY, duratio
 }
 
 // 屏幕底部中心施加向上的推力，持续一秒，推力作用范围为100像素
-function applyUpwardForceToTop(worldId) {
+function applyUpwardForceToTop(worldId, force = -0.05) {
   const width = physicsWorlds[worldId]?.render.options.width;
   const height = physicsWorlds[worldId]?.render.options.height;
 
@@ -317,7 +345,7 @@ function applyUpwardForceToTop(worldId) {
 
   // 向上的推力
   const forceX = 0;
-  const forceY = -0.05;  // 向上的推力
+  const forceY = force;  // 向上的推力
 
   applyForce(worldId, startX, startY, endX, endY, forceX, forceY, 500, width * 2);
 }
@@ -355,19 +383,32 @@ function initShakeDetection() {
 function initKeyboardControls() {
   window.addEventListener('keydown', event => {
     if (event.code === 'Space') {
-      // 空格键：随机施加冲击力，与手机摇一摇相同
-      Object.keys(physicsWorlds).forEach(worldId => {
-        const world = physicsWorlds[worldId]?.world;
-        if (!world) return;
+      if (UseFunction_Emoji === 2) {
+        loadIcon(true);
+        applyUpwardForceToTop('Emoji')
+        setTimeout(() => {
+          WorldRefresh();
+        }, 750)
+        setTimeout(() => {
+          loadIcon(false);
+        }, 750)
+        setTimeout(() => {
+          applyUpwardForceToTop('Emoji')
+        }, 800)
+      }
+      else {
+        // 空格键：随机施加冲击力，与手机摇一摇相同
+        Object.keys(physicsWorlds).forEach(worldId => {
+          const world = physicsWorlds[worldId]?.world;
+          if (!world) return;
 
-        const bodies = Composite.allBodies(world);
-        bodies.forEach(body => {
-          const randomForce = Vector.create((Math.random() - 0.5) * 5, (Math.random() - 0.5) * 5);
-          Body.applyForce(body, body.position, randomForce);
+          const bodies = Composite.allBodies(world);
+          bodies.forEach(body => {
+            const randomForce = Vector.create((Math.random() - 0.5) * 5, (Math.random() - 0.5) * 5);
+            Body.applyForce(body, body.position, randomForce);
+          });
         });
-      });
-      if (UseFunction_Emoji === 2)
-        WorldRefresh();
+      }
     }
   });
 
@@ -412,7 +453,7 @@ function clearWorlds() {
   });
 }
 
-function WorldRefresh() {
+async function WorldRefresh() {
   clearWorlds()
   // 重新创建特殊区域和墙壁
   Object.keys(physicsWorlds).forEach(worldId => {

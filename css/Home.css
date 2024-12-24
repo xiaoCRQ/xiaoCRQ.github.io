@@ -13,4 +13,6 @@
   transform: translateY(100vh);
   pointer-events: none;
   color: white;
+  /*text-shadow: 0 0 1.5vh rgba(255, 255, 255, 0.5);*/
+  /* 添加白色阴影 */
 }

@@ -18,8 +18,8 @@
       "path": "html/Blog.html"
     },
     {
-      "id": "ChatAI_Resource",
-      "path": "html/ChatAI.html"
+      "id": "Project_Resource",
+      "path": "html/Project.html"
     },
     {
       "id": "Thanks_Resource",
@@ -38,6 +38,20 @@
     {
       "title": "Arch Linux",
       "path": "https://raw.githubusercontent.com/xiaoCRQ/archlinux_config/main/install.md"
+    }
+  ],
+  "ProjectResources": [
+    {
+      "title": "ChatAI",
+      "path": "https://lobe-chat-five-delta-99.vercel.app/chat"
+    },
+    {
+      "title": "Blog",
+      "path": "https://xiaocrq.github.io/"
+    },
+    {
+      "title": "WhimsVim",
+      "path": "https://github.com/xiaoCRQ/WhimsVim"
     }
   ],
   "PhotoConfig": [

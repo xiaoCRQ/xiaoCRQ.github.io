@@ -5,7 +5,7 @@
 @import url('BackGrund.css');
 @import url('Home.css');
 @import url('Blog.css');
-@import url('ChatAI.css');
+@import url('Project.css');
 @import url('Thanks.css');
 @import url('MarkdownStyle.css');
 
@@ -93,7 +93,7 @@ code {
 
 .Nav_Options {
   color: black;
-  margin: 1.5vh;
+  margin-left: 3vh;
   height: 3vh;
   font-weight: bold;
 }

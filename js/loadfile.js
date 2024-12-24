@@ -118,6 +118,24 @@ async function processMarkdownFiles(markdownFiles) {
   }
 }
 
+// 处理 ProjectResources 配置部分
+async function processProjectResources(ProjectResources) {
+  if (Array.isArray(ProjectResources)) {
+    ProjectResources.forEach(file => {
+      if (file.title && file.path) {
+        ConfigData.ProjectConfig.push({
+          title: file.title,
+          path: file.path
+        });
+      } else {
+        console.warn("无效的 ProjectResources 文件信息:", file);
+      }
+    });
+  } else {
+    console.warn("ProjectResources 配置无效或未找到");
+  }
+}
+
 // 处理 PhotoConfig 配置部分
 async function processPhotoConfig(photoConfig) {
   if (Array.isArray(photoConfig)) {
@@ -194,15 +212,18 @@ async function loadConfig(path) {
     ConfigData.FileLoadConfig = [];
     ConfigData.MarkdownInfo = [];
     ConfigData.PhotoConfig = [];
+    ConfigData.ProjectConfig = [];
     ConfigData.Language = config.Language || 'en';  // 默认语言为 'en'
 
     await processFileLoadConfig(config.FileLoadConfig); // 处理文件加载配置
     await processMarkdownFiles(config.MarkdownFiles);   // 处理 Markdown 文件信息
+    await processProjectResources(config.ProjectResources);   // 处理 ProjectResources 信息
     await processPhotoConfig(config.PhotoConfig);       // 处理 Photo 配置
 
     // 输出加载的配置
     console.log("文件加载配置:", ConfigData.FileLoadConfig);
     console.log("Markdown 文件信息:", ConfigData.MarkdownInfo);
+    console.log("Project 信息:", ConfigData.ProjectConfig);
     console.log("照片配置:", ConfigData.PhotoConfig);
     console.log("语言配置:", ConfigData.Language);
     console.log("所有文件和媒体已加载完毕");

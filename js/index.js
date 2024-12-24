@@ -23,20 +23,19 @@ function isMobileDevice() {
 async function loadIcon(Motion = true) {
   const Anime = document.getElementById('Square');
   if (Motion) {
-    await gsap.to(Anime, {
+    await gsap.fromTo(Anime, {
+      y: '100vh',
+    }, {
       y: '0vh',
       ease: "expo.inOut",
       duration: 0.75
     });
   }
   else {
-    await gsap.to(Anime, {
+    await gsap.fromTo(Anime, {
+      y: '0vh',
+    }, {
       y: '-100vh',
-      ease: "expo.inOut",
-      duration: 0.75
-    });
-    gsap.set(Anime, {
-      y: '100vh',
       ease: "expo.inOut",
       duration: 0.75
     });
@@ -151,7 +150,7 @@ async function NavAnime() {
 
   const Home = document.getElementById('Home')
   const Blog = document.getElementById('Blog')
-  const ChatAI = document.getElementById('ChatAI')
+  const Project = document.getElementById('Project')
   const Thanks = document.getElementById('Thanks')
 
   gsap.to(Nav, {
@@ -196,7 +195,7 @@ async function NavAnime() {
           }, 750)
           setTimeout(() => {
             applyUpwardForceToTop('Emoji')
-          }, 1000)
+          }, 800)
         }
 
         if (ElementIDLast === "Thanks_Resource") {
@@ -210,7 +209,7 @@ async function NavAnime() {
           }, 750)
           setTimeout(() => {
             applyUpwardForceToTop('Emoji')
-          }, 1000)
+          }, 800)
         }
 
         setTimeout(() => {
@@ -224,14 +223,15 @@ async function NavAnime() {
       }
 
 
-      if (ElementIDLast !== 'Blog_Resource');
-      BlogNav(false)
+      if (ElementIDLast === 'Blog_Resource') {
+        BlogNav(false)
+      }
     }
   };
 
   Home.addEventListener('click', () => NavPageFunction("Home_Resource"));
   Blog.addEventListener('click', () => NavPageFunction("Blog_Resource"));
-  ChatAI.addEventListener('click', () => NavPageFunction("ChatAI_Resource"));
+  Project.addEventListener('click', () => NavPageFunction("Project_Resource"));
   Thanks.addEventListener('click', () => NavPageFunction("Thanks_Resource"));
 }
 
@@ -269,7 +269,8 @@ async function OpeWebSite() {
       duration: 1,
       ease: "expo.inOut",
       borderRadius: '1.5vw',
-      height: '2vw',
+      width: '1vw',
+      height: '1vw',
       rotation: 0,
     }),
     gsap.to(Icon, {

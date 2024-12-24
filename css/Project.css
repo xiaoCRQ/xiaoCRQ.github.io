@@ -1,4 +1,4 @@
-#ChatAI_Resource {
+#Project_Resource {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,9 +13,19 @@
   pointer-events: auto;
 }
 
-#Chat_Web {
+#Web {
+  transform: translateY(100vh);
   border-radius: 1.5vh;
   width: 98vw;
   height: 96vh;
   cursor: none;
+}
+
+#Project_Resources {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+
 }
