@@ -52,7 +52,12 @@
    width: auto;
    height: auto;
    display: block;
+   -webkit-user-select: none;
+   -moz-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
  }
+
 
  /* 列表样式 */
  .MarkDown ul,

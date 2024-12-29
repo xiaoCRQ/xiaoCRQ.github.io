@@ -15,7 +15,7 @@ function vwToPx(vw) {
 function isMobileDevice() {
   const Project = document.getElementById('Project_Web');
   MobileDevice = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|webOS/i.test(navigator.userAgent)
-  if (MobileDevice) BlogNavMove = NavMove = '100vw', Project.src = "";
+  if (MobileDevice) BlogNavMove = NavMove = '100vw'
   else NavMove = '45vh', BlogNavMove = '48vh'
   return MobileDevice;
 }
@@ -405,12 +405,29 @@ async function CursorDefine() {
   });
 }
 
+let lenis
+async function LenisDefine(id) {
+  const Element = document.getElementById(id);
+  lenis = new Lenis({
+    wrapper: Element,
+    wheelMultiplier: 2,
+  });
+
+  function raf(time) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+
+  requestAnimationFrame(raf);
+}
+
 async function init() {
   await loadConfig("config.json");
   await OpeWebSite()
   await CursorDefine()
   await NavAnime()
   await loadMarkdownTitles('Blog_Nav')
+  await LenisDefine('Blog_Page')
 }
 
 

@@ -122,10 +122,11 @@ async function processMarkdownFiles(markdownFiles) {
 async function processProjectResources(ProjectResources) {
   if (Array.isArray(ProjectResources)) {
     ProjectResources.forEach(file => {
-      if (file.title && file.path) {
+      if (file.title && file.img && file.url) {
         ConfigData.ProjectConfig.push({
           title: file.title,
-          path: file.path
+          img: file.img,
+          url: file.url
         });
       } else {
         console.warn("无效的 ProjectResources 文件信息:", file);

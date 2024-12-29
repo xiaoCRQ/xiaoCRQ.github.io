@@ -10,8 +10,13 @@
   width: 10vh;
   height: 10vh;
   background: white;
+  transform: scale(0.3);
 }
 
 .mf-cursor.-pointer:before {
-  transform: scale(0.45)
+  transform: scale(0.5)
+}
+
+.mf-cursor.-active:before {
+  transform: scale(0.7)
 }

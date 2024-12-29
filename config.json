@@ -43,34 +43,37 @@
   "ProjectResources": [
     {
       "title": "ChatAI",
-      "path": "https://lobe-chat-five-delta-99.vercel.app/chat"
+      "img": "img/Projects/AI.png",
+      "url": "https://lobe-chat-five-delta-99.vercel.app/chat"
     },
     {
       "title": "Blog",
-      "path": "https://xiaocrq.github.io/"
+      "img": "img/Projects/Blog.png",
+      "url": "https://xiaocrq.github.io/"
     },
     {
       "title": "WhimsVim",
-      "path": "https://github.com/xiaoCRQ/WhimsVim"
+      "img": "img/Projects/Neovim.png",
+      "url": "https://github.com/xiaoCRQ/WhimsVim"
     }
   ],
   "PhotoConfig": [
-    "img/1.jpg",
-    "img/2.png",
-    "img/3.jpg",
-    "img/4.png",
-    "img/5.jpg",
-    "img/6.png",
-    "img/7.jpg",
-    "img/8.png",
-    "img/9.png",
-    "img/10.jpg",
-    "img/11.png",
-    "img/12.png",
-    "img/13.png",
-    "img/14.png",
-    "img/15.jpg",
-    "img/16.jpg",
-    "img/17.jpg"
+    "img/Thanks/1.jpg",
+    "img/Thanks/2.png",
+    "img/Thanks/3.jpg",
+    "img/Thanks/4.png",
+    "img/Thanks/5.jpg",
+    "img/Thanks/6.png",
+    "img/Thanks/7.jpg",
+    "img/Thanks/8.png",
+    "img/Thanks/9.png",
+    "img/Thanks/10.jpg",
+    "img/Thanks/11.png",
+    "img/Thanks/12.png",
+    "img/Thanks/13.png",
+    "img/Thanks/14.png",
+    "img/Thanks/15.jpg",
+    "img/Thanks/16.jpg",
+    "img/Thanks/17.jpg"
   ]
 }

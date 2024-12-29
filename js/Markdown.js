@@ -78,6 +78,7 @@ async function loadMarkdownTitles(elementId, renderId = 'Blog_Page') {
             await loadFileContent(renderId, dataPath); // 加载文件内容 
             await renderMarkdownById(renderId, dataPath); // 渲染 Markdown 内容
             await waitForMediaLoaded(renderId);
+            lenis.resize()
             await loadIcon(false);
           }
         } catch (error) {
@@ -96,7 +97,11 @@ async function loadMarkdownTitles(elementId, renderId = 'Blog_Page') {
         MD_NOW = dataPath; // 更新当前加载的文件路径
 
         loadFileContent(renderId, dataPath)
-          .then(() => renderMarkdownById(renderId, dataPath))
+          .then(async () => {
+            await renderMarkdownById(renderId, dataPath)
+            await waitForMediaLoaded(renderId);
+            lenis.resize()
+          })
           .catch(error => console.error('发生错误:', error));
       }
 

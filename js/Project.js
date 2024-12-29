@@ -1,132 +1,237 @@
 const ProjectResources = {
-  // canvas对象容器
-  canvas: {},
-  // canvas 2d上下文
-  content: {},
-  // 背景块的总数
-  img_total: 12,
-  // 背景块排列的总列数
-  row_max: 3,
-  // 背景块宽度和高度，用作占位符，单位为vh
-  img_width: 45,
-  img_height: 65,
-  // 背景块间距，单位为vh
-  img_margin: 12,
-  // 所有背景块纵横排列之后的总宽高，用作超出范围的界限判定
-  total_width: 0,
-  total_height: 0,
-  // 背景块数据，用以储存每块的xy坐标位置
-  img_data: [],
-  // 当前画布是否可以移动
-  if_movable: false,
-  // 初始化
+  canvas: {}, // canvas对象
+  content: {}, // 2D上下文
+  img_total: 28, // 总图片数量
+  row_max: 7, // 图片排列的列数
+  line_max: 4, // 图片排列的行数
+  img_width: Math.floor(700 / 2), // 图片宽度
+  img_height: Math.floor(1000 / 2), // 图片高度
+  img_margin: 20, // 图片间距
+  borderRadius: 15, // 圆角大小
+  total_width: 0, // 图片排列的总宽度
+  total_height: 0, // 图片排列的总高度
+  img_data: 0, // 用于存储图片数据
+  if_movable: false, // 图片是否可移动
+  ease: { x: 0, y: 0, damping: (v) => v * 0.965 }, // 动画的缓动效果
+  animationFrameId: null, // 当前的动画帧ID，用于控制动画
+  animationStatus: false, // 动画的状态
+  sensitivity: 0.1, // 滑动灵敏度
+  WheelMotion: -1.35, // 滚轮滑动方向和灵敏度
+
+  // 点击活动
+  projectopen: false, // 项目是否打开
+
+  // 暂时未启用
+  max_sensitivity: 0.2,  // 最大灵敏度差值
+  max_sensitivity_motion: true,  //差值作用范围 true - 列 | false - 行 
+
   init() {
-    this.canvas = document.getElementById("Project_Resources");
-    this.content = this.canvas.getContext("2d");
-    // 使用vh转换为像素
-    const col_width = vhToPx(this.img_width + this.img_margin);
-    const row_height = vhToPx(this.img_height + this.img_margin);
-    this.total_width = this.row_max * col_width - vhToPx(this.img_margin);
-    this.total_height = Math.ceil(this.img_total / this.row_max) * row_height - vhToPx(this.img_margin);
-    this.resize();
-    this.creat_events();
-    this.creat_background(); // 初始化背景数据
+    this.canvas = document.getElementById("Project_Resources"); // 获取canvas元素
+    this.content = this.canvas.getContext("2d"); // 获取2D上下文
+    this.total_width = this.row_max * (this.img_width + this.img_margin) - this.img_margin; // 计算总宽度
+    this.total_height = this.line_max * (this.img_height + this.img_margin) - this.img_margin; // 计算总高度
+    this.resize(); // 调整canvas大小
+    this.creat_events(); // 初始化事件
+    this.creat_img_data(); // 创建图片数据
   },
-
-
-  creat_background() {
-    this.img_data = []; // 初始化为一个空数组
-
-    // 计算居中偏移量
-    const col_width = vhToPx(this.img_width + this.img_margin);
-    const row_height = vhToPx(this.img_height + this.img_margin);
-    const x_offset = (this.canvas.width - this.total_width) / 2; // 水平居中偏移
-    const y_offset = (this.canvas.height - this.total_height) / 2; // 垂直居中偏移
-
-    for (let i = 0; i < this.img_total; i++) {
-      // 计算该序号背景处于第几行第几列
-      let col_index = i % this.row_max;
-      let line_index = Math.floor(i / this.row_max);
-
-      // 中间列的Y轴偏移
-      const middle_col_offset = col_index === Math.floor(this.row_max / 2)
-        ? row_height / 2
-        : 0;
-
-      // 通过行列序号算出xy坐标，并加上偏移量
-      let x = vhToPx(col_index * (this.img_width + this.img_margin)) + x_offset;
-      let y = vhToPx(line_index * (this.img_height + this.img_margin)) + y_offset + middle_col_offset;
-
-      // 将背景数据添加到img_data中
-      this.img_data.push({ x, y });
-
-      // 绘制背景块
-      this.content.fillStyle = "#ffffff"; // 设置背景颜色为白色
-      this.content.fillRect(x, y, vhToPx(this.img_width), vhToPx(this.img_height));
-    }
-  },
-
 
   resize() {
-    // 修改canvas宽高以填充满页面
+    // 修改canvas宽高以填充页面
     this.canvas.width = this.canvas.clientWidth;
     this.canvas.height = this.canvas.clientHeight;
 
-    // 重新计算居中布局的总宽高
-    const col_width = vhToPx(this.img_width + this.img_margin);
-    const row_height = vhToPx(this.img_height + this.img_margin);
-    this.total_width = this.row_max * col_width - vhToPx(this.img_margin);
-    this.total_height = Math.ceil(this.img_total / this.row_max) * row_height - vhToPx(this.img_margin);
+    // 计算画布中心与图片矩阵中心的偏移量
+    this.offsetX = (this.canvas.width - this.total_width) / 2;
+    this.offsetY = (this.canvas.height - this.total_height) / 2;
 
-    // 修改canvas宽高之后，画布内容会被清除，故需要调用一次creat_background函数，重新布局
-    this.creat_background();
+    // 修改canvas宽高后，清空画布内容并重新绘制图片
+    if (this.img_data) this.move_imgs(0, 0);
   },
 
+  creat_img_data() {
+    // 确保ConfigData.ProjectConfig存在并且有数据
+    if (!ConfigData.ProjectConfig || ConfigData.ProjectConfig.length === 0) {
+      console.warn("No project configuration available.");
+      return;
+    }
 
-  // 绑定所有监听事件
+    // 清空现有的img_data
+    this.img_data = [];
+
+    // 循环读取ConfigData.ProjectConfig的内容，直到达到img_total的数量
+    for (let i = 0; i < this.img_total; i++) {
+      // 使用取余运算符循环配置数组
+      let project = ConfigData.ProjectConfig[i % ConfigData.ProjectConfig.length];
+
+      let img = new Image();
+      img.src = project.img; // 使用配置中的img路径
+      img.onload = () => {
+        // 计算图片所在的行列
+        let col_index = i % this.row_max;
+        let line_index = Math.floor(i / this.row_max);
+        let x = col_index * (this.img_width + this.img_margin); // 计算x坐标
+        let y = line_index * (this.img_height + this.img_margin); // 计算y坐标
+
+        // 将图片信息添加到img_data数组
+        this.img_data.push({
+          img,
+          x,
+          y,
+          title: project.title,
+          url: project.url,
+        });
+
+        // 图片加载完成后绘制到画布
+        // this.content.drawImage(img, x, y, this.img_width, this.img_height);
+        this.content.drawImage(img, x + this.offsetX, y + this.offsetY, this.img_width, this.img_height);
+      };
+
+      img.onerror = (err) => {
+        console.error("Error loading image:", project.img, err);
+      };
+    }
+  },
+
   creat_events() {
+    // 窗口大小变化时调整canvas尺寸
     window.addEventListener("resize", () => {
       this.resize();
     });
-    // 当鼠标按下时，才可以移动所有背景
-    this.canvas.addEventListener("mousedown", () => {
+
+    // 鼠标按下时启用图片移动
+    this.canvas.addEventListener("mousedown", (e) => {
       this.if_movable = true;
     });
-    // 当鼠标弹起时，背景无法被移动
-    this.canvas.addEventListener("mouseup", () => {
+
+    // 鼠标弹起时停止移动，并检查点击位置的图片
+    this.canvas.addEventListener("mouseup", (e) => {
       this.if_movable = false;
+      this.check_img(e.x, e.y);
     });
-    // 当鼠标离开选区时，背景无法被移动
+
+    // 鼠标离开画布时停止移动
     this.canvas.addEventListener("mouseleave", () => {
       this.if_movable = false;
     });
-    // 当鼠标移动时，调用move_imgs函数，只允许y轴拖动
+
+    // 鼠标移动时触发图片移动动画
     this.canvas.addEventListener("mousemove", (e) => {
       if (!this.if_movable) return;
-      this.move_imgs(0, e.movementY);
+      this.move_imgs(e.movementX, e.movementY); // 调用move_imgs处理图片移动
     });
-    // 鼠标滚轮事件，上下滚动背景
+
+    // 支持鼠标滚轮
     this.canvas.addEventListener("wheel", (e) => {
-      e.preventDefault(); // 禁止默认滚动行为
-      this.move_imgs(0, e.deltaY < 0 ? 50 : -50); // 根据滚轮方向移动
+      e.preventDefault(); // 阻止默认滚动行为
+      let deltaX = this.WheelMotion * e.deltaX || 0;
+      let deltaY = this.WheelMotion * e.deltaY || 0;
+
+      // 使用滚轮灵敏度调整滑动量
+      this.move_imgs(deltaX, deltaY);
+    });
+
+    // 触摸事件：开始、移动、结束
+    this.canvas.addEventListener("touchstart", (e) => {
+      e.preventDefault(); // 阻止触摸滚动行为
+      const touch = e.touches[0]; // 获取第一个触摸点
+      this.if_movable = true;
+      this.touchStartX = touch.pageX;
+      this.touchStartY = touch.pageY;
+    });
+
+    this.canvas.addEventListener("touchmove", (e) => {
+      if (!this.if_movable) return;
+      e.preventDefault(); // 阻止触摸滚动行为
+      const touch = e.touches[0]; // 获取第一个触摸点
+      const deltaX = touch.pageX - this.touchStartX;
+      const deltaY = touch.pageY - this.touchStartY;
+      this.move_imgs(deltaX, deltaY);
+      this.touchStartX = touch.pageX;
+      this.touchStartY = touch.pageY;
+    });
+
+    this.canvas.addEventListener("touchend", (e) => {
+      this.if_movable = false;
+      const touch = e.changedTouches[0]; // 获取触摸结束的点
+      this.check_img(touch.pageX, touch.pageY);
+    });
+
+    this.canvas.addEventListener("touchcancel", () => {
+      this.if_movable = false;
     });
   },
 
-  // 移动所有背景
   move_imgs(x, y) {
-    // 清除content，重新进行绘制
+    // 应用灵敏度，乘以滑动灵敏度系数
+    x *= this.sensitivity;
+    y *= this.sensitivity;
+
+    // 累加鼠标移动的距离
+    this.ease.x += x;
+    this.ease.y += y;
+
+    // 如果当前有动画在进行，取消上一个动画帧
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+
+    // 启动新的动画帧
+    this.animationFrameId = requestAnimationFrame(this.animate.bind(this));
+  },
+
+  animate() {
+    // 清除画布并重新绘制所有图片
     this.content.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    // 遍历所有背景，对每一个背景进行移动，并进行判断
+
+    // 遍历所有图片并更新它们的位置
     this.img_data.forEach((img) => {
-      img.y += y;
-      // 当背景块超出总高度范围时，将其移到最上方
-      if (img.y > (this.total_height - vhToPx(this.img_height)))
-        img.y -= this.total_height + vhToPx(this.img_margin);
-      // 当背景块小于负的高度范围时，将其移到最下方
-      if (img.y < -vhToPx(this.img_height))
-        img.y += this.total_height + vhToPx(this.img_margin);
-      this.content.fillRect(img.x, img.y, vhToPx(this.img_width), vhToPx(this.img_height));
+      img.x += this.ease.x;
+      img.y += this.ease.y;
+
+      // 判断图片是否超出画布范围，若超出则重新调整到另一边
+      if (img.x > this.total_width - this.img_width) img.x -= this.total_width + this.img_margin;
+      if (img.x < -this.img_width) img.x += this.total_width + this.img_margin;
+      if (img.y > this.total_height - this.img_height) img.y -= this.total_height + this.img_margin;
+      if (img.y < -this.img_height) img.y += this.total_height + this.img_margin;
+
+      // 绘制图片
+      this.content.drawImage(img.img, img.x + this.offsetX, img.y + this.offsetY, this.img_width, this.img_height);
     });
+
+    // 使用缓动函数减缓移动速度
+    this.ease.x = this.ease.damping(this.ease.x);
+    this.ease.y = this.ease.damping(this.ease.y);
+
+    // 如果移动速度非常小，停止动画
+    if (Math.abs(this.ease.x) < 0.1 && Math.abs(this.ease.y) < 0.1) {
+      this.ease.x = 0;
+      this.ease.y = 0;
+      this.animationStatus = false;
+      return;
+    }
+
+    // 如果动画仍在进行，继续请求下一帧动画
+    this.animationFrameId = requestAnimationFrame(this.animate.bind(this));
+    this.animationStatus = true;
+  },
+
+  check_img(x, y) {
+    // 检查当前鼠标点击的位置是否在图片范围内
+    let img = this.img_data.find(img =>
+      x >= img.x && x < img.x + this.img_width &&
+      y >= img.y && y < img.y + this.img_height
+    );
+    if (img && this.projectopen === false) {
+      this.projectopen = true;
+      console.log(img, img.img); // 如果点击到图片，则输出该图片
+    }
+    else
+      this.projectopen = false;
+  },
+
+  // 设置滑动灵敏度
+  set_sensitivity(value) {
+    this.sensitivity = value;
   }
 };
 
