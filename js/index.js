@@ -405,9 +405,17 @@ async function CursorDefine() {
   });
 }
 
-let lenis
+let lenis; // 全局变量，用于存储 Lenis 实例
+
 async function LenisDefine(id) {
   const Element = document.getElementById(id);
+
+  // 如果 lenis 已经存在，则先清除
+  if (lenis) {
+    lenis.destroy(); // 假设 Lenis 类有一个 destroy 方法来清理实例
+  }
+
+  // 创建新的 Lenis 实例
   lenis = new Lenis({
     wrapper: Element,
     wheelMultiplier: 2,

@@ -7,7 +7,6 @@ const ProjectResources = {
   img_width: Math.floor(700 / 2), // 图片宽度
   img_height: Math.floor(1000 / 2), // 图片高度
   img_margin: 20, // 图片间距
-  borderRadius: 15, // 圆角大小
   total_width: 0, // 图片排列的总宽度
   total_height: 0, // 图片排列的总高度
   img_data: 0, // 用于存储图片数据
