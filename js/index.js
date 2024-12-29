@@ -15,8 +15,12 @@ function vwToPx(vw) {
 function isMobileDevice() {
   const Project = document.getElementById('Project_Web');
   MobileDevice = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|webOS/i.test(navigator.userAgent)
-  if (MobileDevice) BlogNavMove = NavMove = '100vw'
-  else NavMove = '45vh', BlogNavMove = '48vh'
+  if (MobileDevice) {
+    BlogNavMove = NavMove = '100vw'
+  }
+  else {
+    NavMove = '45vh', BlogNavMove = '48vh'
+  }
   return MobileDevice;
 }
 
@@ -393,8 +397,6 @@ async function OpeWebSite() {
 }
 
 async function CursorDefine() {
-  if (isMobileDevice())
-    return
   const cursor = new MouseFollower({
     speed: 0.35,
     skewing: 5,
@@ -432,7 +434,8 @@ async function LenisDefine(id) {
 async function init() {
   await loadConfig("config.json");
   await OpeWebSite()
-  await CursorDefine()
+  if (isMobileDevice() === false)
+    await CursorDefine()
   await NavAnime()
   await loadMarkdownTitles('Blog_Nav')
   await LenisDefine('Blog_Page')

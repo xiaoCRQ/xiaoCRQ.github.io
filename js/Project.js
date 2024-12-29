@@ -1,12 +1,12 @@
 const ProjectResources = {
   canvas: {}, // canvas对象
   content: {}, // 2D上下文
-  img_total: 28, // 总图片数量
-  row_max: 7, // 图片排列的列数
-  line_max: 4, // 图片排列的行数
-  img_width: Math.floor(700 / 2), // 图片宽度
-  img_height: Math.floor(1000 / 2), // 图片高度
-  img_margin: 20, // 图片间距
+  row_max: 8, // 图片排列的列数
+  line_max: 6, // 图片排列的行数
+  img_total: 48, // 总图片数量
+  img_width: 280, // 图片宽度
+  img_height: 400, // 图片高度
+  img_margin: 100, // 图片间距
   total_width: 0, // 图片排列的总宽度
   total_height: 0, // 图片排列的总高度
   img_data: 0, // 用于存储图片数据
@@ -20,13 +20,14 @@ const ProjectResources = {
   // 点击活动
   projectopen: false, // 项目是否打开
 
-  // 暂时未启用
-  max_sensitivity: 0.2,  // 最大灵敏度差值
-  max_sensitivity_motion: true,  //差值作用范围 true - 列 | false - 行 
-
   init() {
     this.canvas = document.getElementById("Project_Resources"); // 获取canvas元素
     this.content = this.canvas.getContext("2d"); // 获取2D上下文
+    if (MobileDevice === true) {
+      this.row_max = 6
+      this.line_max = 9
+      this.img_total = this.row_max * this.line_max
+    }
     this.total_width = this.row_max * (this.img_width + this.img_margin) - this.img_margin; // 计算总宽度
     this.total_height = this.line_max * (this.img_height + this.img_margin) - this.img_margin; // 计算总高度
     this.resize(); // 调整canvas大小
@@ -46,6 +47,7 @@ const ProjectResources = {
     // 修改canvas宽高后，清空画布内容并重新绘制图片
     if (this.img_data) this.move_imgs(0, 0);
   },
+
 
   creat_img_data() {
     // 确保ConfigData.ProjectConfig存在并且有数据
@@ -69,7 +71,12 @@ const ProjectResources = {
         let col_index = i % this.row_max;
         let line_index = Math.floor(i / this.row_max);
         let x = col_index * (this.img_width + this.img_margin); // 计算x坐标
+
+        // 如果是偶数列，让图片上升半个img高度
         let y = line_index * (this.img_height + this.img_margin); // 计算y坐标
+        if (col_index % 2) {
+          y -= this.img_height / 2; // 偶数列上升半个图片高度
+        }
 
         // 将图片信息添加到img_data数组
         this.img_data.push({
@@ -81,7 +88,6 @@ const ProjectResources = {
         });
 
         // 图片加载完成后绘制到画布
-        // this.content.drawImage(img, x, y, this.img_width, this.img_height);
         this.content.drawImage(img, x + this.offsetX, y + this.offsetY, this.img_width, this.img_height);
       };
 
@@ -236,4 +242,3 @@ const ProjectResources = {
 
 // 初始化
 ProjectResources.init();
-

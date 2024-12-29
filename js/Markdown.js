@@ -79,6 +79,7 @@ async function loadMarkdownTitles(elementId, renderId = 'Blog_Page') {
             await renderMarkdownById(renderId, dataPath); // 渲染 Markdown 内容
             await waitForMediaLoaded(renderId);
             lenis.resize()
+            lenis.scrollTo(0)
             await loadIcon(false);
           }
         } catch (error) {
@@ -101,6 +102,7 @@ async function loadMarkdownTitles(elementId, renderId = 'Blog_Page') {
             await renderMarkdownById(renderId, dataPath)
             await waitForMediaLoaded(renderId);
             lenis.resize()
+            lenis.scrollTo(0)
           })
           .catch(error => console.error('发生错误:', error));
       }
