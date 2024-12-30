@@ -1,4 +1,5 @@
 const ProjectResources = {
+  main: null,
   canvas: {}, // canvas对象
   content: {}, // 2D上下文
   row_max: 8, // 图片排列的列数
@@ -20,9 +21,15 @@ const ProjectResources = {
   // 点击活动
   projectmouse: false, // 点击触发
   projectopen: false, // 项目是否打开
+  card: null,
+  card_div: null,
 
   init() {
-    this.canvas = document.getElementById("Project_Resources"); // 获取canvas元素
+    // 初始化项目卡片
+    this.canvas = document.createElement('canvas')
+    this.canvas.id = "Project_Canvas"; // 获取canvas元素
+    this.main = document.getElementById("Project_Resource");
+    this.main.appendChild(this.canvas)
     this.content = this.canvas.getContext("2d"); // 获取2D上下文
     if (MobileDevice === true) {
       this.row_max = 6
@@ -114,7 +121,7 @@ const ProjectResources = {
     this.canvas.addEventListener("mouseup", (e) => {
       this.if_movable = false;
       if (this.projectmouse) {
-        // this.OpenProject(e.x, e.y);
+        this.OpenProject(e.x, e.y);
       }
     });
 
@@ -230,30 +237,67 @@ const ProjectResources = {
     // 判断当前状态是关闭还是打开
     if (this.projectopen) {
       // 如果是打开状态，点击任何地方将图片还原到原位置
-      this.move_imgs(0, 0);  // 调用 move_imgs 来恢复原位置
+      this.card = null;
       this.projectopen = false;  // 设置为关闭状态
       return;
     }
 
     // 如果是关闭状态，检查当前点击的位置是否在图片范围内
-    let img = this.img_data.find(img =>
-      x >= img.x && x < img.x + this.img_width &&
-      y >= img.y && y < img.y + this.img_height
+    this.card = this.img_data.find(img =>
+      x >= img.x + this.offsetX && x < img.x + this.img_width + this.offsetX &&
+      y >= img.y + this.offsetY && y < img.y + this.img_height + this.offsetY
     );
 
-    if (!img) return;  // 如果没有点击到图片，直接返回
+    if (!this.card) return;  // 如果没有点击到图片，直接返回
 
-    // 计算图片居中的偏移量
-    let centerX = (this.canvas.width - this.img_width) / 2;
-    let centerY = (this.canvas.height - this.img_height) / 2;
+    this.card_div = document.getElementById("Project_Card");
+    gsap.set(this.card_div, {
+      x: this.card.x + this.offsetX + 'px',
+      y: this.card.y + this.offsetY + 'px',
+    })
 
-    // 计算鼠标点击位置与图片中心的偏移量
-    let deltaX = centerX - img.x - this.offsetX;
-    let deltaY = centerY - img.y - this.offsetY;
+    // 添加背景图片
+    this.card_div.style.backgroundImage = `url(${this.card.img.src})`;
+    this.card_div.style.backgroundSize = 'cover';  // 确保背景图覆盖整个div
+    this.card_div.style.backgroundPosition = 'center';  // 背景图居中显示
 
-    // 将图片居中并设置 projectopen 为 true
-    this.move_imgs(deltaX, deltaY);
+    console.log(this.card);
+
+    // this.content.drawImage(this.card.img, this.card.x + this.offsetX, this.card.y + this.offsetY, this.img_width, this.img_height);
+
     this.projectopen = true;  // 设置为打开状态
+  },
+
+  clear() {
+    // 获取canvas元素
+    this.canvas = document.getElementById("Project_Canvas");
+    if (!this.canvas) {
+      console.warn("Canvas element not found.");
+      return;
+    }
+
+    // 清空图片数据
+    this.img_data = [];
+
+    // 重置图片移动相关的变量
+    this.ease = { x: 0, y: 0, damping: (v) => v * 0.965 };
+
+    // 重置动画状态
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+    this.animationStatus = false;
+
+    // 重置可移动标志和点击状态
+    this.if_movable = false;
+    this.projectmouse = false;
+    this.projectopen = false;
+
+    // 清除卡片数据
+    this.card = null;
+
+    ClearRemoveElement('Project_Canvas', true)
+    this.canvas = null;
   },
 
   // 设置滑动灵敏度
@@ -261,6 +305,3 @@ const ProjectResources = {
     this.sensitivity = value;
   }
 };
-
-// 初始化
-ProjectResources.init();

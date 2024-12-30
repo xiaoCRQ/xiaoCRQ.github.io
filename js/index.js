@@ -24,7 +24,6 @@ function isMobileDevice() {
   return MobileDevice;
 }
 
-
 async function loadIcon(Motion = true) {
   const Anime = document.getElementById('Square');
   if (Motion) {
@@ -84,7 +83,7 @@ async function NavPage(ElementID, Motion = true) {
       ease: "expo.inOut",
       duration: 0.75
     });
-    await gsap.set(Element, { y: '100vh' })
+    gsap.set(Element, { y: '100vh' })
   }
 }
 
@@ -229,6 +228,25 @@ async function NavAnime() {
 
       if (ElementIDLast === 'Blog_Resource') {
         BlogNav(false)
+      }
+
+      if (ElementIDNew === 'Project_Resource' || ElementIDNew === 'Blog_Resource') {
+        setTimeout(() => {
+          clearWorlds()
+        }, 750)
+      } else if (ElementIDLast === 'Project_Resource' || ElementIDLast === 'Blog_Resource') {
+        WorldRefresh()
+        setTimeout(() => {
+          applyUpwardForceToTop('Emoji')
+        }, 50)
+      }
+
+      if (ElementIDNew === 'Project_Resource') {
+        ProjectResources.init();
+      } else if (ElementIDLast === 'Project_Resource') {
+        setTimeout(() => {
+          ProjectResources.clear();
+        }, 750)
       }
     }
   };

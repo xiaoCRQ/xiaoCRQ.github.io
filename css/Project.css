@@ -14,17 +14,27 @@
   background-color: white;
 }
 
-#Project_Web {
+#Project_Window {
   border-radius: 1.5vh;
   width: 98vw;
   height: 96vh;
+  transform: translateX(100vw);
 }
 
-#Project_Resources {
+#Project_Canvas {
   position: fixed;
   top: 0;
   left: 0;
   height: 100vh;
   width: 100vw;
   mix-blend-mode: exclusion;
+}
+
+#Project_Card {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 400px;
+  width: 280px;
+  z-index: 1;
 }

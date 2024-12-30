@@ -80,7 +80,7 @@ function initWorld(elementId, options = {}) {
 
     if (bodiesAtMousePosition.length > 0 && UseFunction_Emoji === 2 && MouseUse === false) {
       clickedBody = bodiesAtMousePosition[0]; // 存储当前点击的物体
-      console.log('Clicked body texture:', clickedBody.render.sprite.texture);
+      // console.log('Clicked body texture:', clickedBody.render.sprite.texture);
 
       MouseUse = true;
 
