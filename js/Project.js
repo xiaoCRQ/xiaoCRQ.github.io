@@ -18,6 +18,7 @@ const ProjectResources = {
   WheelMotion: -1.35, // 滚轮滑动方向和灵敏度
 
   // 点击活动
+  projectmouse: false, // 点击触发
   projectopen: false, // 项目是否打开
 
   init() {
@@ -106,12 +107,15 @@ const ProjectResources = {
     // 鼠标按下时启用图片移动
     this.canvas.addEventListener("mousedown", (e) => {
       this.if_movable = true;
+      this.projectmouse = true;
     });
 
     // 鼠标弹起时停止移动，并检查点击位置的图片
     this.canvas.addEventListener("mouseup", (e) => {
       this.if_movable = false;
-      this.check_img(e.x, e.y);
+      if (this.projectmouse) {
+        // this.OpenProject(e.x, e.y);
+      }
     });
 
     // 鼠标离开画布时停止移动
@@ -122,7 +126,9 @@ const ProjectResources = {
     // 鼠标移动时触发图片移动动画
     this.canvas.addEventListener("mousemove", (e) => {
       if (!this.if_movable) return;
-      this.move_imgs(e.movementX, e.movementY); // 调用move_imgs处理图片移动
+      this.projectmouse = false;
+      if (this.projectopen === false)
+        this.move_imgs(e.movementX, e.movementY); // 鼠标相对移动距离 
     });
 
     // 支持鼠标滚轮
@@ -158,7 +164,7 @@ const ProjectResources = {
     this.canvas.addEventListener("touchend", (e) => {
       this.if_movable = false;
       const touch = e.changedTouches[0]; // 获取触摸结束的点
-      this.check_img(touch.pageX, touch.pageY);
+      this.OpenProject(touch.pageX, touch.pageY);
     });
 
     this.canvas.addEventListener("touchcancel", () => {
@@ -220,18 +226,34 @@ const ProjectResources = {
     this.animationStatus = true;
   },
 
-  check_img(x, y) {
-    // 检查当前鼠标点击的位置是否在图片范围内
+  OpenProject(x, y) {
+    // 判断当前状态是关闭还是打开
+    if (this.projectopen) {
+      // 如果是打开状态，点击任何地方将图片还原到原位置
+      this.move_imgs(0, 0);  // 调用 move_imgs 来恢复原位置
+      this.projectopen = false;  // 设置为关闭状态
+      return;
+    }
+
+    // 如果是关闭状态，检查当前点击的位置是否在图片范围内
     let img = this.img_data.find(img =>
       x >= img.x && x < img.x + this.img_width &&
       y >= img.y && y < img.y + this.img_height
     );
-    if (img && this.projectopen === false) {
-      this.projectopen = true;
-      console.log(img, img.img); // 如果点击到图片，则输出该图片
-    }
-    else
-      this.projectopen = false;
+
+    if (!img) return;  // 如果没有点击到图片，直接返回
+
+    // 计算图片居中的偏移量
+    let centerX = (this.canvas.width - this.img_width) / 2;
+    let centerY = (this.canvas.height - this.img_height) / 2;
+
+    // 计算鼠标点击位置与图片中心的偏移量
+    let deltaX = centerX - img.x - this.offsetX;
+    let deltaY = centerY - img.y - this.offsetY;
+
+    // 将图片居中并设置 projectopen 为 true
+    this.move_imgs(deltaX, deltaY);
+    this.projectopen = true;  // 设置为打开状态
   },
 
   // 设置滑动灵敏度
