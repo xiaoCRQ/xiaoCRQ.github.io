@@ -21,11 +21,14 @@ const ProjectResources = {
   // 点击活动
   projectmouse: false, // 点击触发
   projectopen: false, // 项目是否打开
+  projectwindow: false, // 项目
   card: null,
   card_div: null,
 
   init() {
     // 初始化项目卡片
+    this.projectwindow = document.getElementById("Project_Window");
+    this.card_div = document.getElementById("Project_Card");
     this.canvas = document.createElement('canvas')
     this.canvas.id = "Project_Canvas"; // 获取canvas元素
     this.main = document.getElementById("Project_Resource");
@@ -134,12 +137,13 @@ const ProjectResources = {
     this.canvas.addEventListener("mousemove", (e) => {
       if (!this.if_movable) return;
       this.projectmouse = false;
-      if (this.projectopen === false)
-        this.move_imgs(e.movementX, e.movementY); // 鼠标相对移动距离 
+      if (this.projectopen) return;
+      this.move_imgs(e.movementX, e.movementY); // 鼠标相对移动距离 
     });
 
     // 支持鼠标滚轮
     this.canvas.addEventListener("wheel", (e) => {
+      if (this.projectopen) return;
       e.preventDefault(); // 阻止默认滚动行为
       let deltaX = this.WheelMotion * e.deltaX || 0;
       let deltaY = this.WheelMotion * e.deltaY || 0;
@@ -153,12 +157,16 @@ const ProjectResources = {
       e.preventDefault(); // 阻止触摸滚动行为
       const touch = e.touches[0]; // 获取第一个触摸点
       this.if_movable = true;
+      this.projectmouse = true;
       this.touchStartX = touch.pageX;
       this.touchStartY = touch.pageY;
     });
 
     this.canvas.addEventListener("touchmove", (e) => {
       if (!this.if_movable) return;
+      this.projectmouse = false;
+      if (this.projectopen) return;
+
       e.preventDefault(); // 阻止触摸滚动行为
       const touch = e.touches[0]; // 获取第一个触摸点
       const deltaX = touch.pageX - this.touchStartX;
@@ -171,7 +179,9 @@ const ProjectResources = {
     this.canvas.addEventListener("touchend", (e) => {
       this.if_movable = false;
       const touch = e.changedTouches[0]; // 获取触摸结束的点
-      this.OpenProject(touch.pageX, touch.pageY);
+      if (this.projectmouse) {
+        this.OpenProject(touch.pageX, touch.pageY);
+      }
     });
 
     this.canvas.addEventListener("touchcancel", () => {
@@ -237,8 +247,30 @@ const ProjectResources = {
     // 判断当前状态是关闭还是打开
     if (this.projectopen) {
       // 如果是打开状态，点击任何地方将图片还原到原位置
-      this.card = null;
-      this.projectopen = false;  // 设置为关闭状态
+      gsap.to(this.canvas, {
+        ease: "expo.in",
+        delay: 0.75,
+        duration: 0.25,
+        opacity: 1,
+        onComplete: () => {
+          this.projectwindow.src = ''; // 设置iframe的url
+          this.card_div.style.backgroundImage = ``;
+          this.card = null;
+          this.projectopen = false;  // 设置为关闭状态
+        }
+      });
+      gsap.to(this.projectwindow, {
+        ease: "expo.inOut",
+        duration: 0.75,
+        x: '100vw',
+      });
+      gsap.to(this.card_div, {
+        ease: "expo.inOut",
+        duration: 0.75,
+        x: this.card.x + this.offsetX + 'px',
+        y: this.card.y + this.offsetY + 'px',
+        scale: 1,
+      })
       return;
     }
 
@@ -250,7 +282,6 @@ const ProjectResources = {
 
     if (!this.card) return;  // 如果没有点击到图片，直接返回
 
-    this.card_div = document.getElementById("Project_Card");
     gsap.set(this.card_div, {
       x: this.card.x + this.offsetX + 'px',
       y: this.card.y + this.offsetY + 'px',
@@ -258,8 +289,30 @@ const ProjectResources = {
 
     // 添加背景图片
     this.card_div.style.backgroundImage = `url(${this.card.img.src})`;
-    this.card_div.style.backgroundSize = 'cover';  // 确保背景图覆盖整个div
-    this.card_div.style.backgroundPosition = 'center';  // 背景图居中显示
+    this.projectwindow.src = this.card.url; // 设置iframe的url
+    this.move_imgs(0, 0)
+
+    gsap.to(this.card_div, {
+      ease: "expo.inOut",
+      delay: 0.25,
+      duration: 0.75,
+      x: vwToPx(20) - this.img_width / 2 + 'px',
+      y: vhToPx(50) - this.img_height / 2 + 'px',
+      scale: 1.5,
+    })
+
+    gsap.to(this.canvas, {
+      ease: "expo.in",
+      duration: 0.25,
+      opacity: 0
+    });
+
+    gsap.to(this.projectwindow, {
+      ease: "expo.inOut",
+      delay: 0.25,
+      duration: 0.75,
+      x: '18vw',
+    });
 
     console.log(this.card);
 

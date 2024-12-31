@@ -199,12 +199,12 @@ async function NavAnime() {
           setTimeout(() => {
             applyUpwardForceToTop('Emoji')
           }, 800)
-        }
+        } else
+          UseFunction_Emoji = 1;
 
         if (ElementIDLast === "Thanks_Resource") {
           delay = 0;
           loadIcon(true);
-          UseFunction_Emoji = 1
           setTimeout(() => {
             // Back.style.backgroundColor = 'black'
             WorldRefresh()
@@ -231,6 +231,7 @@ async function NavAnime() {
       }
 
       if (ElementIDNew === 'Project_Resource' || ElementIDNew === 'Blog_Resource') {
+        UseFunction_Emoji = 0
         setTimeout(() => {
           clearWorlds()
         }, 750)
