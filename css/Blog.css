@@ -18,7 +18,6 @@
   height: 100vh;
   flex-grow: 1;
   /* 占据剩余宽度 */
-  color: black;
   pointer-events: auto;
 }
 
@@ -29,7 +28,6 @@
   /* 防止压缩 */
   white-space: nowrap;
   background-color: white;
-  color: black;
   pointer-events: auto;
   user-select: none;
   overflow-y: scroll;

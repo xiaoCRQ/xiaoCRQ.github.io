@@ -12,14 +12,15 @@
    /* 水平居中 */
    z-index: -1;
    pointer-events: auto;
-   background-color: black;
+   background-color: #F5F5F5;
  }
 
  #backgroundCanvas {
    position: fixed;
-   top: 0;
-   left: 0;
-   mix-blend-mode: exclusion;
+   top: 50%;
+   left: 50%;
+   z-index: -1;
+   transform: translate(-50%, -50%);
  }
 
  #Emoji {
@@ -28,4 +29,16 @@
    width: 100vw;
    height: 100vh;
    pointer-events: auto;
+ }
+
+ #hero::before {
+   content: "";
+   backdrop-filter: blur(10vh);
+   -webkit-backdrop-filter: blur(10vh);
+   position: absolute;
+   top: 0;
+   left: 0;
+   width: 100vw;
+   height: 100vh;
+   z-index: 0;
  }

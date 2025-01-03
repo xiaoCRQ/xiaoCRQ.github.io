@@ -12,6 +12,10 @@ function vwToPx(vw) {
   return (vw * window.innerWidth) / 100;
 }
 
+function delayReturn(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function isMobileDevice() {
   const Project = document.getElementById('Project_Web');
   MobileDevice = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|webOS/i.test(navigator.userAgent)
@@ -191,9 +195,9 @@ async function NavAnime() {
           delay = 1500;
           loadIcon(true);
           UseFunction_Emoji = 2
+          WorldRefresh()
           setTimeout(() => {
             // Back.style.backgroundColor = 'white'
-            WorldRefresh()
             loadIcon(false);
           }, 750)
           setTimeout(() => {
@@ -205,9 +209,9 @@ async function NavAnime() {
         if (ElementIDLast === "Thanks_Resource") {
           delay = 0;
           loadIcon(true);
+          WorldRefresh()
           setTimeout(() => {
             // Back.style.backgroundColor = 'black'
-            WorldRefresh()
             loadIcon(false);
           }, 750)
           setTimeout(() => {
@@ -230,21 +234,32 @@ async function NavAnime() {
         BlogNav(false)
       }
 
+      if (ElementIDNew === 'Blog_Resource') {
+        LenisDefine('Blog_Page')
+        lenis.resize()
+        lenis.scrollTo(0)
+      } else if (ElementIDNew === 'Home_Resource') {
+        // LenisDefine('Home_Main')
+        // lenis.resize()
+        // lenis.scrollTo(0)
+      }
+
       if (ElementIDNew === 'Project_Resource' || ElementIDNew === 'Blog_Resource') {
         UseFunction_Emoji = 0
         setTimeout(() => {
           clearWorlds()
-        }, 750)
+        }, 150)
       } else if (ElementIDLast === 'Project_Resource' || ElementIDLast === 'Blog_Resource') {
         WorldRefresh()
-        setTimeout(() => {
-          applyUpwardForceToTop('Emoji')
-        }, 50)
+        // setTimeout(() => {
+        //   applyUpwardForceToTop('Emoji')
+        // }, 150)
       }
 
       if (ElementIDNew === 'Project_Resource') {
         ProjectResources.init();
       } else if (ElementIDLast === 'Project_Resource') {
+        if (ProjectResources.projectopen) ProjectResources.OpenProject(0, 0)
         setTimeout(() => {
           ProjectResources.clear();
         }, 750)
@@ -447,7 +462,13 @@ async function LenisDefine(id) {
     requestAnimationFrame(raf);
   }
 
+  lenis.on("scroll", () => {
+    // console.log(lenis.progress)
+  })
+
   requestAnimationFrame(raf);
+
+  // console.log(`切换平滑滚动对象为 ${id}`);
 }
 
 async function init() {
@@ -457,7 +478,7 @@ async function init() {
     await CursorDefine()
   await NavAnime()
   await loadMarkdownTitles('Blog_Nav')
-  await LenisDefine('Blog_Page')
+  // await LenisDefine('Home_Main')
 }
 
 

@@ -10,6 +10,13 @@
    /* 隐藏所有的滚动条 */
  }
 
+ .MarkDown ::selection {
+   background-color: black;
+   /* 被选取文本的背景颜色 */
+   color: white;
+   /* 被选取文本的字体颜色 */
+ }
+
  .MarkDown a {
    font-weight: bold;
    color: rgb;

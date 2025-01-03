@@ -23,6 +23,7 @@
       this.fpsElement.style.borderRadius = '5px';
       this.fpsElement.style.fontFamily = 'Arial, sans-serif';
       this.fpsElement.style.pointerEvents = 'none';
+      this.fpsElement.style.userSelect = 'none';
       this.fpsElement.style.display = 'none'; // 默认隐藏
       document.body.appendChild(this.fpsElement);
 

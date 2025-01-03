@@ -11,7 +11,7 @@
   z-index: 1;
   transform: translateY(100vh);
   pointer-events: auto;
-  background-color: white;
+  /*background-color: white;*/
 }
 
 #Project_Window {
@@ -22,7 +22,7 @@
   height: 80vh;
   transform: translateX(100vw);
   box-shadow: 0px 0px 2.5vh rgba(0, 0, 0, 0.35);
-  /* 添加阴影 */
+  background-color: white;
 }
 
 #Project_Canvas {

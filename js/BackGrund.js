@@ -1,139 +1,67 @@
-const CanvasBackGrund = document.getElementById('backgroundCanvas');
-const CtxBackGrund = CanvasBackGrund.getContext('2d');
+const canvas = document.getElementById("backgroundCanvas")
+const ctx = canvas.getContext("2d")
 
-// 设置画布大小为窗口大小
-function resizeCanvasBackGrund() {
-  CanvasBackGrund.width = window.innerWidth + 20;
-  CanvasBackGrund.height = window.innerHeight;
+function randomBetween(min, max) {
+  return Math.random() * (max - min) + min;
 }
 
-resizeCanvasBackGrund();
+let circles = [];
 
-// 小球参数
-const ballRadius = 0.1; // 小球基础半径，单位vh
-const maxRadiusIncrement = 0.15; // 最大半径增量，单位vh
-const baseSpacing = 5; // 基础间隔，单位vh
-const mouseRadiusEffect = 80; // 鼠标影响范围（单位像素）
-const mouseExtraRadius = 0.15; // 鼠标附近小球放大效果的增量（单位vh）
+// const colors = ["#836fff", "#15f5ba", "#69f2ff"];
+// const colors = ["#1F3C88", "#5893D4", "#070D59"];
+const colors = ["#3FC1C9", "#FC5185", "#364F6B"];
 
-// 鼠标位置和画布偏移
-let mouseX = CanvasBackGrund.width / 2; // 鼠标位置x
-let mouseY = CanvasBackGrund.height / 2; // 鼠标位置y
-let offsetX = 0; // 画布x方向的晃动偏移
-let offsetY = 0; // 画布y方向的晃动偏移
+function initCircles() {
+  circles = [];
+  let circleCount = window.innerWidth / 100;
 
-// 计算矩阵大小
-let matrixWidth, matrixHeight;
-
-function updateMatrixSize() {
-  matrixWidth = Math.ceil(CanvasBackGrund.width / vhToPx(baseSpacing)) + 1;
-  matrixHeight = Math.ceil(CanvasBackGrund.height / vhToPx(baseSpacing)) + 1;
+  for (let i = 0; i < circleCount; i++) {
+    let radiux = window.innerWidth / 4;
+    let x = randomBetween(radiux, canvas.width - radiux);
+    let y = randomBetween(radiux, canvas.height - radiux);
+    let dx = randomBetween(window.innerWidth / -2000, window.innerWidth / 2000);
+    let dy = randomBetween(window.innerWidth / -2000, window.innerWidth / 2000);
+    let color = colors[Math.floor(Math.random() * colors.length)]
+    circles.push({ x, y, dx, dy, radiux, color });
+  }
 }
 
-updateMatrixSize();
-
-// 动画参数
-let xOffset = 0;
-const speed = 0; // 每帧移动的vh单位数
-
-
-// 绘制小球
-function drawBall(x, y, isMouseEffect) {
-  // 计算距离最近边界的距离（仅 x 轴）
-  const distanceToXEdge = Math.min(x, CanvasBackGrund.width - x);
-
-  // x 轴影响范围设定为 25% 的画布宽度
-  const maxXDistance = CanvasBackGrund.width * 0.25;
-
-  // 计算 x 轴上的半径增量
-  const xRadiusIncrement = (1 - distanceToXEdge / maxXDistance) * vhToPx(maxRadiusIncrement);
-
-  // 鼠标距离计算
-  const distanceToMouse = Math.sqrt((x - mouseX) ** 2 + (y - mouseY) ** 2);
-  const mouseEffectIncrement = distanceToMouse < mouseRadiusEffect
-    ? vhToPx(mouseExtraRadius) * (1 - distanceToMouse / mouseRadiusEffect)
-    : 0;
-
-  // 最终半径，结合边界和鼠标的增量
-  const radius = vhToPx(ballRadius) + Math.max(0, xRadiusIncrement) + mouseEffectIncrement;
-
-  CtxBackGrund.beginPath();
-  CtxBackGrund.arc(x, y, radius, 0, Math.PI * 2);
-  CtxBackGrund.fillStyle = isMouseEffect ? 'rgba(255, 255, 255, 0.65)' : 'rgba(255,255,255,0.25)'; // 鼠标影响区域加点透明效果
-  CtxBackGrund.fill();
+function drawCircle(circle) {
+  ctx.beginPath();
+  ctx.arc(circle.x, circle.y, circle.radiux, 0, Math.PI * 2, false);
+  ctx.fillStyle = circle.color;
+  ctx.fill();
+  ctx.closePath();
 }
 
-// 绘制矩阵
-function drawMatrix() {
-  CtxBackGrund.clearRect(0, 0, CanvasBackGrund.width, CanvasBackGrund.height);
+function animate() {
+  requestAnimationFrame(animate);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  circles.forEach(circle => {
 
-  for (let row = 0; row < matrixHeight; row++) {
-    for (let col = 0; col < matrixWidth; col++) {
-      const baseX = col * vhToPx(baseSpacing) + offsetX; // 添加画布晃动偏移
-      const baseY = row * vhToPx(baseSpacing) + offsetY; // 添加画布晃动偏移
-
-      const x = (baseX - xOffset + CanvasBackGrund.width) % CanvasBackGrund.width;
-      const y = baseY;
-
-      drawBall(x, y, Math.sqrt((x - mouseX) ** 2 + (y - mouseY) ** 2) < mouseRadiusEffect);
+    if (circle.x + circle.radiux > canvas.width || circle.x - circle.radiux < 0) {
+      circle.dx = -circle.dx;
     }
-  }
 
-  xOffset += vhToPx(speed);
-  if (xOffset >= vhToPx(baseSpacing)) {
-    xOffset = 0;
-  }
-
-  requestAnimationFrame(drawMatrix);
+    if (circle.y + circle.radiux > canvas.height || circle.y - circle.radiux < 0) {
+      circle.dy = -circle.dy;
+    }
+    circle.x += circle.dx;
+    circle.y += circle.dy;
+    drawCircle(circle);
+  });
 }
 
-// 鼠标移动事件监听
-window.addEventListener('mousemove', (event) => {
+function resizeCanvas() {
+  canvas.width = window.innerWidth * 1.5;
+  canvas.height = window.innerHeight * 1.5;
+  initCircles();
+}
 
-  if (isMobileDevice()) return;
+resizeCanvas();
 
-  const maxOffset = 50; // 最大偏移量
-  mouseX = event.clientX;
-  mouseY = event.clientY;
+window.addEventListener("resize", resizeCanvas);
 
-  // 根据鼠标位置调整画布整体偏移
-  offsetX = ((mouseX / CanvasBackGrund.width) - 0.5) * maxOffset;
-  offsetY = ((mouseY / CanvasBackGrund.height) - 0.5) * maxOffset;
-});
+initCircles();
 
-// 监听设备方向变化
-window.addEventListener('deviceorientation', (event) => {
-  const maxOffset = 50; // 最大偏移量
-
-  // 设备的alpha, beta, gamma值（分别对应绕z, x, y轴的旋转角度）
-  const alpha = event.alpha; // 绕z轴旋转
-  const beta = event.beta;   // 绕x轴旋转
-  const gamma = event.gamma; // 绕y轴旋转
-
-  // 将设备的旋转角度映射到画布的偏移量
-  // alpha (0-360°) 映射到 -maxOffset 到 +maxOffset
-  offsetX = (gamma / 90) * maxOffset * 2; // gamma 值控制x轴偏移
-  offsetY = (beta / 90) * maxOffset * 2;  // beta 值控制y轴偏移
-});
-
-// 开始动画
-drawMatrix();
-
-// 窗口大小改变时调整画布大小和矩阵
-window.addEventListener('resize', () => {
-  resizeCanvasBackGrund();
-  updateMatrixSize();
-});
-
-// 监听页面缩放
-window.addEventListener('zoom', () => {
-  resizeCanvasBackGrund();
-  updateMatrixSize();
-});
-
-// 监听设备方向变化（用于移动设备）
-window.addEventListener('orientationchange', () => {
-  resizeCanvasBackGrund();
-  updateMatrixSize();
-});
-
+animate();

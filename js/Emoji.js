@@ -164,6 +164,59 @@ function initWorld(elementId, options = {}) {
 }
 
 
+let isScaledUp = true; // 全局变量，记录当前放大和缩小的状态
+let originalScales = {}; // 全局变量，存储原始比例
+
+async function toggleScaling() {
+  const allBodies = Composite.allBodies(physicsWorlds[Object.keys(physicsWorlds)[0]].world);
+
+  if (isScaledUp) {
+    // 缩小：记录原始比例，并将所有物体缩小
+    allBodies.forEach(body => {
+      originalScales[body.id] = {
+        xScale: body.render.sprite.xScale,
+        yScale: body.render.sprite.yScale,
+      };
+
+      gsap.to(body.render.sprite, {
+        xScale: 0, // 缩小到0
+        yScale: 0,
+        ease: "expo.out",
+        duration: 0.5,
+      });
+    });
+  } else {
+    // 放大：还原到原始比例
+    allBodies.forEach(body => {
+      const originalScale = originalScales[body.id];
+      if (originalScale) {
+        gsap.to(body.render.sprite, {
+          xScale: originalScale.xScale,
+          yScale: originalScale.yScale,
+          ease: "expo.out",
+          duration: 0.5,
+        });
+      }
+    });
+    originalScales = {}; // 清空记录
+  }
+
+  isScaledUp = !isScaledUp; // 切换状态
+  await delayReturn(500)
+}
+
+
+function FromToScale(body, duration = 0.5) {
+  gsap.fromTo(body.render.sprite, {
+    xScale: 0,
+    yScale: 0
+  }, {
+    xScale: body.render.sprite.xScale,
+    yScale: body.render.sprite.yScale,
+    ease: "expo.out",
+    duration: duration
+  });
+}
 
 function createDeleteArea(worldId, x, y, width, height) {
   const world = physicsWorlds[worldId]?.world;
@@ -418,7 +471,7 @@ function initKeyboardControls() {
       if (!world) return;
 
       const bodies = Composite.allBodies(world);
-      const forceY = event.deltaY < 0 ? 0.05 : -0.05; // 滚轮向上为负值，向下为正值
+      const forceY = event.deltaY < 0 ? 0.15 : -0.15; // 滚轮向上为负值，向下为正值
       bodies.forEach(body => {
         Body.applyForce(body, body.position, { x: 0, y: forceY });
       });
@@ -426,7 +479,9 @@ function initKeyboardControls() {
   });
 }
 
-function clearWorlds() {
+async function clearWorlds() {
+  isScaledUp = true;
+  await toggleScaling();
   // 清除特殊区域和墙壁
   Object.keys(physicsWorlds).forEach(worldId => {
     const { world, render, engine, mouseConstraint } = physicsWorlds[worldId] || {};
@@ -454,7 +509,7 @@ function clearWorlds() {
 }
 
 async function WorldRefresh() {
-  clearWorlds()
+  await clearWorlds()
   // 重新创建特殊区域和墙壁
   Object.keys(physicsWorlds).forEach(worldId => {
     const { render } = physicsWorlds[worldId] || {};
@@ -542,6 +597,8 @@ async function createEmoji(worldId, x, y, size, delay) {
 
     // 将新创建的 Emoji 物体添加到世界中
     Composite.add(world, body);
+
+    FromToScale(body)
   }, delay);  // 使用随机延迟
 }
 
@@ -611,6 +668,8 @@ function createPhoto(worldId, x, y, width, delay) {
 
     // 将新创建的图片物体添加到世界中
     Composite.add(world, body);
+
+    FromToScale(body)
   }, delay);
 }
 
@@ -667,6 +726,8 @@ async function createLetter(worldId, x, y, size, delay) {
 
     // 将新创建的字母物体添加到世界中
     Composite.add(world, body);
+
+    FromToScale(body)
   }, delay);  // 使用随机延迟
 }
 
