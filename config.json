@@ -38,6 +38,10 @@
     {
       "title": "Arch Linux",
       "path": "https://raw.githubusercontent.com/xiaoCRQ/archlinux_config/main/install.md"
+    },
+    {
+      "title": "Anki Card",
+      "path": "https://raw.githubusercontent.com/xiaoCRQ/Anki/main/README.md"
     }
   ],
   "ProjectResources": [
