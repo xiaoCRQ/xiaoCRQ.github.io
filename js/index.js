@@ -106,7 +106,8 @@ async function NavAnimes(Motion = true) {
     gsap.to(Nav_Option, {
       ease: "expo.in",
       opacity: 1,
-      duration: 0.45
+      duration: 0.35,
+      delay: 0.15
     })
     gsap.to(Nav, {
       width: NavMove,
@@ -131,7 +132,7 @@ async function NavAnimes(Motion = true) {
     gsap.to(Nav_Option, {
       ease: "expo.inOut",
       opacity: 0,
-      duration: 0.65
+      duration: 0.45
     })
     gsap.to(Nav, {
       width: '5vh',
