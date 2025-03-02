@@ -522,7 +522,7 @@ async function WorldRefresh() {
   if (UseFunction_Emoji === 1)
     createEmojiS(CountS, 6, 4, 0, 0, 0);
   else if (UseFunction_Emoji === 2)
-    createPhotoS(CountS, 8, 4, 0, 0, 0);
+    createPhotoS(CountS - 10, 8, 4, 0, 0, 0);
   else if (UseFunction_Emoji === 3)
     createLetterS(CountS, 8, 4, 0, 0, 0);
 

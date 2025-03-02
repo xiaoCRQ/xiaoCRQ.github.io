@@ -12,6 +12,7 @@
   transform: translateY(100vh);
   color: white;
   text-shadow: 0px 0px 2.5vh rgba(0, 0, 0, 0.35);
+  font-family: 'SmileySans-Oblique';
 }
 
 #Home_Head {

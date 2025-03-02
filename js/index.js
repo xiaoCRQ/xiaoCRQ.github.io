@@ -1,6 +1,10 @@
 let MobileDevice = false
 let NavMove = '45vh'
 let BlogNavMove = '48vh'
+let ProjectWindowX = '18vw'
+let ProjectWindowY = '0vh'
+let ProjectWindowX_Off = '100vw'
+let ProjectWindowY_Off = '0vh'
 
 // 将vh单位转换为像素
 function vhToPx(vh) {
@@ -20,10 +24,11 @@ function isMobileDevice() {
   const Project = document.getElementById('Project_Web');
   MobileDevice = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone|webOS/i.test(navigator.userAgent)
   if (MobileDevice) {
-    BlogNavMove = NavMove = '100vw'
-  }
-  else {
-    NavMove = '45vh', BlogNavMove = '48vh'
+    BlogNavMove = '100vw';
+    NavMove = '98vw';
+    ProjectWindowX = ProjectWindowX_Off = '0vw';
+    ProjectWindowY = '18vh';
+    ProjectWindowY_Off = '100vh';
   }
   return MobileDevice;
 }
@@ -106,8 +111,8 @@ async function NavAnimes(Motion = true) {
     gsap.to(Nav_Option, {
       ease: "expo.in",
       opacity: 1,
-      duration: 0.35,
-      delay: 0.15
+      duration: 0.45,
+      delay: 0.25
     })
     gsap.to(Nav, {
       width: NavMove,
@@ -260,7 +265,7 @@ async function NavAnime() {
       if (ElementIDNew === 'Project_Resource') {
         ProjectResources.init();
       } else if (ElementIDLast === 'Project_Resource') {
-        if (ProjectResources.projectopen) ProjectResources.OpenProject(0, 0)
+        if (ProjectResources.projectopen) ProjectResources.OpenProject(0, 0, false)
         setTimeout(() => {
           ProjectResources.clear();
         }, 750)
@@ -475,12 +480,12 @@ async function LenisDefine(id) {
 async function init() {
   await loadConfig("config.json");
   await OpeWebSite()
-  if (isMobileDevice() === false)
+  if (MobileDevice === false)
     await CursorDefine()
   await NavAnime()
   await loadMarkdownTitles('Blog_Nav')
   // await LenisDefine('Home_Main')
 }
 
-
+isMobileDevice()
 init()

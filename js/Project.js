@@ -38,6 +38,19 @@ const ProjectResources = {
       this.row_max = 6
       this.line_max = 9
       this.img_total = this.row_max * this.line_max
+      gsap.set(this.projectwindow, {
+        y: '100vh',
+        x: '0vw',
+        width: '98vw',
+        height: '60vh',
+      });
+    } else {
+      gsap.set(this.projectwindow, {
+        y: '0vh',
+        x: '100vw',
+        width: '60vw',
+        height: '80vh',
+      });
     }
     this.total_width = this.row_max * (this.img_width + this.img_margin) - this.img_margin; // 计算总宽度
     this.total_height = this.line_max * (this.img_height + this.img_margin) - this.img_margin; // 计算总高度
@@ -243,7 +256,7 @@ const ProjectResources = {
     this.animationStatus = true;
   },
 
-  OpenProject(x, y) {
+  OpenProject(x, y, closed = true) {
     // 判断当前状态是关闭还是打开
     if (this.projectopen) {
       // 如果是打开状态，点击任何地方将图片还原到原位置
@@ -255,22 +268,33 @@ const ProjectResources = {
         onComplete: () => {
           this.projectwindow.src = ''; // 设置iframe的url
           this.card_div.style.backgroundImage = ``;
+          this.card_div.style.scale = 1;
           this.card = null;
           this.projectopen = false;  // 设置为关闭状态
         }
       });
-      gsap.to(this.projectwindow, {
-        ease: "expo.inOut",
-        duration: 0.75,
-        x: '100vw',
-      });
-      gsap.to(this.card_div, {
-        ease: "expo.inOut",
-        duration: 0.75,
-        x: this.card.x + this.offsetX + 'px',
-        y: this.card.y + this.offsetY + 'px',
-        scale: 1,
-      })
+
+      if (closed) {
+        gsap.to(this.projectwindow, {
+          ease: "expo.inOut",
+          duration: 0.75,
+          x: ProjectWindowX_Off,
+          y: ProjectWindowY_Off,
+        });
+        gsap.to(this.card_div, {
+          ease: "expo.inOut",
+          duration: 0.75,
+          x: this.card.x + this.offsetX + 'px',
+          y: this.card.y + this.offsetY + 'px',
+          scale: 1,
+        })
+      } else {
+        gsap.to(this.card_div, {
+          ease: "expo.inOut",
+          duration: 0.75,
+          scale: 1,
+        })
+      }
       return;
     }
 
@@ -292,14 +316,25 @@ const ProjectResources = {
     this.projectwindow.src = this.card.url; // 设置iframe的url
     this.move_imgs(0, 0)
 
-    gsap.to(this.card_div, {
-      ease: "expo.inOut",
-      delay: 0.25,
-      duration: 0.75,
-      x: vwToPx(20) - this.img_width / 2 + 'px',
-      y: vhToPx(50) - this.img_height / 2 + 'px',
-      scale: 1.5,
-    })
+    if (MobileDevice === true)
+      gsap.to(this.card_div, {
+        ease: "expo.inOut",
+        delay: 0.25,
+        duration: 0.75,
+        x: vwToPx(50) - this.img_width / 2 + 'px',
+        y: vhToPx(20) - this.img_height / 2 + 'px',
+        scale: 1.5,
+      })
+    else
+      gsap.to(this.card_div, {
+        ease: "expo.inOut",
+        delay: 0.25,
+        duration: 0.75,
+        x: vwToPx(20) - this.img_width / 2 + 'px',
+        y: vhToPx(50) - this.img_height / 2 + 'px',
+        scale: 1.5,
+      })
+
 
     gsap.to(this.canvas, {
       ease: "expo.in",
@@ -311,7 +346,8 @@ const ProjectResources = {
       ease: "expo.inOut",
       delay: 0.25,
       duration: 0.75,
-      x: '18vw',
+      x: ProjectWindowX,
+      y: ProjectWindowY,
     });
 
     console.log(this.card);
