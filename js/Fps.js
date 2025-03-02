@@ -6,6 +6,7 @@
       this.ticks = 0;
       this.fpsElement = null;
       this.isVisible = false; // 默认隐藏
+      this.targetElement = null; // 目标元素
 
       this.init();
     }
@@ -31,13 +32,26 @@
       requestAnimationFrame(this.rafLoop.bind(this));
 
       // 监听键盘事件
-      window.addEventListener('keydown', this.toggleVisibility.bind(this));
+      window.addEventListener('keydown', this.toggleVisibilityByKey.bind(this));
+
+      // 监听三指触摸事件
+      window.addEventListener('touchstart', this.handleTouch.bind(this));
     }
 
-    toggleVisibility(event) {
+    toggleVisibility() {
+      this.isVisible = !this.isVisible;
+      this.fpsElement.style.display = this.isVisible ? 'block' : 'none';
+    }
+
+    toggleVisibilityByKey(event) {
       if (event.key.toLowerCase() === '\\') {
-        this.isVisible = !this.isVisible;
-        this.fpsElement.style.display = this.isVisible ? 'block' : 'none';
+        this.toggleVisibility();
+      }
+    }
+
+    handleTouch(event) {
+      if (event.touches.length === 3) {
+        this.toggleVisibility();
       }
     }
 
@@ -59,6 +73,7 @@
     }
   }
 
-  // 实例化FPS监视器
-  new FPSMonitor();
+  // 将实例设置为全局变量以便外部调用
+  window.fpsMonitor = new FPSMonitor();
 })();
+

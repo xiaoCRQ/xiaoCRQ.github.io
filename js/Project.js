@@ -28,6 +28,7 @@ const ProjectResources = {
   init() {
     // 初始化项目卡片
     this.projectwindow = document.getElementById("Project_Window");
+    this.projectwindow.style.opacity = 0;
     this.card_div = document.getElementById("Project_Card");
     this.canvas = document.createElement('canvas')
     this.canvas.id = "Project_Canvas"; // 获取canvas元素
