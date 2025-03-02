@@ -267,6 +267,7 @@ const ProjectResources = {
         opacity: 1,
         onComplete: () => {
           this.projectwindow.src = ''; // 设置iframe的url
+          this.projectwindow.style.opacity = 0;
           this.card_div.style.backgroundImage = ``;
           this.card_div.style.scale = 1;
           this.card = null;
@@ -314,6 +315,7 @@ const ProjectResources = {
     // 添加背景图片
     this.card_div.style.backgroundImage = `url(${this.card.img.src})`;
     this.projectwindow.src = this.card.url; // 设置iframe的url
+    this.projectwindow.style.opacity = 1;
     this.move_imgs(0, 0)
 
     if (MobileDevice === true)
